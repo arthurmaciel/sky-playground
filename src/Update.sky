@@ -1,0 +1,132 @@
+module Update exposing (update)
+
+import Sky.Core.Prelude exposing (..)
+import Sky.Core.Error as Error
+import Sky.Core.Task as Task
+import State exposing (..)
+import Security
+import Runner
+import Examples exposing (examples)
+import Sky.Core.List as List
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        -- ── Code editor changes ──────────────────────────────────────────────
+
+        CodeChanged newCode ->
+            ( { model | code = newCode, securityWarning = "" }
+            , Cmd.none
+            )
+
+        -- ── Format ───────────────────────────────────────────────────────────
+
+        FormatClicked ->
+            let
+                warning =
+                    if Security.isDangerous model.code then
+                        Security.warningMessage
+
+                    else
+                        ""
+            in
+            ( { model
+                | formatStatus = FmtRunning
+                , securityWarning = warning
+              }
+            , Cmd.perform (Runner.formatCode model.code) GotFormatResult
+            )
+
+        GotFormatResult result ->
+            case result of
+                Ok formatted ->
+                    ( { model
+                        | code = formatted
+                        , formatStatus = FmtSucceeded
+                      }
+                    , Cmd.none
+                    )
+
+                Err e ->
+                    ( { model
+                        | formatStatus = FmtFailed
+                        , securityWarning =
+                            "Format error: " ++ Error.toString e
+                      }
+                    , Cmd.none
+                    )
+
+        -- ── Run ──────────────────────────────────────────────────────────────
+
+        RunClicked ->
+            let
+                -- Always notify the user if dangerous imports were found, but
+                -- we still proceed (Runner.runCode calls Security.sanitise
+                -- internally, stripping them before the build).
+                warning =
+                    if Security.isDangerous model.code then
+                        Security.warningMessage
+
+                    else
+                        ""
+            in
+            ( { model
+                | runStatus = Running
+                , runOutput = ""
+                , securityWarning = warning
+                , activeTab = OutputTab
+              }
+            , Cmd.perform (Runner.runCode model.code) GotRunResult
+            )
+
+        GotRunResult result ->
+            case result of
+                Ok output ->
+                    ( { model
+                        | runOutput = output
+                        , runStatus = Succeeded
+                      }
+                    , Cmd.none
+                    )
+
+                Err e ->
+                    ( { model
+                        | runOutput = "Error: " ++ Error.toString e
+                        , runStatus = Failed
+                      }
+                    , Cmd.none
+                    )
+
+        -- ── Examples ─────────────────────────────────────────────────────────
+
+        LoadExample i ->
+            let
+                maybeEx =
+                    List.head (List.drop i examples)
+            in
+            case maybeEx of
+                Just ex ->
+                    ( { model
+                        | code = ex.code
+                        , activeExample = i
+                        , runOutput = ""
+                        , runStatus = Idle
+                        , formatStatus = FmtIdle
+                        , securityWarning = ""
+                      }
+                    , Cmd.none
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        -- ── Tabs ─────────────────────────────────────────────────────────────
+
+        TabChanged tab ->
+            ( { model | activeTab = tab }, Cmd.none )
+
+        -- ── Dismiss security warning ─────────────────────────────────────────
+
+        DismissWarning ->
+            ( { model | securityWarning = "" }, Cmd.none )

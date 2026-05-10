@@ -1,0 +1,13 @@
+[project]
+name = "sky-playground"
+version = "0.1.0"
+main = "src/Main.sky"
+
+[live]
+port = 8080
+store = "memory"
+ttl = 3600
+
+[log]
+level = "info"
+format = "plain"

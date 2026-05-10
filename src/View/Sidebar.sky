@@ -1,0 +1,155 @@
+module View.Sidebar exposing (sidebar)
+
+import Sky.Core.Prelude exposing (..)
+import Sky.Core.List as List
+import Std.Ui as Ui exposing (Element)
+import Std.Ui.Background as Background
+import Std.Ui.Border as Border
+import Std.Ui.Font as Font
+import State exposing (..)
+import Examples exposing (examples, Example)
+import View.Common exposing (..)
+
+
+-- ── Sidebar ───────────────────────────────────────────────────────────────────
+
+
+sidebar : Model -> Element Msg
+sidebar model =
+    Ui.column
+        [ Ui.width (Ui.px 210)
+        , Ui.height Ui.fill
+        , Background.color bg1
+        , Border.color borderColour
+        , Border.widthEach { top = 0, right = 1, bottom = 0, left = 0 }
+        ]
+        [ sectionLabel "Examples"
+        , examplesList model
+        , quickRefPanel
+        ]
+
+
+-- ── Examples list ─────────────────────────────────────────────────────────────
+
+
+examplesList : Model -> Element Msg
+examplesList model =
+    Ui.column
+        [ Ui.width Ui.fill
+        , Border.color borderColour
+        , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
+        ]
+        (List.indexedMap (exampleItem model.activeExample) examples)
+
+
+exampleItem : Int -> Int -> Example -> Element Msg
+exampleItem activeIdx i ex =
+    let
+        isActive =
+            i == activeIdx
+
+        leftBorder =
+            if isActive then
+                accent
+
+            else
+                Ui.rgba 0 0 0 0.0
+
+        bgColour =
+            if isActive then
+                accentDim
+
+            else
+                Ui.rgba 0 0 0 0.0
+    in
+    Ui.el
+        [ Ui.width Ui.fill
+        , Ui.onClick (LoadExample i)
+        , Ui.pointer
+        , Background.color bgColour
+        , Border.color leftBorder
+        , Border.widthEach { top = 0, right = 0, bottom = 0, left = 2 }
+        ]
+        (Ui.column
+            [ Ui.width Ui.fill
+            , Ui.paddingXY 12 8
+            , Ui.spacing 2
+            ]
+            [ Ui.el
+                [ Font.size 11
+                , Font.color
+                    (if isActive then
+                        textPrimary
+
+                     else
+                        textSecondary)
+                ]
+                (Ui.text ex.name)
+            , Ui.el
+                [ Font.size 10
+                , Font.color textMuted
+                , Font.family Font.monospace
+                ]
+                (Ui.text ex.description)
+            ])
+
+
+-- ── Quick-reference panel ─────────────────────────────────────────────────────
+
+
+quickRefPanel : Element Msg
+quickRefPanel =
+    Ui.column
+        [ Ui.width Ui.fill
+        , Ui.paddingXY 0 4
+        ]
+        [ sectionLabel "Quick Ref"
+        , refGroup "Types"
+            [ "String · Int · Float · Bool"
+            , "Maybe · Result · Task Error a"
+            , "List · Dict · Set"
+            ]
+        , refGroup "Effects"
+            [ "Task Error a"
+            , "Cmd msg · Sub msg"
+            , "Task.andThen"
+            ]
+        , refGroup "Operators"
+            [ "|>  <|  pipeline"
+            , "::  cons   ++  append"
+            , "==  /=  <  <=  >  >="
+            ]
+        , refGroup "Syntax"
+            [ "let … in"
+            , "case … of"
+            , "\\x -> expr"
+            , "{ r | field = v }"
+            ]
+        ]
+
+
+refGroup : String -> List String -> Element Msg
+refGroup groupTitle lines =
+    Ui.column
+        [ Ui.width Ui.fill
+        , Ui.paddingXY 14 6
+        , Ui.spacing 4
+        ]
+        (Ui.el
+            [ Font.size 10
+            , Font.color accent
+            , Font.family Font.monospace
+            ]
+            (Ui.text groupTitle)
+            :: List.map
+                (\line ->
+                    Ui.el
+                        [ Font.size 10
+                        , Font.color textMuted
+                        , Font.family Font.monospace
+                        , Ui.paddingXY 6 0
+                        , Border.color (Ui.rgba 77 158 255 0.1)
+                        , Border.widthEach { top = 0, right = 0, bottom = 0, left = 1 }
+                        ]
+                        (Ui.text line))
+                lines)

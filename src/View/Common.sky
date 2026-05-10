@@ -1,0 +1,195 @@
+module View.Common exposing
+    ( -- Colours
+      bg0
+    , bg1
+    , bg2
+    , bg3
+    , accent
+    , accentDim
+    , textPrimary
+    , textSecondary
+    , textMuted
+    , colourSuccess
+    , colourError
+    , colourWarning
+    , borderColour
+      -- Reusable elements
+    , actionButton
+    , secondaryButton
+    , statusBadge
+    , sectionLabel
+    )
+
+import Sky.Core.Prelude exposing (..)
+import Sky.Core.String as String
+import Std.Ui as Ui exposing (Element)
+import Std.Ui.Background as Background
+import Std.Ui.Border as Border
+import Std.Ui.Font as Font
+import State exposing (..)
+
+
+-- ── Colour palette ────────────────────────────────────────────────────────────
+
+
+bg0 : Ui.Color
+bg0 =
+    Ui.rgb 3 7 15
+
+
+bg1 : Ui.Color
+bg1 =
+    Ui.rgb 6 11 22
+
+
+bg2 : Ui.Color
+bg2 =
+    Ui.rgb 10 18 35
+
+
+bg3 : Ui.Color
+bg3 =
+    Ui.rgb 16 27 52
+
+
+accent : Ui.Color
+accent =
+    Ui.rgb 77 158 255
+
+
+accentDim : Ui.Color
+accentDim =
+    Ui.rgba 77 158 255 0.12
+
+
+textPrimary : Ui.Color
+textPrimary =
+    Ui.rgb 232 240 255
+
+
+textSecondary : Ui.Color
+textSecondary =
+    Ui.rgb 154 176 204
+
+
+textMuted : Ui.Color
+textMuted =
+    Ui.rgb 86 100 128
+
+
+colourSuccess : Ui.Color
+colourSuccess =
+    Ui.rgb 57 217 138
+
+
+colourError : Ui.Color
+colourError =
+    Ui.rgb 255 95 95
+
+
+colourWarning : Ui.Color
+colourWarning =
+    Ui.rgb 255 200 74
+
+
+borderColour : Ui.Color
+borderColour =
+    Ui.rgba 77 158 255 0.15
+
+
+-- ── Action button (primary — blue fill) ───────────────────────────────────────
+
+
+actionButton : Msg -> Bool -> String -> Element Msg
+actionButton onPress isDisabled label =
+    Ui.button
+        [ Ui.paddingXY 18 8
+        , Border.rounded 6
+        , if isDisabled then
+            Background.color bg3
+
+          else
+            Background.color accent
+        , if isDisabled then
+            Font.color textMuted
+
+          else
+            Font.color Ui.white
+        , Font.size 12
+        , Font.bold
+        ]
+        { onPress =
+            if isDisabled then
+                Nothing
+
+            else
+                Just onPress
+        , label = Ui.text label
+        }
+
+
+-- ── Secondary button (ghost — dim border) ────────────────────────────────────
+
+
+secondaryButton : Msg -> String -> Element Msg
+secondaryButton onPress label =
+    Ui.button
+        [ Ui.paddingXY 14 7
+        , Border.rounded 6
+        , Background.color bg2
+        , Border.color borderColour
+        , Border.width 1
+        , Font.color textSecondary
+        , Font.size 11
+        , Font.family Font.monospace
+        ]
+        { onPress = Just onPress
+        , label = Ui.text label
+        }
+
+
+-- ── Status badge ──────────────────────────────────────────────────────────────
+
+
+statusBadge : RunStatus -> Element Msg
+statusBadge status =
+    let
+        ( badgeColour, badgeLabel ) =
+            case status of
+                Idle ->
+                    ( textMuted, "idle" )
+
+                Running ->
+                    ( colourWarning, "running…" )
+
+                Succeeded ->
+                    ( colourSuccess, "success" )
+
+                Failed ->
+                    ( colourError, "failed" )
+    in
+    Ui.el
+        [ Font.size 10
+        , Font.family Font.monospace
+        , Font.color badgeColour
+        , Ui.paddingXY 8 4
+        , Background.color bg2
+        , Border.rounded 20
+        , Border.color (Ui.rgba 77 158 255 0.08)
+        , Border.width 1
+        ]
+        (Ui.text badgeLabel)
+
+
+-- ── Section label (small caps header used in sidebar) ────────────────────────
+
+
+sectionLabel : String -> Element Msg
+sectionLabel heading =
+    Ui.el
+        [ Font.size 9
+        , Font.color textMuted
+        , Font.family Font.monospace
+        , Ui.paddingXY 14 8
+        ]
+        (Ui.text (String.toUpper heading))
