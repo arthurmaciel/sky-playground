@@ -1,14 +1,15 @@
 module View.Sidebar exposing (sidebar)
 
-import Sky.Core.Prelude exposing (..)
+import Examples exposing (Example, examples)
 import Sky.Core.List as List
+import Sky.Core.Prelude exposing (..)
+import State exposing (..)
 import Std.Ui as Ui exposing (Element)
 import Std.Ui.Background as Background
 import Std.Ui.Border as Border
 import Std.Ui.Font as Font
-import State exposing (..)
-import Examples exposing (examples, Example)
 import View.Common exposing (..)
+
 
 
 -- ── Sidebar ───────────────────────────────────────────────────────────────────
@@ -29,24 +30,35 @@ sidebar model =
         ]
 
 
+
 -- ── Examples list ─────────────────────────────────────────────────────────────
 
 
 examplesList : Model -> Element Msg
 examplesList model =
+    let
+        -- Extract activeExample into a plain Int before partial application.
+        -- List.map dispatches Example (map[string]interface{}) to the callback,
+        -- which now expects Example as its only remaining argument — no Int is
+        -- ever passed through reflect dispatch, eliminating the
+        --   reflect: Call using map[string]interface {} as type int
+        -- panic that occurred when fst/snd returned the whole tuple map.
+        activeIdx =
+            model.activeExample
+    in
     Ui.column
         [ Ui.width Ui.fill
         , Border.color borderColour
         , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
         ]
-        (List.indexedMap (exampleItem model.activeExample) examples)
+        (List.map (exampleItem activeIdx) examples)
 
 
-exampleItem : Int -> Int -> Example -> Element Msg
-exampleItem activeIdx i ex =
+exampleItem : Int -> Example -> Element Msg
+exampleItem activeIdx ex =
     let
         isActive =
-            i == activeIdx
+            ex.index == activeIdx
 
         leftBorder =
             if isActive then
@@ -64,7 +76,7 @@ exampleItem activeIdx i ex =
     in
     Ui.el
         [ Ui.width Ui.fill
-        , Ui.onClick (LoadExample i)
+        , Ui.onClick (LoadExample ex.index)
         , Ui.pointer
         , Background.color bgColour
         , Border.color leftBorder
@@ -82,7 +94,8 @@ exampleItem activeIdx i ex =
                         textPrimary
 
                      else
-                        textSecondary)
+                        textSecondary
+                    )
                 ]
                 (Ui.text ex.name)
             , Ui.el
@@ -91,7 +104,9 @@ exampleItem activeIdx i ex =
                 , Font.family Font.monospace
                 ]
                 (Ui.text ex.description)
-            ])
+            ]
+        )
+
 
 
 -- ── Quick-reference panel ─────────────────────────────────────────────────────
@@ -151,5 +166,7 @@ refGroup groupTitle lines =
                         , Border.color (Ui.rgba 77 158 255 0.1)
                         , Border.widthEach { top = 0, right = 0, bottom = 0, left = 1 }
                         ]
-                        (Ui.text line))
-                lines)
+                        (Ui.text line)
+                )
+                lines
+        )

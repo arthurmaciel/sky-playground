@@ -3,6 +3,7 @@ module Main exposing (main)
 -- Sky.Live + Std.Ui playground — assembles all view modules and wires the
 -- TEA loop. View is split across View/* to avoid HM type-checker heap
 -- exhaustion on Std.Ui-heavy modules (CLAUDE.md Limitation #17).
+-- import Examples exposing (examples)
 
 import Examples exposing (examples)
 import Sky.Core.List as List
@@ -24,7 +25,7 @@ import View.Sidebar exposing (sidebar)
 -- ── Init ─────────────────────────────────────────────────────────────────────
 
 
-init : Page -> ( Model, Cmd Msg )
+init : {} -> ( Model, Cmd Msg )
 init _ =
     let
         firstCode =
@@ -35,7 +36,9 @@ init _ =
                 Nothing ->
                     "module Main exposing (main)\n\nimport Sky.Core.Prelude exposing (..)\nimport Std.Log exposing (println)\n\nmain =\n    println \"Hello, Sky! ☁\"\n"
     in
-    ( { initialModel | code = firstCode }, Cmd.none )
+    ( { initialModel | code = firstCode }
+    , Cmd.none
+    )
 
 
 
@@ -60,7 +63,11 @@ logoMark =
         , Border.rounded 6
         ]
         (Ui.el
-            [ Ui.centerX, Ui.centerY, Font.size 15, Font.color Ui.white ]
+            [ Ui.centerX
+            , Ui.centerY
+            , Font.size 15
+            , Font.color Ui.white
+            ]
             (Ui.text "☁")
         )
 
@@ -78,7 +85,11 @@ header =
         ]
         [ logoMark
         , Ui.el
-            [ Font.size 16, Font.bold, Font.color textPrimary ]
+            [ Font.size 16
+            , Font.bold
+            , Font.color textPrimary
+            , Font.family Font.monospace
+            ]
             (Ui.text "Playground")
         , Ui.el
             [ Font.size 10
@@ -87,13 +98,16 @@ header =
             , Border.color (Ui.rgba 77 158 255 0.3)
             , Border.width 1
             , Border.rounded 20
-            , Ui.paddingXY 8 3
+            , Ui.paddingXY 8 1
             , Font.family Font.monospace
             ]
             (Ui.text "Elm → Go")
         , Ui.el [ Ui.width Ui.fill ] (Ui.text "")
         , Ui.link
-            [ Font.size 12, Font.color textMuted, Font.family Font.monospace ]
+            [ Font.size 12
+            , Font.color textMuted
+            , Font.family Font.monospace
+            ]
             { url = "https://github.com/arthurmaciel/sky"
             , label = Ui.text "GitHub ↗"
             }
@@ -112,11 +126,18 @@ view model =
     Ui.layout
         [ Background.color bg0 ]
         (Ui.column
-            [ Ui.width Ui.fill, Ui.height Ui.fill ]
+            [ Ui.width Ui.fill
+            , Ui.height Ui.fill
+            ]
             [ header
             , Ui.row
-                [ Ui.width Ui.fill, Ui.height Ui.fill ]
-                [ sidebar model, editorPanel model, outputPanel model ]
+                [ Ui.width Ui.fill
+                , Ui.height Ui.fill
+                ]
+                [ sidebar model
+                , editorPanel model
+                , outputPanel model
+                ]
             ]
         )
 

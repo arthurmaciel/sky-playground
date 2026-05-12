@@ -1,9 +1,13 @@
-module Security exposing (blockedModuleNames, isDangerous, sanitise, warningMessage)
+module Security exposing
+    ( isDangerous
+    , sanitise
+    , blockedModuleNames
+    , warningMessage
+    )
 
-import Sky.Core.List as List
 import Sky.Core.Prelude exposing (..)
 import Sky.Core.String as String
-
+import Sky.Core.List as List
 
 
 -- ── Blocked patterns ──────────────────────────────────────────────────────────
@@ -14,38 +18,49 @@ import Sky.Core.String as String
 
 blockedPatterns : List String
 blockedPatterns =
-    [ "import Sky.Core.File"
+    [ -- File system
+      "import Sky.Core.File"
     , "import File"
     , "File."
-    , "import Sky.Core.Io"
+    , -- Standard I/O (direct stdin/stdout bypass)
+      "import Sky.Core.Io"
     , "import Io"
     , "Io."
-    , "import Sky.Core.Process"
+    , -- Subprocess execution
+      "import Sky.Core.Process"
     , "import Process"
     , "Process."
-    , "import Sky.Core.System"
+    , -- Environment / exit / CWD
+      "import Sky.Core.System"
     , "import System"
     , "System."
-    , "import Std.Db"
+    , -- Database
+      "import Std.Db"
     , "import Db"
     , "Db."
-    , "import Std.Auth"
+    , -- Authentication
+      "import Std.Auth"
     , "import Auth"
     , "Auth."
-    , "import Sky.Core.Http"
+    , -- Outbound HTTP (SSRF risk)
+      "import Sky.Core.Http"
     , "import Http"
     , "Http."
-    , "import Sky.Http.Server"
+    , -- HTTP server (nested server spawning)
+      "import Sky.Http.Server"
     , "import Server"
     , "Server."
-    , "import Sky.Http.RateLimit"
+    , -- HTTP infrastructure
+      "import Sky.Http.RateLimit"
     , "import RateLimit"
     , "import Sky.Http.Middleware"
     , "import Middleware"
-    , "import Std.Live"
+    , -- Sky.Live (nested app spawning)
+      "import Std.Live"
     , "import Live"
     , "Live."
-    , "import Sky.Ffi"
+    , -- Go FFI escape hatches
+      "import Sky.Ffi"
     , "import Ffi"
     , "Ffi."
     , "import Context"
@@ -55,28 +70,13 @@ blockedPatterns =
     ]
 
 
-
 -- Human-readable list for the warning UI
-
-
 blockedModuleNames : List String
 blockedModuleNames =
-    [ "File"
-    , "Io"
-    , "Process"
-    , "System"
-    , "Db"
-    , "Auth"
-    , "Http"
-    , "Server"
-    , "Live"
-    , "RateLimit"
-    , "Middleware"
-    , "Ffi"
-    , "Context"
-    , "Fmt"
+    [ "File", "Io", "Process", "System"
+    , "Db", "Auth", "Http", "Server", "Live"
+    , "RateLimit", "Middleware", "Ffi", "Context", "Fmt"
     ]
-
 
 
 -- ── Public API ────────────────────────────────────────────────────────────────
@@ -87,25 +87,21 @@ isDangerous code =
     List.any (\pat -> String.contains pat code) blockedPatterns
 
 
-
 -- Strip every line that contains a blocked pattern. This is the server-side
 -- double-check — the client already warns the user, but we sanitise regardless
 -- before handing the code to the build pipeline.
-
-
 sanitise : String -> String
 sanitise code =
     code
         |> String.lines
-        |> List.filter (\line -> not (isDangerous line))
+        |> List.filter (\line ->
+            not (List.any (\pat -> String.contains pat line) blockedPatterns))
         |> String.join "\n"
 
 
 warningMessage : String
 warningMessage =
-    let
-        names =
-            String.join ", " blockedModuleNames
+    let names = String.join ", " blockedModuleNames
     in
     "Blocked modules detected: "
         ++ names

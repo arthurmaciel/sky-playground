@@ -2,13 +2,14 @@ module View.Editor exposing (editorPanel)
 
 import Sky.Core.Prelude exposing (..)
 import Sky.Core.String as String
+import State exposing (..)
 import Std.Ui as Ui exposing (Element)
 import Std.Ui.Background as Background
 import Std.Ui.Border as Border
 import Std.Ui.Font as Font
 import Std.Ui.Input as Input
-import State exposing (..)
 import View.Common exposing (..)
+
 
 
 -- ── Editor panel ─────────────────────────────────────────────────────────────
@@ -21,12 +22,14 @@ editorPanel model =
         , Ui.height Ui.fill
         , Background.color bg0
         , Border.color borderColour
-        , Border.widthEach { top = 0, right = 1, bottom = 0, left = 0 }
+
+        -- , Border.widthEach { top = 0, right = 1, bottom = 0, left = 0 }
         ]
         [ toolbar model
         , securityBanner model
         , codeInput model
         ]
+
 
 
 -- ── Toolbar ───────────────────────────────────────────────────────────────────
@@ -116,6 +119,7 @@ fmtStatusHint model =
             Ui.text ""
 
 
+
 -- ── Security warning banner ───────────────────────────────────────────────────
 -- Shown when the user's code contains an import of a blocked module.
 -- The banner is informational — the server already strips the dangerous
@@ -150,7 +154,8 @@ securityBanner model =
                     , Font.family Font.monospace
                     ]
                     (Ui.text
-                        "Dangerous import lines were stripped before building. See the About tab for details.")
+                        "Dangerous import lines were stripped before building. See the About tab for details."
+                    )
                 ]
             , Ui.button
                 [ Font.size 11
@@ -161,6 +166,7 @@ securityBanner model =
                 ]
                 { onPress = Just DismissWarning, label = Ui.text "✕" }
             ]
+
 
 
 -- ── Code textarea ─────────────────────────────────────────────────────────────
@@ -197,7 +203,10 @@ codeInput model =
                         , Font.size 13
                         ]
                         (Ui.text
-                            "-- Write your Sky code here, or pick an example from the sidebar…"))
+                            "-- Write your Sky code here, or pick an example from the sidebar…"
+                        )
+                    )
             , label = Input.labelHidden "Sky source code editor"
             , spellcheck = False
-            })
+            }
+        )

@@ -1,27 +1,25 @@
 module Update exposing (update)
 
-import Sky.Core.Prelude exposing (..)
+import Examples exposing (examples)
+import Runner
+import Security
 import Sky.Core.Error as Error
+import Sky.Core.List as List
+import Sky.Core.Prelude exposing (..)
 import Sky.Core.Task as Task
 import State exposing (..)
-import Security
-import Runner
-import Examples exposing (examples)
-import Sky.Core.List as List
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         -- ── Code editor changes ──────────────────────────────────────────────
-
         CodeChanged newCode ->
             ( { model | code = newCode, securityWarning = "" }
             , Cmd.none
             )
 
         -- ── Format ───────────────────────────────────────────────────────────
-
         FormatClicked ->
             let
                 warning =
@@ -58,7 +56,6 @@ update msg model =
                     )
 
         -- ── Run ──────────────────────────────────────────────────────────────
-
         RunClicked ->
             let
                 -- Always notify the user if dangerous imports were found, but
@@ -99,7 +96,6 @@ update msg model =
                     )
 
         -- ── Examples ─────────────────────────────────────────────────────────
-
         LoadExample i ->
             let
                 maybeEx =
@@ -122,11 +118,9 @@ update msg model =
                     ( model, Cmd.none )
 
         -- ── Tabs ─────────────────────────────────────────────────────────────
-
         TabChanged tab ->
             ( { model | activeTab = tab }, Cmd.none )
 
         -- ── Dismiss security warning ─────────────────────────────────────────
-
         DismissWarning ->
             ( { model | securityWarning = "" }, Cmd.none )

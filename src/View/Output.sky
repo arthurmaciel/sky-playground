@@ -1,15 +1,16 @@
 module View.Output exposing (outputPanel)
 
+import Security exposing (blockedModuleNames)
+import Sky.Core.List as List
 import Sky.Core.Prelude exposing (..)
 import Sky.Core.String as String
-import Sky.Core.List as List
+import State exposing (..)
 import Std.Ui as Ui exposing (Element)
 import Std.Ui.Background as Background
 import Std.Ui.Border as Border
 import Std.Ui.Font as Font
-import State exposing (..)
-import Security exposing (blockedModuleNames)
 import View.Common exposing (..)
+
 
 
 -- ── Output panel ─────────────────────────────────────────────────────────────
@@ -27,6 +28,7 @@ outputPanel model =
         ]
 
 
+
 -- ── Tab toolbar ───────────────────────────────────────────────────────────────
 
 
@@ -38,7 +40,8 @@ outputToolbar model =
         , Ui.spacing 0
         , Background.color bg1
         , Border.color borderColour
-        , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
+
+        -- , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
         ]
         [ tabButton model OutputTab "Output"
         , tabButton model AboutTab "About Sky"
@@ -64,16 +67,20 @@ tabButton model tab label =
                 accent
 
              else
-                textMuted)
+                textMuted
+            )
         , Border.color
             (if isActive then
                 accent
 
              else
-                Ui.rgba 0 0 0 0.0)
-        , Border.widthEach { top = 0, right = 0, bottom = 2, left = 0 }
+                Ui.rgba 0 0 0 0.0
+            )
+
+        -- , Border.widthEach { top = 0, right = 0, bottom = 2, left = 0 }
         ]
         (Ui.text label)
+
 
 
 -- ── Active tab content ────────────────────────────────────────────────────────
@@ -87,6 +94,7 @@ activeTabContent model =
 
         AboutTab ->
             aboutContent
+
 
 
 -- ── Output tab ───────────────────────────────────────────────────────────────
@@ -142,7 +150,8 @@ idlePlaceholder =
                 , Ui.centerX
                 ]
                 (Ui.text "Press ▶ Run to execute your Sky code")
-            ])
+            ]
+        )
 
 
 runningView : Element Msg
@@ -171,7 +180,9 @@ runningView =
                 , Ui.centerX
                 ]
                 (Ui.text "Building and running… (5 s timeout applied)")
-            ])
+            ]
+        )
+
 
 
 -- Render multi-line output as a scrollable column of text lines.
@@ -191,7 +202,8 @@ scrollableLines lineColour output =
             , Ui.padding 16
             , Ui.spacing 1
             ]
-            (List.map (outputLine lineColour) (String.lines output)))
+            (List.map (outputLine lineColour) (String.lines output))
+        )
 
 
 outputLine : Ui.Color -> String -> Element Msg
@@ -206,7 +218,10 @@ outputLine lineColour line =
                 " "
 
              else
-                line))
+                line
+            )
+        )
+
 
 
 -- ── About tab ─────────────────────────────────────────────────────────────────
@@ -249,7 +264,8 @@ aboutContent =
                 , "Json.Encode · Json.Decode · Uuid · Task · Time"
                 , "Random · Log.println"
                 ]
-            ])
+            ]
+        )
 
 
 infoCard : String -> List String -> Element Msg
@@ -263,12 +279,14 @@ infoCard cardTitle bodyLines =
         , Border.width 1
         , Border.rounded 8
         ]
-        (Ui.el
+        (Ui.row
             [ Font.bold
             , Font.color accent
             , Font.size 12
             ]
-            (Ui.text cardTitle)
+            (Ui.text
+                cardTitle
+            )
             :: List.map
                 (\line ->
                     Ui.el
@@ -279,15 +297,20 @@ infoCard cardTitle bodyLines =
                                 textMuted
 
                              else
-                                textSecondary)
+                                textSecondary
+                            )
                         ]
                         (Ui.text
                             (if String.isEmpty line then
                                 " "
 
                              else
-                                line)))
-                bodyLines)
+                                line
+                            )
+                        )
+                )
+                bodyLines
+        )
 
 
 blockedLibsCard : Element Msg
@@ -322,11 +345,13 @@ blockedLibsCard =
             , Font.color textSecondary
             ]
             (Ui.text
-                "These modules access the file system, network, processes, or databases.")
+                "These modules access the file system, network, processes, or databases."
+            )
         , Ui.el
             [ Font.size 11
             , Font.color textSecondary
             ]
             (Ui.text
-                "Dangerous import lines are stripped server-side before any build attempt.")
+                "Dangerous import lines are stripped server-side before any build attempt."
+            )
         ]

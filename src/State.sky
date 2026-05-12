@@ -1,7 +1,7 @@
 module State exposing (..)
 
-import Sky.Core.Prelude exposing (..)
 import Sky.Core.Error as Error
+import Sky.Core.Prelude exposing (..)
 
 
 type RunStatus
@@ -46,11 +46,14 @@ initialModel =
     }
 
 
+
 -- Using a named ADT instead of () avoids a reflect.Call panic at the Sky.Live
 -- route-dispatch boundary. The runtime passes route flags as SkyADT structs;
 -- bare () compiles to struct{} inside init but arrives as map[string]interface{}
 -- at the call site, causing:
 --   reflect: Call using map[string]interface {} as type struct {}
+
+
 type Page
     = MainPage
 
@@ -61,6 +64,6 @@ type Msg
     | FormatClicked
     | GotRunResult (Result Error String)
     | GotFormatResult (Result Error String)
-    | LoadExample Int
+    | LoadExample i
     | TabChanged Tab
     | DismissWarning
