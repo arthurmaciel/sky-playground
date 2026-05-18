@@ -70,7 +70,7 @@ process s =
     s
         |> String.toUpper
         |> String.trim
-        |> (\\x -> "[" ++ x ++ "]")
+        |> (\x -> "[" ++ x ++ "]")
 
 
 main =
@@ -136,7 +136,7 @@ main =
             , Rectangle 4.0 6.0
             , Triangle 3.0 4.0 5.0
             ]
-        _ = List.map (\\s -> println (describeArea s)) shapes
+        _ = List.map (\s -> println (describeArea s)) shapes
     in
         println "Done."
 """
@@ -321,6 +321,18 @@ import Sky.Core.String as String
 
 -- Every side effect returns Task Error a.
 -- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
+-- Every side effect returns Task Error a.
+-- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
+
+
+-- Every side effect returns Task Error a.
+-- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
+-- Every side effect returns Task Error a.
+-- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
+
+
+-- Every side effect returns Task Error a.
+-- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
 greetUser : String -> Task Error String
 greetUser name =
     if String.isEmpty name then
@@ -334,8 +346,8 @@ pipeline : Task Error ()
 pipeline =
     greetUser "Sky"
         |> Task.andThen println
-        |> Task.andThen (\\_ -> greetUser "")
-        |> Task.onError (\\e ->
+        |> Task.andThen (\_ -> greetUser "")
+        |> Task.onError (\e ->
             Log.warn ("Caught error: " ++ Error.toString e))
 
 
@@ -460,7 +472,7 @@ handleUser req =
             Task.succeed (Server.withStatus 400 (Server.text "Bad id"))
 
         Just n ->
-            case List.find (\\u -> u.id == n) users of
+            case List.find (\u -> u.id == n) users of
                 Nothing ->
                     Task.succeed (Server.withStatus 404 (Server.text "Not found"))
 

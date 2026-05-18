@@ -48,6 +48,7 @@ logoMark =
     Ui.el
         [ Ui.width (Ui.px 30)
         , Ui.height (Ui.px 30)
+        , Ui.centerY
         , Background.color accent
         , Border.rounded 6
         ]
@@ -73,6 +74,7 @@ header =
               , Font.bold
               , Font.color textPrimary
               , Font.family Font.monospace
+              , Ui.centerY
               ]
               (Ui.text "Playground")
         , Ui.el
@@ -83,12 +85,17 @@ header =
               , Border.width 1
               , Border.rounded 20
               , Ui.paddingXY 8 1
+              , Ui.centerY
               , Font.family Font.monospace
               ]
               (Ui.text "Elm → Go")
         , Ui.el [Ui.width Ui.fill] (Ui.text "")
         , Ui.link
-              [ Font.size 12, Font.color textMuted, Font.family Font.monospace ]
+              [ Font.size 12
+              , Font.color textMuted
+              , Font.family Font.monospace
+              , Ui.centerY
+              ]
               { url = "https://github.com/arthurmaciel/sky"
               , label = Ui.text "GitHub ↗"
               }

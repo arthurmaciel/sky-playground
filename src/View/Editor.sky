@@ -56,6 +56,7 @@ fileNamePill =
         [ Ui.el
               [ Ui.width (Ui.px 7)
               , Ui.height (Ui.px 7)
+              , Ui.centerY
               , Background.color accent
               , Border.rounded 4
               ]
@@ -64,6 +65,7 @@ fileNamePill =
               [ Font.size 11
               , Font.color textSecondary
               , Font.family Font.monospace
+              , Ui.centerY
               ]
               (Ui.text "src/Main.sky")
         ]
@@ -148,6 +150,7 @@ securityBanner model =
                   , Background.color bg2
                   , Border.rounded 4
                   , Ui.paddingXY 10 5
+                  , Ui.centerY
                   ]
                   { onPress = Just DismissWarning, label = Ui.text "✕" }
             ]

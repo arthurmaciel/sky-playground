@@ -34,7 +34,7 @@ outputToolbar model =
         [ tabButton model OutputTab "Output"
         , tabButton model AboutTab "About Sky"
         , Ui.el [Ui.width Ui.fill] (Ui.text "")
-        , Ui.el [Ui.paddingXY 12 0] (statusBadge model.runStatus)
+        , Ui.el [ Ui.paddingXY 12 0, Ui.centerY ] (statusBadge model.runStatus)
         ]
 
 
@@ -75,11 +75,9 @@ activeTabContent model =
     case model.activeTab of
 
         OutputTab ->
-        -- ── Output tab ───────────────────────────────────────────────────────────────
             outputContent model
 
         AboutTab ->
-        -- ── About tab ─────────────────────────────────────────────────────────────────
             aboutContent
 
 

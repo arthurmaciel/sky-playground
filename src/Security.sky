@@ -83,13 +83,7 @@ isDangerous code =
 -- before handing the code to the build pipeline.
 sanitise : String -> String
 sanitise code =
-    code |> String.lines
-        |> List.filter
-               (\line ->
-                   not
-                       (List.any
-                           (\pat -> String.contains pat line)
-                           blockedPatterns))
+    code |> String.lines |> List.filter (\line -> not (isDangerous line))
         |> String.join "\n"
 
 

@@ -41,13 +41,13 @@ withTempDir prefix action =
         |> Task.andThen
                (\token ->
                    let
-                       dir = "/tmp/" ++ prefix ++ "-" ++ token
+                       dir = "tmp/" ++ prefix ++ "-" ++ token
                    in
                        File.mkdirAll (dir ++ "/src")
                            |> Task.andThen (\_ -> action dir)
                            |> Task.andThen
                                   (\result ->
-                                      Process.run "rm" [ "-rf", dir ]
+                                      Process.run "ls" [ "-a", dir ]
                                           |> Task.map (\_ -> result)
                                           |> Task.onError
                                                  (\_ -> Task.succeed result)))
