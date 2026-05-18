@@ -13,7 +13,6 @@ import State exposing (..)
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-    -- ── Code editor changes ──────────────────────────────────────────────
 
         CodeChanged newCode ->
             ( { model | code = newCode, securityWarning = "" }, Cmd.none )
@@ -35,7 +34,6 @@ update msg model =
                   }
                 , Cmd.perform (Runner.formatCode model.code) GotFormatResult
                 )
-                -- ── Format ───────────────────────────────────────────────────────────
 
         GotFormatResult result ->
             case result of
@@ -44,7 +42,6 @@ update msg model =
                     ( { model | code = formatted, formatStatus = FmtSucceeded }
                     , Cmd.none
                     )
-                    -- ── Run ──────────────────────────────────────────────────────────────
 
                 Err e ->
                     ( { model | formatStatus = FmtFailed
@@ -52,7 +49,6 @@ update msg model =
                       }
                     , Cmd.none
                     )
-                    -- ── Examples ─────────────────────────────────────────────────────────
 
         RunClicked ->
             let
@@ -105,11 +101,9 @@ update msg model =
 
                     Nothing ->
                         ( model, Cmd.none )
-                        -- ── Tabs ─────────────────────────────────────────────────────────────
 
         TabChanged tab ->
             ( { model | activeTab = tab }, Cmd.none )
-            -- ── Dismiss security warning ─────────────────────────────────────────
 
         DismissWarning ->
             ( { model | securityWarning = "" }, Cmd.none )
