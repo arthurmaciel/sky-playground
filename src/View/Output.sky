@@ -12,26 +12,15 @@ import Std.Ui.Font as Font
 import View.Common exposing (..)
 
 
-
 -- ── Output panel ─────────────────────────────────────────────────────────────
-
-
 outputPanel : Model -> Element Msg
 outputPanel model =
     Ui.column
-        [ Ui.width Ui.fill
-        , Ui.height Ui.fill
-        , Background.color bg0
-        ]
-        [ outputToolbar model
-        , activeTabContent model
-        ]
-
+        [ Ui.width (Ui.fillPortion 3), Ui.height Ui.fill, Background.color bg0 ]
+        [ outputToolbar model, activeTabContent model ]
 
 
 -- ── Tab toolbar ───────────────────────────────────────────────────────────────
-
-
 outputToolbar : Model -> Element Msg
 outputToolbar model =
     Ui.row
@@ -40,69 +29,64 @@ outputToolbar model =
         , Ui.spacing 0
         , Background.color bg1
         , Border.color borderColour
-
-        -- , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
+        , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
         ]
         [ tabButton model OutputTab "Output"
         , tabButton model AboutTab "About Sky"
-        , Ui.el [ Ui.width Ui.fill ] (Ui.text "")
-        , Ui.el [ Ui.paddingXY 12 0 ] (statusBadge model.runStatus)
+        , Ui.el [Ui.width Ui.fill] (Ui.text "")
+        , Ui.el [Ui.paddingXY 12 0] (statusBadge model.runStatus)
         ]
 
 
 tabButton : Model -> Tab -> String -> Element Msg
 tabButton model tab label =
     let
-        isActive =
-            model.activeTab == tab
+        isActive = model.activeTab == tab
     in
-    Ui.el
-        [ Ui.onClick (TabChanged tab)
-        , Ui.pointer
-        , Ui.paddingXY 14 10
-        , Font.size 11
-        , Font.family Font.monospace
-        , Font.color
-            (if isActive then
-                accent
+        Ui.el
+            [ Ui.onClick (TabChanged tab)
+            , Ui.pointer
+            , Ui.paddingXY 14 10
+            , Font.size 11
+            , Font.family Font.monospace
+            , Font.color
+                  (if isActive then
+                      accent
 
-             else
-                textMuted
-            )
-        , Border.color
-            (if isActive then
-                accent
+                  else
+                  -- Render multi-line output as a scrollable column of text lines.
+                  -- Empty lines are replaced with a single space so they preserve vertical space
+                  -- (an empty Ui.text "" renders as zero height).
+                      textMuted)
+            , Border.color
+                  (if isActive then
+                      accent
 
-             else
-                Ui.rgba 0 0 0 0.0
-            )
-
-        -- , Border.widthEach { top = 0, right = 0, bottom = 2, left = 0 }
-        ]
-        (Ui.text label)
-
+                  else
+                      Ui.rgba 0 0 0 0.0)
+            , Border.widthEach { top = 0, right = 0, bottom = 2, left = 0 }
+            ]
+            (Ui.text label)
 
 
 -- ── Active tab content ────────────────────────────────────────────────────────
-
-
 activeTabContent : Model -> Element Msg
 activeTabContent model =
     case model.activeTab of
+
         OutputTab ->
+        -- ── Output tab ───────────────────────────────────────────────────────────────
             outputContent model
 
         AboutTab ->
+        -- ── About tab ─────────────────────────────────────────────────────────────────
             aboutContent
-
-
-
--- ── Output tab ───────────────────────────────────────────────────────────────
 
 
 outputContent : Model -> Element Msg
 outputContent model =
     case model.runStatus of
+
         Idle ->
             idlePlaceholder
 
@@ -129,143 +113,102 @@ outputContent model =
 idlePlaceholder : Element Msg
 idlePlaceholder =
     Ui.el
-        [ Ui.width Ui.fill
-        , Ui.height Ui.fill
-        ]
+        [ Ui.width Ui.fill, Ui.height Ui.fill ]
         (Ui.column
-            [ Ui.centerX
-            , Ui.centerY
-            , Ui.spacing 10
-            ]
+            [ Ui.centerX, Ui.centerY, Ui.spacing 10 ]
             [ Ui.el
-                [ Font.size 36
-                , Font.color textMuted
-                , Ui.centerX
-                ]
-                (Ui.text "☁")
+                  [ Font.size 36, Font.color textMuted, Ui.centerX ]
+                  (Ui.text "☁")
             , Ui.el
-                [ Font.size 12
-                , Font.family Font.monospace
-                , Font.color textMuted
-                , Ui.centerX
-                ]
-                (Ui.text "Press ▶ Run to execute your Sky code")
-            ]
-        )
+                  [ Font.size 12
+                  , Font.family Font.monospace
+                  , Font.color textMuted
+                  , Ui.centerX
+                  ]
+                  (Ui.text "Press ▶ Run to execute your Sky code")
+            ])
 
 
 runningView : Element Msg
 runningView =
     Ui.el
-        [ Ui.width Ui.fill
-        , Ui.height Ui.fill
-        ]
+        [ Ui.width Ui.fill, Ui.height Ui.fill ]
         (Ui.column
-            [ Ui.centerX
-            , Ui.centerY
-            , Ui.spacing 8
-            , Ui.padding 20
-            ]
+            [ Ui.centerX, Ui.centerY, Ui.spacing 8, Ui.padding 20 ]
             [ Ui.el
-                [ Font.size 11
-                , Font.family Font.monospace
-                , Font.color colourWarning
-                , Ui.centerX
-                ]
-                (Ui.text "sky build src/Main.sky && ./sky-out/app")
+                  [ Font.size 11
+                  , Font.family Font.monospace
+                  , Font.color colourWarning
+                  , Ui.centerX
+                  ]
+                  (Ui.text "sky build src/Main.sky && ./sky-out/app")
             , Ui.el
-                [ Font.size 11
-                , Font.family Font.monospace
-                , Font.color textMuted
-                , Ui.centerX
-                ]
-                (Ui.text "Building and running… (5 s timeout applied)")
-            ]
-        )
-
-
-
--- Render multi-line output as a scrollable column of text lines.
--- Empty lines are replaced with a single space so they preserve vertical space
--- (an empty Ui.text "" renders as zero height).
+                  [ Font.size 11
+                  , Font.family Font.monospace
+                  , Font.color textMuted
+                  , Ui.centerX
+                  ]
+                  (Ui.text "Building and running… (5 s timeout applied)")
+            ])
 
 
 scrollableLines : Ui.Color -> String -> Element Msg
 scrollableLines lineColour output =
     Ui.el
-        [ Ui.width Ui.fill
-        , Ui.height Ui.fill
-        , Ui.scrollbars
-        ]
+        [ Ui.width Ui.fill, Ui.height Ui.fill, Ui.scrollbars ]
         (Ui.column
-            [ Ui.width Ui.fill
-            , Ui.padding 16
-            , Ui.spacing 1
-            ]
-            (List.map (outputLine lineColour) (String.lines output))
-        )
+            [ Ui.width Ui.fill, Ui.padding 16, Ui.spacing 1 ]
+            (List.map (outputLine lineColour) (String.lines output)))
 
 
 outputLine : Ui.Color -> String -> Element Msg
 outputLine lineColour line =
     Ui.el
-        [ Font.family Font.monospace
-        , Font.size 12
-        , Font.color lineColour
-        ]
+        [ Font.family Font.monospace, Font.size 12, Font.color lineColour ]
         (Ui.text
             (if String.isEmpty line then
                 " "
 
-             else
-                line
-            )
-        )
-
-
-
--- ── About tab ─────────────────────────────────────────────────────────────────
+            else
+                line))
 
 
 aboutContent : Element Msg
 aboutContent =
     Ui.el
-        [ Ui.width Ui.fill
-        , Ui.height Ui.fill
-        , Ui.scrollbars
-        ]
+        [ Ui.width Ui.fill, Ui.height Ui.fill, Ui.scrollbars ]
         (Ui.column
-            [ Ui.width Ui.fill
-            , Ui.padding 20
-            , Ui.spacing 14
-            ]
-            [ infoCard "☁  Sky Language"
-                [ "Pure functional, ML-family language compiling to Go."
-                , "Hindley-Milner types · pattern matching · Elm-compatible syntax."
-                , ""
-                , "Build:  sky build src/Main.sky"
-                , "Run:    ./sky-out/app"
-                , "Format: sky fmt src/Main.sky"
-                ]
-            , infoCard "🔁  Sky.Live + TEA"
-                [ "Server-driven UI using Model / Update / View / Subscriptions."
-                , "Full HTML on load, VNode patches on events via SSE."
-                , "No JavaScript — the server handles all logic."
-                ]
-            , infoCard "🎨  Std.Ui"
-                [ "Typed no-CSS layout DSL (elm-ui heritage)."
-                , "Use row / column / el with Background, Border, Font."
-                , "No stylesheets, no class names, no raw CSS."
-                ]
+            [ Ui.width Ui.fill, Ui.padding 20, Ui.spacing 14 ]
+            [ infoCard
+                  "☁  Sky Language"
+                  [ "Pure functional, ML-family language compiling to Go."
+                  , "Hindley-Milner types · pattern matching · Elm-compatible syntax."
+                  , ""
+                  , "Build:  sky build src/Main.sky"
+                  , "Run:    ./sky-out/app"
+                  , "Format: sky fmt src/Main.sky"
+                  ]
+            , infoCard
+                  "🔁  Sky.Live + TEA"
+                  [ "Server-driven UI using Model / Update / View / Subscriptions."
+                  , "Full HTML on load, VNode patches on events via SSE."
+                  , "No JavaScript — the server handles all logic."
+                  ]
+            , infoCard
+                  "🎨  Std.Ui"
+                  [ "Typed no-CSS layout DSL (elm-ui heritage)."
+                  , "Use row / column / el with Background, Border, Font."
+                  , "No stylesheets, no class names, no raw CSS."
+                  ]
             , blockedLibsCard
-            , infoCard "✅  Allowed in playground"
-                [ "String · List · Dict · Set · Maybe · Result"
-                , "Math · Regex · Char · Crypto (hashing) · Encoding"
-                , "Json.Encode · Json.Decode · Uuid · Task · Time"
-                , "Random · Log.println"
-                ]
-            ]
-        )
+            , infoCard
+                  "✅  Allowed in playground"
+                  [ "String · List · Dict · Set · Maybe · Result"
+                  , "Math · Regex · Char · Crypto (hashing) · Encoding"
+                  , "Json.Encode · Json.Decode · Uuid · Task · Time"
+                  , "Random · Log.println"
+                  ]
+            ])
 
 
 infoCard : String -> List String -> Element Msg
@@ -279,79 +222,57 @@ infoCard cardTitle bodyLines =
         , Border.width 1
         , Border.rounded 8
         ]
-        (Ui.row
-            [ Font.bold
-            , Font.color accent
-            , Font.size 12
-            ]
-            (Ui.text
-                cardTitle
-            )
+        (Ui.el [ Font.bold, Font.color accent, Font.size 12 ] (Ui.text cardTitle)
             :: List.map
-                (\line ->
-                    Ui.el
-                        [ Font.size 11
-                        , Font.family Font.monospace
-                        , Font.color
-                            (if String.isEmpty line then
-                                textMuted
+                   (\line ->
+                       Ui.el
+                           [ Font.size 11
+                           , Font.family Font.monospace
+                           , Font.color
+                                 (if String.isEmpty line then
+                                     textMuted
 
-                             else
-                                textSecondary
-                            )
-                        ]
-                        (Ui.text
-                            (if String.isEmpty line then
-                                " "
+                                 else
+                                     textSecondary)
+                           ]
+                           (Ui.text
+                               (if String.isEmpty line then
+                                   " "
 
-                             else
-                                line
-                            )
-                        )
-                )
-                bodyLines
-        )
+                               else
+                                   line)))
+                   bodyLines)
 
 
 blockedLibsCard : Element Msg
 blockedLibsCard =
     let
-        nameList =
-            String.join " · " blockedModuleNames
+        nameList = String.join " · " blockedModuleNames
     in
-    Ui.column
-        [ Ui.width Ui.fill
-        , Ui.spacing 8
-        , Ui.padding 14
-        , Background.color (Ui.rgba 255 200 74 0.05)
-        , Border.color (Ui.rgba 255 200 74 0.25)
-        , Border.width 1
-        , Border.rounded 8
-        ]
-        [ Ui.el
-            [ Font.bold
-            , Font.color colourWarning
-            , Font.size 12
+        Ui.column
+            [ Ui.width Ui.fill
+            , Ui.spacing 8
+            , Ui.padding 14
+            , Background.color (Ui.rgba 255 200 74 5.0e-2)
+            , Border.color (Ui.rgba 255 200 74 0.25)
+            , Border.width 1
+            , Border.rounded 8
             ]
-            (Ui.text "⚠  Blocked in playground")
-        , Ui.el
-            [ Font.size 11
-            , Font.family Font.monospace
-            , Font.color textMuted
+            [ Ui.el
+                  [ Font.bold, Font.color colourWarning, Font.size 12 ]
+                  (Ui.text "⚠  Blocked in playground")
+            , Ui.el
+                  [ Font.size 11
+                  , Font.family Font.monospace
+                  , Font.color textMuted
+                  ]
+                  (Ui.text nameList)
+            , Ui.el
+                  [ Font.size 11, Font.color textSecondary ]
+                  (Ui.text
+                      "These modules access the file system, network, processes, or databases.")
+            , Ui.el
+                  [ Font.size 11, Font.color textSecondary ]
+                  (Ui.text
+                      "Dangerous import lines are stripped server-side before any build attempt.")
             ]
-            (Ui.text nameList)
-        , Ui.el
-            [ Font.size 11
-            , Font.color textSecondary
-            ]
-            (Ui.text
-                "These modules access the file system, network, processes, or databases."
-            )
-        , Ui.el
-            [ Font.size 11
-            , Font.color textSecondary
-            ]
-            (Ui.text
-                "Dangerous import lines are stripped server-side before any build attempt."
-            )
-        ]

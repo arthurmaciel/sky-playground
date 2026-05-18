@@ -3,20 +3,17 @@ module State exposing (..)
 import Sky.Core.Error as Error
 import Sky.Core.Prelude exposing (..)
 
-
 type RunStatus
     = Idle
     | Running
     | Succeeded
     | Failed
 
-
 type FormatStatus
     = FmtIdle
     | FmtRunning
     | FmtSucceeded
     | FmtFailed
-
 
 type alias Model =
     { code : String
@@ -27,7 +24,6 @@ type alias Model =
     , securityWarning : String
     , activeTab : Tab
     }
-
 
 type Tab
     = OutputTab
@@ -45,18 +41,13 @@ initialModel =
     , activeTab = OutputTab
     }
 
-
-
 -- Using a named ADT instead of () avoids a reflect.Call panic at the Sky.Live
 -- route-dispatch boundary. The runtime passes route flags as SkyADT structs;
 -- bare () compiles to struct{} inside init but arrives as map[string]interface{}
 -- at the call site, causing:
 --   reflect: Call using map[string]interface {} as type struct {}
-
-
 type Page
     = MainPage
-
 
 type Msg
     = CodeChanged String
@@ -64,6 +55,6 @@ type Msg
     | FormatClicked
     | GotRunResult (Result Error String)
     | GotFormatResult (Result Error String)
-    | LoadExample i
+    | LoadExample Int
     | TabChanged Tab
     | DismissWarning

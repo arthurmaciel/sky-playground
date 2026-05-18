@@ -2,7 +2,6 @@ module Examples exposing (Example, examples)
 
 import Sky.Core.Prelude exposing (..)
 
-
 type alias Example =
     { index : Int
     , name : String
@@ -25,17 +24,13 @@ examples =
     ]
 
 
-
 -- ── 01 — Hello, World! ───────────────────────────────────────────────────────
-
-
 helloWorld : Example
 helloWorld =
     { index = 0
     , name = "01 · Hello, World!"
     , description = "println · basic output"
-    , code =
-        """module Main exposing (main)
+    , code = """module Main exposing (main)
 
 import Sky.Core.Prelude exposing (..)
 import Std.Log exposing (println)
@@ -47,17 +42,13 @@ main =
     }
 
 
-
 -- ── 02 — Pure Functions ───────────────────────────────────────────────────────
-
-
 pureFunctions : Example
 pureFunctions =
     { index = 1
     , name = "02 · Pure Functions"
     , description = "HM types · pipelines · let…in"
-    , code =
-        """module Main exposing (main)
+    , code = """module Main exposing (main)
 
 import Sky.Core.Prelude exposing (..)
 import Std.Log exposing (println)
@@ -93,17 +84,13 @@ main =
     }
 
 
-
 -- ── 03 — Algebraic Types ──────────────────────────────────────────────────────
-
-
 algebraicTypes : Example
 algebraicTypes =
     { index = 2
     , name = "03 · Algebraic Types"
     , description = "ADTs · case · exhaustive patterns"
-    , code =
-        """module Main exposing (main)
+    , code = """module Main exposing (main)
 
 import Sky.Core.Prelude exposing (..)
 import Std.Log exposing (println)
@@ -156,17 +143,13 @@ main =
     }
 
 
-
 -- ── 04 — Maybe & Result ───────────────────────────────────────────────────────
-
-
 maybeResult : Example
 maybeResult =
     { index = 3
     , name = "04 · Maybe & Result"
     , description = "safe error handling · Result.andThen"
-    , code =
-        """module Main exposing (main)
+    , code = """module Main exposing (main)
 
 import Sky.Core.Prelude exposing (..)
 import Std.Log exposing (println)
@@ -211,17 +194,13 @@ main =
     }
 
 
-
 -- ── 05 — TEA Counter ─────────────────────────────────────────────────────────
-
-
 teaCounter : Example
 teaCounter =
     { index = 4
     , name = "05 · TEA Counter"
     , description = "Sky.Live · init · update · view"
-    , code =
-        """module Main exposing (main)
+    , code = """module Main exposing (main)
 
 import Sky.Core.Prelude exposing (..)
 import Std.Live as Live
@@ -315,17 +294,13 @@ main =
     }
 
 
-
 -- ── 06 — Task Effects ────────────────────────────────────────────────────────
-
-
 taskEffects : Example
 taskEffects =
     { index = 5
     , name = "06 · Task Effects"
     , description = "Task.andThen · onError · auto-force"
-    , code =
-        """module Main exposing (main)
+    , code = """module Main exposing (main)
 
 import Sky.Core.Prelude exposing (..)
 import Sky.Core.Error as Error
@@ -338,6 +313,14 @@ import Sky.Core.String as String
 -- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
 
 
+-- Every side effect returns Task Error a.
+-- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
+-- Every side effect returns Task Error a.
+-- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
+
+
+-- Every side effect returns Task Error a.
+-- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
 greetUser : String -> Task Error String
 greetUser name =
     if String.isEmpty name then
@@ -365,17 +348,13 @@ main =
     }
 
 
-
 -- ── 07 — JSON Decode ─────────────────────────────────────────────────────────
-
-
 jsonDecode : Example
 jsonDecode =
     { index = 6
     , name = "07 · JSON Decode"
     , description = "Json.Decode.Pipeline · typed config"
-    , code =
-        """module Main exposing (main)
+    , code = """module Main exposing (main)
 
 import Sky.Core.Prelude exposing (..)
 import Std.Log exposing (println)
@@ -423,17 +402,13 @@ main =
     }
 
 
-
 -- ── 08 — HTTP Server ─────────────────────────────────────────────────────────
-
-
 httpServer : Example
 httpServer =
     { index = 7
     , name = "08 · HTTP Server"
     , description = "Sky.Http.Server · routes · JSON"
-    , code =
-        """module Main exposing (main)
+    , code = """module Main exposing (main)
 
 import Sky.Core.Prelude exposing (..)
 import Sky.Http.Server as Server
@@ -504,17 +479,13 @@ main =
     }
 
 
-
 -- ── 09 — Std.Ui Layout ───────────────────────────────────────────────────────
-
-
 stdUiLayout : Example
 stdUiLayout =
     { index = 8
     , name = "09 · Std.Ui Layout"
     , description = "typed no-CSS DSL · cards · Sky.Live"
-    , code =
-        """module Main exposing (main)
+    , code = """module Main exposing (main)
 
 import Sky.Core.Prelude exposing (..)
 import Std.Live as Live

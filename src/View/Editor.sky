@@ -11,30 +11,20 @@ import Std.Ui.Input as Input
 import View.Common exposing (..)
 
 
-
 -- ── Editor panel ─────────────────────────────────────────────────────────────
-
-
 editorPanel : Model -> Element Msg
 editorPanel model =
     Ui.column
-        [ Ui.width Ui.fill
+        [ Ui.width (Ui.fillPortion 7)
         , Ui.height Ui.fill
         , Background.color bg0
         , Border.color borderColour
-
-        -- , Border.widthEach { top = 0, right = 1, bottom = 0, left = 0 }
+        , Border.widthEach { top = 0, right = 1, bottom = 0, left = 0 }
         ]
-        [ toolbar model
-        , securityBanner model
-        , codeInput model
-        ]
-
+        [ toolbar model, securityBanner model, codeInput model ]
 
 
 -- ── Toolbar ───────────────────────────────────────────────────────────────────
-
-
 toolbar : Model -> Element Msg
 toolbar model =
     Ui.row
@@ -46,7 +36,7 @@ toolbar model =
         , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
         ]
         [ fileNamePill
-        , Ui.el [ Ui.width Ui.fill ] (Ui.text "")
+        , Ui.el [Ui.width Ui.fill] (Ui.text "")
         , fmtStatusHint model
         , secondaryButton FormatClicked (fmtLabel model)
         , actionButton RunClicked (model.runStatus == Running) (runLabel model)
@@ -63,26 +53,26 @@ fileNamePill =
         , Border.color borderColour
         , Border.width 1
         ]
-        [ -- Coloured dot acting as a file-status indicator
-          Ui.el
-            [ Ui.width (Ui.px 7)
-            , Ui.height (Ui.px 7)
-            , Background.color accent
-            , Border.rounded 4
-            ]
-            (Ui.text "")
+        [ Ui.el
+              [ Ui.width (Ui.px 7)
+              , Ui.height (Ui.px 7)
+              , Background.color accent
+              , Border.rounded 4
+              ]
+              (Ui.text "")
         , Ui.el
-            [ Font.size 11
-            , Font.color textSecondary
-            , Font.family Font.monospace
-            ]
-            (Ui.text "src/Main.sky")
+              [ Font.size 11
+              , Font.color textSecondary
+              , Font.family Font.monospace
+              ]
+              (Ui.text "src/Main.sky")
         ]
 
 
 fmtLabel : Model -> String
 fmtLabel model =
     case model.formatStatus of
+
         FmtRunning ->
             "Formatting…"
 
@@ -90,12 +80,14 @@ fmtLabel model =
             "✓ Formatted"
 
         _ ->
+        -- Ui.none workaround: use empty text node
             "sky fmt"
 
 
 runLabel : Model -> String
 runLabel model =
     case model.runStatus of
+
         Running ->
             "Running…"
 
@@ -106,6 +98,7 @@ runLabel model =
 fmtStatusHint : Model -> Element Msg
 fmtStatusHint model =
     case model.formatStatus of
+
         FmtFailed ->
             Ui.el
                 [ Font.size 10
@@ -115,17 +108,13 @@ fmtStatusHint model =
                 (Ui.text "fmt failed")
 
         _ ->
-            -- Ui.none workaround: use empty text node
             Ui.text ""
-
 
 
 -- ── Security warning banner ───────────────────────────────────────────────────
 -- Shown when the user's code contains an import of a blocked module.
 -- The banner is informational — the server already strips the dangerous
 -- imports before building, so the user can still run the sanitised code.
-
-
 securityBanner : Model -> Element Msg
 securityBanner model =
     if String.isEmpty model.securityWarning then
@@ -136,45 +125,38 @@ securityBanner model =
             [ Ui.width Ui.fill
             , Ui.paddingXY 14 10
             , Ui.spacing 12
-            , Background.color (Ui.rgba 255 200 74 0.08)
+            , Background.color (Ui.rgba 255 200 74 8.0e-2)
             , Border.color (Ui.rgba 255 200 74 0.3)
             , Border.widthEach { top = 0, right = 0, bottom = 1, left = 3 }
             ]
             [ Ui.column
-                [ Ui.width Ui.fill, Ui.spacing 3 ]
-                [ Ui.el
-                    [ Font.size 11
-                    , Font.bold
-                    , Font.color colourWarning
-                    ]
-                    (Ui.text "⚠  Restricted module detected")
-                , Ui.el
-                    [ Font.size 11
-                    , Font.color textSecondary
-                    , Font.family Font.monospace
-                    ]
-                    (Ui.text
-                        "Dangerous import lines were stripped before building. See the About tab for details."
-                    )
-                ]
+                  [ Ui.width Ui.fill, Ui.spacing 3 ]
+                  [ Ui.el
+                        [ Font.size 11, Font.bold, Font.color colourWarning ]
+                        (Ui.text "⚠  Restricted module detected")
+                  , Ui.el
+                        [ Font.size 11
+                        , Font.color textSecondary
+                        , Font.family Font.monospace
+                        ]
+                        (Ui.text
+                            "Dangerous import lines were stripped before building. See the About tab for details.")
+                  ]
             , Ui.button
-                [ Font.size 11
-                , Font.color textMuted
-                , Background.color bg2
-                , Border.rounded 4
-                , Ui.paddingXY 10 5
-                ]
-                { onPress = Just DismissWarning, label = Ui.text "✕" }
+                  [ Font.size 11
+                  , Font.color textMuted
+                  , Background.color bg2
+                  , Border.rounded 4
+                  , Ui.paddingXY 10 5
+                  ]
+                  { onPress = Just DismissWarning, label = Ui.text "✕" }
             ]
-
 
 
 -- ── Code textarea ─────────────────────────────────────────────────────────────
 -- Uses Std.Ui.Input.multiline which renders a real <textarea>.
 -- spellcheck = False prevents browser spell-check from underlining
 -- Sky keywords and identifiers.
-
-
 codeInput : Model -> Element Msg
 codeInput model =
     Ui.el
@@ -195,18 +177,14 @@ codeInput model =
             ]
             { onChange = CodeChanged
             , text = model.code
-            , placeholder =
-                Just
-                    (Input.placeholder
-                        [ Font.color textMuted
-                        , Font.family Font.monospace
-                        , Font.size 13
-                        ]
-                        (Ui.text
-                            "-- Write your Sky code here, or pick an example from the sidebar…"
-                        )
-                    )
+            , placeholder = Just
+                  (Input.placeholder
+                      [ Font.color textMuted
+                      , Font.family Font.monospace
+                      , Font.size 13
+                      ]
+                      (Ui.text
+                          "-- Write your Sky code here, or pick an example from the sidebar…"))
             , label = Input.labelHidden "Sky source code editor"
             , spellcheck = False
-            }
-        )
+            })

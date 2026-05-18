@@ -4,7 +4,6 @@ module Main exposing (main)
 -- TEA loop. View is split across View/* to avoid HM type-checker heap
 -- exhaustion on Std.Ui-heavy modules (CLAUDE.md Limitation #17).
 -- import Examples exposing (examples)
-
 import Examples exposing (examples)
 import Sky.Core.List as List
 import Sky.Core.Prelude exposing (..)
@@ -21,39 +20,29 @@ import View.Output exposing (outputPanel)
 import View.Sidebar exposing (sidebar)
 
 
-
 -- ── Init ─────────────────────────────────────────────────────────────────────
-
-
-init : {} -> ( Model, Cmd Msg )
+init : {  } -> ( Model, Cmd Msg )
 init _ =
     let
         firstCode =
             case List.head examples of
+
                 Just ex ->
                     ex.code
 
                 Nothing ->
                     "module Main exposing (main)\n\nimport Sky.Core.Prelude exposing (..)\nimport Std.Log exposing (println)\n\nmain =\n    println \"Hello, Sky! ☁\"\n"
     in
-    ( { initialModel | code = firstCode }
-    , Cmd.none
-    )
-
+        ( { initialModel | code = firstCode }, Cmd.none )
 
 
 -- ── Subscriptions ─────────────────────────────────────────────────────────────
-
-
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.none
 
 
-
 -- ── Header ────────────────────────────────────────────────────────────────────
-
-
 logoMark : Element Msg
 logoMark =
     Ui.el
@@ -63,13 +52,8 @@ logoMark =
         , Border.rounded 6
         ]
         (Ui.el
-            [ Ui.centerX
-            , Ui.centerY
-            , Font.size 15
-            , Font.color Ui.white
-            ]
-            (Ui.text "☁")
-        )
+            [ Ui.centerX, Ui.centerY, Font.size 15, Font.color Ui.white ]
+            (Ui.text "☁"))
 
 
 header : Element Msg
@@ -85,73 +69,56 @@ header =
         ]
         [ logoMark
         , Ui.el
-            [ Font.size 16
-            , Font.bold
-            , Font.color textPrimary
-            , Font.family Font.monospace
-            ]
-            (Ui.text "Playground")
+              [ Font.size 16
+              , Font.bold
+              , Font.color textPrimary
+              , Font.family Font.monospace
+              ]
+              (Ui.text "Playground")
         , Ui.el
-            [ Font.size 10
-            , Font.color accent
-            , Background.color accentDim
-            , Border.color (Ui.rgba 77 158 255 0.3)
-            , Border.width 1
-            , Border.rounded 20
-            , Ui.paddingXY 8 1
-            , Font.family Font.monospace
-            ]
-            (Ui.text "Elm → Go")
-        , Ui.el [ Ui.width Ui.fill ] (Ui.text "")
+              [ Font.size 10
+              , Font.color accent
+              , Background.color accentDim
+              , Border.color (Ui.rgba 77 158 255 0.3)
+              , Border.width 1
+              , Border.rounded 20
+              , Ui.paddingXY 8 1
+              , Font.family Font.monospace
+              ]
+              (Ui.text "Elm → Go")
+        , Ui.el [Ui.width Ui.fill] (Ui.text "")
         , Ui.link
-            [ Font.size 12
-            , Font.color textMuted
-            , Font.family Font.monospace
-            ]
-            { url = "https://github.com/arthurmaciel/sky"
-            , label = Ui.text "GitHub ↗"
-            }
+              [ Font.size 12, Font.color textMuted, Font.family Font.monospace ]
+              { url = "https://github.com/arthurmaciel/sky"
+              , label = Ui.text "GitHub ↗"
+              }
         ]
-
 
 
 -- ── View ──────────────────────────────────────────────────────────────────────
 -- Return type is `any` because Ui.layout produces the Sky.Live HTML payload.
 -- The three panels are split across dedicated modules; each returns
 -- Element Msg, which Ui.layout assembles into the final document.
-
-
 view : Model -> any
 view model =
     Ui.layout
-        [ Background.color bg0 ]
+        [Background.color bg0]
         (Ui.column
-            [ Ui.width Ui.fill
-            , Ui.height Ui.fill
-            ]
+            [ Ui.width Ui.fill, Ui.height Ui.fill ]
             [ header
             , Ui.row
-                [ Ui.width Ui.fill
-                , Ui.height Ui.fill
-                ]
-                [ sidebar model
-                , editorPanel model
-                , outputPanel model
-                ]
-            ]
-        )
-
+                  [ Ui.width Ui.fill, Ui.height Ui.fill ]
+                  [ sidebar model, editorPanel model, outputPanel model ]
+            ])
 
 
 -- ── Main ──────────────────────────────────────────────────────────────────────
-
-
 main =
     Live.app
         { init = init
         , update = update
         , view = view
         , subscriptions = subscriptions
-        , routes = [ Live.route "/" MainPage ]
+        , routes = [Live.route "/" MainPage]
         , notFound = MainPage
         }

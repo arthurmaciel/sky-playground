@@ -11,10 +11,7 @@ import Std.Ui.Font as Font
 import View.Common exposing (..)
 
 
-
 -- ── Sidebar ───────────────────────────────────────────────────────────────────
-
-
 sidebar : Model -> Element Msg
 sidebar model =
     Ui.column
@@ -24,49 +21,39 @@ sidebar model =
         , Border.color borderColour
         , Border.widthEach { top = 0, right = 1, bottom = 0, left = 0 }
         ]
-        [ sectionLabel "Examples"
-        , examplesList model
-        , quickRefPanel
-        ]
-
+        [ sectionLabel "Examples", examplesList model, quickRefPanel ]
 
 
 -- ── Examples list ─────────────────────────────────────────────────────────────
-
-
 examplesList : Model -> Element Msg
 examplesList model =
     let
-        -- Extract activeExample into a plain Int before partial application.
-        -- List.map dispatches Example (map[string]interface{}) to the callback,
-        -- which now expects Example as its only remaining argument — no Int is
-        -- ever passed through reflect dispatch, eliminating the
-        --   reflect: Call using map[string]interface {} as type int
-        -- panic that occurred when fst/snd returned the whole tuple map.
-        activeIdx =
-            model.activeExample
+    -- Extract activeExample into a plain Int before partial application.
+    -- List.map dispatches Example (map[string]interface{}) to the callback,
+    -- which now expects Example as its only remaining argument — no Int is
+    -- ever passed through reflect dispatch, eliminating the
+    --   reflect: Call using map[string]interface {} as type int
+    -- panic that occurred when fst/snd returned the whole tuple map.
+        activeIdx = model.activeExample
     in
-    Ui.column
-        [ Ui.width Ui.fill
-        , Border.color borderColour
-        , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
-        ]
-        (List.map (exampleItem activeIdx) examples)
+        Ui.column
+            [ Ui.width Ui.fill
+            , Border.color borderColour
+            , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
+            ]
+            (List.map (exampleItem activeIdx) examples)
 
 
 exampleItem : Int -> Example -> Element Msg
 exampleItem activeIdx ex =
     let
-        isActive =
-            ex.index == activeIdx
-
+        isActive = ex.index == activeIdx
         leftBorder =
             if isActive then
                 accent
 
             else
                 Ui.rgba 0 0 0 0.0
-
         bgColour =
             if isActive then
                 accentDim
@@ -74,99 +61,79 @@ exampleItem activeIdx ex =
             else
                 Ui.rgba 0 0 0 0.0
     in
-    Ui.el
-        [ Ui.width Ui.fill
-        , Ui.onClick (LoadExample ex.index)
-        , Ui.pointer
-        , Background.color bgColour
-        , Border.color leftBorder
-        , Border.widthEach { top = 0, right = 0, bottom = 0, left = 2 }
-        ]
-        (Ui.column
+        Ui.el
             [ Ui.width Ui.fill
-            , Ui.paddingXY 12 8
-            , Ui.spacing 2
+            , Ui.onClick (LoadExample ex.index)
+            , Ui.pointer
+            , Background.color bgColour
+            , Border.color leftBorder
+            , Border.widthEach { top = 0, right = 0, bottom = 0, left = 2 }
             ]
-            [ Ui.el
-                [ Font.size 11
-                , Font.color
-                    (if isActive then
-                        textPrimary
+            (Ui.column
+                [ Ui.width Ui.fill, Ui.paddingXY 12 8, Ui.spacing 2 ]
+                [ Ui.el
+                      [ Font.size 11
+                      , Font.color
+                            (if isActive then
+                                textPrimary
 
-                     else
-                        textSecondary
-                    )
-                ]
-                (Ui.text ex.name)
-            , Ui.el
-                [ Font.size 10
-                , Font.color textMuted
-                , Font.family Font.monospace
-                ]
-                (Ui.text ex.description)
-            ]
-        )
-
+                            else
+                                textSecondary)
+                      ]
+                      (Ui.text ex.name)
+                , Ui.el
+                      [ Font.size 10
+                      , Font.color textMuted
+                      , Font.family Font.monospace
+                      ]
+                      (Ui.text ex.description)
+                ])
 
 
 -- ── Quick-reference panel ─────────────────────────────────────────────────────
-
-
 quickRefPanel : Element Msg
 quickRefPanel =
     Ui.column
-        [ Ui.width Ui.fill
-        , Ui.paddingXY 0 4
-        ]
+        [ Ui.width Ui.fill, Ui.paddingXY 0 4 ]
         [ sectionLabel "Quick Ref"
-        , refGroup "Types"
-            [ "String · Int · Float · Bool"
-            , "Maybe · Result · Task Error a"
-            , "List · Dict · Set"
-            ]
-        , refGroup "Effects"
-            [ "Task Error a"
-            , "Cmd msg · Sub msg"
-            , "Task.andThen"
-            ]
-        , refGroup "Operators"
-            [ "|>  <|  pipeline"
-            , "::  cons   ++  append"
-            , "==  /=  <  <=  >  >="
-            ]
-        , refGroup "Syntax"
-            [ "let … in"
-            , "case … of"
-            , "\\x -> expr"
-            , "{ r | field = v }"
-            ]
+        , refGroup
+              "Types"
+              [ "String · Int · Float · Bool"
+              , "Maybe · Result · Task Error a"
+              , "List · Dict · Set"
+              ]
+        , refGroup
+              "Effects"
+              [ "Task Error a", "Cmd msg · Sub msg", "Task.andThen" ]
+        , refGroup
+              "Operators"
+              [ "|>  <|  pipeline"
+              , "::  cons   ++  append"
+              , "==  /=  <  <=  >  >="
+              ]
+        , refGroup
+              "Syntax"
+              [ "let … in", "case … of", "\\x -> expr", "{ r | field = v }" ]
         ]
 
 
 refGroup : String -> List String -> Element Msg
 refGroup groupTitle lines =
     Ui.column
-        [ Ui.width Ui.fill
-        , Ui.paddingXY 14 6
-        , Ui.spacing 4
-        ]
+        [ Ui.width Ui.fill, Ui.paddingXY 14 6, Ui.spacing 4 ]
         (Ui.el
-            [ Font.size 10
-            , Font.color accent
-            , Font.family Font.monospace
-            ]
+            [ Font.size 10, Font.color accent, Font.family Font.monospace ]
             (Ui.text groupTitle)
             :: List.map
-                (\line ->
-                    Ui.el
-                        [ Font.size 10
-                        , Font.color textMuted
-                        , Font.family Font.monospace
-                        , Ui.paddingXY 6 0
-                        , Border.color (Ui.rgba 77 158 255 0.1)
-                        , Border.widthEach { top = 0, right = 0, bottom = 0, left = 1 }
-                        ]
-                        (Ui.text line)
-                )
-                lines
-        )
+                   (\line ->
+                       Ui.el
+                           [ Font.size 10
+                           , Font.color textMuted
+                           , Font.family Font.monospace
+                           , Ui.paddingXY 6 0
+                           , Border.color (Ui.rgba 77 158 255 0.1)
+                           , Border.widthEach
+                                 { top = 0, right = 0, bottom = 0, left = 1 }
+                           ]
+                           (Ui.text line))
+                   lines)

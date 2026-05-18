@@ -1,18 +1,16 @@
 module Runner exposing (formatCode, runCode)
 
-import Sky.Core.Prelude exposing (..)
-import Sky.Core.Error as Error
-import Sky.Core.Task as Task
-import Sky.Core.File as File
-import Sky.Core.Process as Process
-import Sky.Core.Crypto as Crypto
-import Sky.Core.String as String
 import Security
+import Sky.Core.Crypto as Crypto
+import Sky.Core.Error as Error
+import Sky.Core.File as File
+import Sky.Core.Prelude exposing (..)
+import Sky.Core.Process as Process
+import Sky.Core.String as String
+import Sky.Core.Task as Task
 
 
 -- ── Sandbox sky.toml ─────────────────────────────────────────────────────────
-
-
 sandboxToml : String
 sandboxToml =
     """[project]
@@ -27,100 +25,105 @@ main = "src/Main.sky"
 -- `; true` at the end makes the sh invocation succeed regardless of
 -- whether the inner command failed, so Process.run always returns Ok
 -- and the caller can inspect the captured output for errors.
-
-
 shellIn : String -> String -> Task Error String
 shellIn dir cmd =
-    Process.run "sh"
-        [ "-c"
-        , "( cd " ++ dir ++ " && " ++ cmd ++ " ) 2>&1; true"
-        ]
+    Process.run
+        "sh"
+        [ "-c", "( cd " ++ dir ++ " && " ++ cmd ++ " ) 2>&1; true" ]
 
 
 -- ── Temp-dir lifecycle ────────────────────────────────────────────────────────
 -- Allocate a fresh temp dir, run an action inside it, then best-effort clean
 -- up. Cleanup errors are swallowed so they never shadow a real action failure.
-
-
 withTempDir : String -> (String -> Task Error a) -> Task Error a
 withTempDir prefix action =
     Crypto.randomToken 4
-        |> Task.andThen (\token ->
-            let
-                dir = "/tmp/" ++ prefix ++ "-" ++ token
-            in
-            File.mkdirAll (dir ++ "/src")
-                |> Task.andThen (\_ -> action dir)
-                |> Task.andThen (\result ->
-                    Process.run "rm" [ "-rf", dir ]
-                        |> Task.map (\_ -> result)
-                        |> Task.onError (\_ -> Task.succeed result)))
+        |> Task.andThen
+               (\token ->
+                   let
+                       dir = "/tmp/" ++ prefix ++ "-" ++ token
+                   in
+                       File.mkdirAll (dir ++ "/src")
+                           |> Task.andThen (\_ -> action dir)
+                           |> Task.andThen
+                                  (\result ->
+                                      Process.run "rm" [ "-rf", dir ]
+                                          |> Task.map (\_ -> result)
+                                          |> Task.onError
+                                                 (\_ -> Task.succeed result)))
 
 
 -- ── Format ───────────────────────────────────────────────────────────────────
 -- Sanitise → write to sandbox → `sky fmt` (modifies file in-place) →
 -- read back. Returns the formatted source, or the original code with an
 -- error header when formatting fails.
-
-
 formatCode : String -> Task Error String
 formatCode code =
     let
         safe = Security.sanitise code
     in
-    withTempDir "sky-fmt" (\dir ->
-        let
-            skyFile = dir ++ "/src/Main.sky"
-        in
-        File.writeFile (dir ++ "/sky.toml") sandboxToml
-            |> Task.andThen (\_ -> File.writeFile skyFile safe)
-            |> Task.andThen (\_ -> shellIn dir "sky fmt src/Main.sky")
-            |> Task.andThen (\_ -> File.readFile skyFile)
-            |> Task.onError (\e ->
-                Task.succeed
-                    ("-- sky fmt error: " ++ Error.toString e ++ "\n\n" ++ safe)))
+        withTempDir
+            "sky-fmt"
+            (\dir ->
+                let
+                    skyFile = dir ++ "/src/Main.sky"
+                in
+                    File.writeFile (dir ++ "/sky.toml") sandboxToml
+                        |> Task.andThen (\_ -> File.writeFile skyFile safe)
+                        |> Task.andThen
+                               (\_ -> shellIn dir "sky fmt src/Main.sky")
+                        |> Task.andThen (\_ -> File.readFile skyFile)
+                        |> Task.onError
+                               (\e ->
+                                   Task.succeed
+                                       ("-- sky fmt error: " ++ Error.toString e
+                                           ++ "\n\n"
+                                           ++ safe)))
 
 
 -- ── Run ───────────────────────────────────────────────────────────────────────
 -- Sanitise → write to sandbox → `sky build` → run executable (5 s timeout).
 -- Build diagnostics and program output are concatenated and returned together.
-
-
 runCode : String -> Task Error String
 runCode code =
     let
         safe = Security.sanitise code
     in
-    withTempDir "sky-run" (\dir ->
-        let
-            appPath = dir ++ "/sky-out/app"
+        withTempDir
+            "sky-run"
+            (\dir ->
+                let
+                    appPath = dir ++ "/sky-out/app"
+                    runScript =
+                        "if [ -f " ++ appPath ++ " ]; then" ++ " timeout 5s "
+                            ++ appPath
+                            ++ "; EXIT=$?;"
+                            ++ " [ $EXIT -eq 124 ] && echo '[timeout: process ran for > 5 s]';"
+                            ++ " else"
+                            ++ " echo '[build failed — no executable produced]';"
+                            ++ " fi"
+                in
+                    File.writeFile (dir ++ "/sky.toml") sandboxToml
+                        |> Task.andThen
+                               (\_ ->
+                                   File.writeFile (dir ++ "/src/Main.sky") safe)
+                        |> Task.andThen
+                               (\_ -> shellIn dir "sky build src/Main.sky")
+                        |> Task.andThen
+                               (\buildOut ->
+                                   shellIn dir runScript
+                                       |> Task.map
+                                              (\runOut ->
+                                                  let
+                                                      buildSection =
+                                                          if String.isEmpty
+                                                              (String.trim
+                                                                  buildOut) then
+                                                              ""
 
-            runScript =
-                "if [ -f "
-                    ++ appPath
-                    ++ " ]; then"
-                    ++ " timeout 5s "
-                    ++ appPath
-                    ++ "; EXIT=$?;"
-                    ++ " [ $EXIT -eq 124 ] && echo '[timeout: process ran for > 5 s]';"
-                    ++ " else"
-                    ++ " echo '[build failed — no executable produced]';"
-                    ++ " fi"
-        in
-        File.writeFile (dir ++ "/sky.toml") sandboxToml
-            |> Task.andThen (\_ -> File.writeFile (dir ++ "/src/Main.sky") safe)
-            |> Task.andThen (\_ -> shellIn dir "sky build src/Main.sky")
-            |> Task.andThen (\buildOut ->
-                shellIn dir runScript
-                    |> Task.map (\runOut ->
-                        let
-                            buildSection =
-                                if String.isEmpty (String.trim buildOut) then
-                                    ""
-
-                                else
-                                    "── Build ──────────────────────────────────────\n"
-                                        ++ buildOut
-                                        ++ "\n"
-                        in
-                        buildSection ++ runOut)))
+                                                          else
+                                                              "── Build ──────────────────────────────────────\n"
+                                                                  ++ buildOut
+                                                                  ++ "\n"
+                                                  in
+                                                      buildSection ++ runOut)))

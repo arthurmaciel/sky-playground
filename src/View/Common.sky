@@ -1,6 +1,5 @@
 module View.Common exposing
-    ( -- Colours
-      bg0
+    ( bg0
     , bg1
     , bg2
     , bg3
@@ -13,7 +12,7 @@ module View.Common exposing
     , colourError
     , colourWarning
     , borderColour
-      -- Reusable elements
+    -- Reusable elements
     , actionButton
     , secondaryButton
     , statusBadge
@@ -30,8 +29,6 @@ import State exposing (..)
 
 
 -- ── Colour palette ────────────────────────────────────────────────────────────
-
-
 bg0 : Ui.Color
 bg0 =
     Ui.rgb 3 7 15
@@ -98,39 +95,34 @@ borderColour =
 
 
 -- ── Action button (primary — blue fill) ───────────────────────────────────────
-
-
 actionButton : Msg -> Bool -> String -> Element Msg
 actionButton onPress isDisabled label =
     Ui.button
         [ Ui.paddingXY 18 8
         , Border.rounded 6
         , if isDisabled then
-            Background.color bg3
+              Background.color bg3
 
           else
-            Background.color accent
+              Background.color accent
         , if isDisabled then
-            Font.color textMuted
+              Font.color textMuted
 
           else
-            Font.color Ui.white
+              Font.color Ui.white
         , Font.size 12
         , Font.bold
         ]
-        { onPress =
-            if isDisabled then
-                Nothing
+        { onPress = if isDisabled then
+              Nothing
 
-            else
-                Just onPress
+          else
+              Just onPress
         , label = Ui.text label
         }
 
 
 -- ── Secondary button (ghost — dim border) ────────────────────────────────────
-
-
 secondaryButton : Msg -> String -> Element Msg
 secondaryButton onPress label =
     Ui.button
@@ -143,19 +135,16 @@ secondaryButton onPress label =
         , Font.size 11
         , Font.family Font.monospace
         ]
-        { onPress = Just onPress
-        , label = Ui.text label
-        }
+        { onPress = Just onPress, label = Ui.text label }
 
 
 -- ── Status badge ──────────────────────────────────────────────────────────────
-
-
 statusBadge : RunStatus -> Element Msg
 statusBadge status =
     let
         ( badgeColour, badgeLabel ) =
             case status of
+
                 Idle ->
                     ( textMuted, "idle" )
 
@@ -168,22 +157,20 @@ statusBadge status =
                 Failed ->
                     ( colourError, "failed" )
     in
-    Ui.el
-        [ Font.size 10
-        , Font.family Font.monospace
-        , Font.color badgeColour
-        , Ui.paddingXY 8 4
-        , Background.color bg2
-        , Border.rounded 20
-        , Border.color (Ui.rgba 77 158 255 0.08)
-        , Border.width 1
-        ]
-        (Ui.text badgeLabel)
+        Ui.el
+            [ Font.size 10
+            , Font.family Font.monospace
+            , Font.color badgeColour
+            , Ui.paddingXY 8 4
+            , Background.color bg2
+            , Border.rounded 20
+            , Border.color (Ui.rgba 77 158 255 8.0e-2)
+            , Border.width 1
+            ]
+            (Ui.text badgeLabel)
 
 
 -- ── Section label (small caps header used in sidebar) ────────────────────────
-
-
 sectionLabel : String -> Element Msg
 sectionLabel heading =
     Ui.el

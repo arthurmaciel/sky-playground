@@ -1,9 +1,4 @@
-module Security exposing
-    ( isDangerous
-    , sanitise
-    , blockedModuleNames
-    , warningMessage
-    )
+module Security exposing (isDangerous, sanitise, blockedModuleNames, warningMessage)
 
 import Sky.Core.Prelude exposing (..)
 import Sky.Core.String as String
@@ -14,53 +9,40 @@ import Sky.Core.List as List
 -- These are matched against every line of user code. Both full import paths and
 -- bare-name aliases are checked because Sky's kernel registry resolves bare
 -- names without an explicit import statement.
-
-
 blockedPatterns : List String
 blockedPatterns =
-    [ -- File system
-      "import Sky.Core.File"
+    [ "import Sky.Core.File"
     , "import File"
     , "File."
-    , -- Standard I/O (direct stdin/stdout bypass)
-      "import Sky.Core.Io"
+    , "import Sky.Core.Io"
     , "import Io"
     , "Io."
-    , -- Subprocess execution
-      "import Sky.Core.Process"
+    , "import Sky.Core.Process"
     , "import Process"
     , "Process."
-    , -- Environment / exit / CWD
-      "import Sky.Core.System"
+    , "import Sky.Core.System"
     , "import System"
     , "System."
-    , -- Database
-      "import Std.Db"
+    , "import Std.Db"
     , "import Db"
     , "Db."
-    , -- Authentication
-      "import Std.Auth"
+    , "import Std.Auth"
     , "import Auth"
     , "Auth."
-    , -- Outbound HTTP (SSRF risk)
-      "import Sky.Core.Http"
+    , "import Sky.Core.Http"
     , "import Http"
     , "Http."
-    , -- HTTP server (nested server spawning)
-      "import Sky.Http.Server"
+    , "import Sky.Http.Server"
     , "import Server"
     , "Server."
-    , -- HTTP infrastructure
-      "import Sky.Http.RateLimit"
+    , "import Sky.Http.RateLimit"
     , "import RateLimit"
     , "import Sky.Http.Middleware"
     , "import Middleware"
-    , -- Sky.Live (nested app spawning)
-      "import Std.Live"
+    , "import Std.Live"
     , "import Live"
     , "Live."
-    , -- Go FFI escape hatches
-      "import Sky.Ffi"
+    , "import Sky.Ffi"
     , "import Ffi"
     , "Ffi."
     , "import Context"
@@ -73,15 +55,24 @@ blockedPatterns =
 -- Human-readable list for the warning UI
 blockedModuleNames : List String
 blockedModuleNames =
-    [ "File", "Io", "Process", "System"
-    , "Db", "Auth", "Http", "Server", "Live"
-    , "RateLimit", "Middleware", "Ffi", "Context", "Fmt"
+    [ "File"
+    , "Io"
+    , "Process"
+    , "System"
+    , "Db"
+    , "Auth"
+    , "Http"
+    , "Server"
+    , "Live"
+    , "RateLimit"
+    , "Middleware"
+    , "Ffi"
+    , "Context"
+    , "Fmt"
     ]
 
 
 -- ── Public API ────────────────────────────────────────────────────────────────
-
-
 isDangerous : String -> Bool
 isDangerous code =
     List.any (\pat -> String.contains pat code) blockedPatterns
@@ -92,23 +83,25 @@ isDangerous code =
 -- before handing the code to the build pipeline.
 sanitise : String -> String
 sanitise code =
-    code
-        |> String.lines
-        |> List.filter (\line ->
-            not (List.any (\pat -> String.contains pat line) blockedPatterns))
+    code |> String.lines
+        |> List.filter
+               (\line ->
+                   not
+                       (List.any
+                           (\pat -> String.contains pat line)
+                           blockedPatterns))
         |> String.join "\n"
 
 
 warningMessage : String
 warningMessage =
-    let names = String.join ", " blockedModuleNames
+    let
+        names = String.join ", " blockedModuleNames
     in
-    "Blocked modules detected: "
-        ++ names
-        ++ ".\n\n"
-        ++ "These libraries are disabled in the playground because they can access\n"
-        ++ "the file system, network, database, processes, or authentication systems\n"
-        ++ "on the server hosting this playground.\n\n"
-        ++ "The import lines have been stripped automatically before building.\n"
-        ++ "Allowed: String · List · Dict · Maybe · Result · Math · Crypto (hashing)\n"
-        ++ "         Encoding · Json · Uuid · Regex · Task · Time · Random · Log.println"
+        "Blocked modules detected: " ++ names ++ ".\n\n"
+            ++ "These libraries are disabled in the playground because they can access\n"
+            ++ "the file system, network, database, processes, or authentication systems\n"
+            ++ "on the server hosting this playground.\n\n"
+            ++ "The import lines have been stripped automatically before building.\n"
+            ++ "Allowed: String · List · Dict · Maybe · Result · Math · Crypto (hashing)\n"
+            ++ "         Encoding · Json · Uuid · Regex · Task · Time · Random · Log.println"
