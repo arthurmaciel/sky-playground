@@ -15,12 +15,13 @@ import View.Common exposing (..)
 editorPanel : Model -> Element Msg
 editorPanel model =
     Ui.column
-        [ Ui.width (Ui.fillPortion 7)
+        [ Ui.width Ui.fill
         , Ui.height Ui.fill
         , Background.color bg0
         , Border.color borderColour
         , Border.widthEach { top = 0, right = 1, bottom = 0, left = 0 }
         ]
+        -- lineNumList
         [ toolbar model, securityBanner model, codeInput model ]
 
 
@@ -162,32 +163,51 @@ securityBanner model =
 -- Sky keywords and identifiers.
 codeInput : Model -> Element Msg
 codeInput model =
-    Ui.el
+    Ui.row
         [ Ui.width Ui.fill
         , Ui.height Ui.fill
         , Ui.padding 2
+        , Ui.clipX
         , Background.color bg0
         ]
-        (Input.multiline
-            [ Ui.width Ui.fill
+        [ lineNumCol model.code
+        , Input.multiline
+              [ Ui.width Ui.fill
+              , Ui.height Ui.fill
+              , Font.family Font.monospace
+              , Font.size 16
+              , Font.color (Ui.rgb 200 220 255)
+              -- , Ui.width Ui.fill
+              , Background.color bg0
+              , Border.width 0
+              , Ui.padding 16
+              ]
+              { onChange = CodeChanged
+              , text = model.code
+              , placeholder = Just
+                    (Input.placeholder
+                        [ Font.color textMuted
+                        , Font.family Font.monospace
+                        , Font.size 16
+                        ]
+                        (Ui.text
+                            "-- Write your Sky code here, or pick an example from the sidebar…"))
+              , label = Input.labelHidden "Sky source code editor"
+              , spellcheck = False
+              }
+        ]
+
+
+lineNumCol code =
+    let
+        codeLines = String.lines code
+    in
+        Ui.column
+            [ Ui.paddingXY 4 16
+            , Font.color (Ui.rgb 150 155 155)
             , Ui.height Ui.fill
-            , Font.family Font.monospace
-            , Font.size 13
-            , Font.color (Ui.rgb 200 220 255)
-            , Background.color bg0
-            , Border.width 0
-            , Ui.padding 16
             ]
-            { onChange = CodeChanged
-            , text = model.code
-            , placeholder = Just
-                  (Input.placeholder
-                      [ Font.color textMuted
-                      , Font.family Font.monospace
-                      , Font.size 13
-                      ]
-                      (Ui.text
-                          "-- Write your Sky code here, or pick an example from the sidebar…"))
-            , label = Input.labelHidden "Sky source code editor"
-            , spellcheck = False
-            })
+            (List.indexedMap
+                (\i l ->
+                    (Ui.el [Ui.alignRight] (Ui.text (String.fromInt (i + 1)))))
+                codeLines)

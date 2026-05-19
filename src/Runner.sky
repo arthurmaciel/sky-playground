@@ -93,7 +93,15 @@ runCode code =
             "sky-run"
             (\dir ->
                 let
-                    app = "sky-out/app"
+                    appPath = "sky-out/app"
+                    runScript =
+                        "if [ -f " ++ appPath ++ " ]; then" ++ " timeout 5s "
+                            ++ appPath
+                            ++ "; EXIT=$?;"
+                            ++ " [ $EXIT -eq 124 ] && echo '[timeout: process ran for > 5 s]';"
+                            ++ " else echo '[build failed — no executable produced]';"
+                            -- ++ " else echo "
+                            ++ " fi"
                 in
                     File.writeFile (dir ++ "/sky.toml") sandboxToml
                         |> Task.andThen
@@ -103,7 +111,7 @@ runCode code =
                                (\_ -> shellIn dir "sky build src/Main.sky")
                         |> Task.andThen
                                (\buildOut ->
-                                   shellIn dir app
+                                   shellIn dir runScript
                                        |> Task.map
                                               (\runOut ->
                                                   let

@@ -96,7 +96,7 @@ outputContent model =
                 Ui.el
                     [ Ui.padding 16
                     , Font.family Font.monospace
-                    , Font.size 12
+                    , Font.size 16
                     , Font.color textMuted
                     ]
                     (Ui.text "(programme ran successfully — no stdout output)")
