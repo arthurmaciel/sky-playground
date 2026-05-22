@@ -177,7 +177,6 @@ codeInput model =
               , Font.family Font.monospace
               , Font.size 16
               , Font.color (Ui.rgb 200 220 255)
-              -- , Ui.width Ui.fill
               , Background.color bg0
               , Border.width 0
               , Ui.padding 16

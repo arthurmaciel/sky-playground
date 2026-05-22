@@ -27,9 +27,7 @@ main = "src/Main.sky"
 -- and the caller can inspect the captured output for errors.
 shellIn : String -> String -> Task Error String
 shellIn dir cmd =
-    Process.run
-        "sh"
-        [ "-c", "( cd " ++ dir ++ " && " ++ cmd ++ " ) 2>&1; true" ]
+    Process.run "sh" [ "-c", "( cd " ++ dir ++ " && " ++ cmd ++ " ) 2>&1;" ]
 
 
 -- ── Temp-dir lifecycle ────────────────────────────────────────────────────────
@@ -94,14 +92,32 @@ runCode code =
             (\dir ->
                 let
                     appPath = "sky-out/app"
-                    runScript =
-                        "if [ -f " ++ appPath ++ " ]; then" ++ " timeout 5s "
-                            ++ appPath
-                            ++ "; EXIT=$?;"
-                            ++ " [ $EXIT -eq 124 ] && echo '[timeout: process ran for > 5 s]';"
-                            ++ " else echo '[build failed — no executable produced]';"
-                            -- ++ " else echo "
-                            ++ " fi"
+                    runScript = "timeout 5s " ++ appPath
+                    -- "if [ -f " ++ appPath ++ " ]; then" ++ " timeout 5s "
+                    --     ++ appPath
+                    --     ++ "; EXIT=$?;"
+                    --     ++ " [ $EXIT -eq 124 ] && echo '[timeout: process ran for > 5 s]';"
+                    --     ++ " else echo '[build failed — no executable produced]';"
+                    --     -- ++ " else echo "
+                    --     ++ " fi"
+                    formatOutput buildOutput runOutput =
+                        let
+                            buildSection =
+                                "── Build ──────────────────────────────────────\n"
+                                    ++ if String.isEmpty (String.trim buildOutput) then
+                                           ""
+
+                                       else
+                                           buildOutput ++ "\n"
+                            runSection =
+                                "── Run ────────────────────────────────────────\n"
+                                    ++ if String.isEmpty (String.trim runOutput) then
+                                           ""
+
+                                       else
+                                           runOutput ++ "\n"
+                        in
+                            buildSection ++ runSection
                 in
                     File.writeFile (dir ++ "/sky.toml") sandboxToml
                         |> Task.andThen
@@ -114,16 +130,4 @@ runCode code =
                                    shellIn dir runScript
                                        |> Task.map
                                               (\runOut ->
-                                                  let
-                                                      buildSection =
-                                                          if String.isEmpty
-                                                              (String.trim
-                                                                  buildOut) then
-                                                              ""
-
-                                                          else
-                                                              "── Build ──────────────────────────────────────\n"
-                                                                  ++ buildOut
-                                                                  ++ "\n"
-                                                  in
-                                                      buildSection ++ runOut)))
+                                                  formatOutput buildOut runOut)))
