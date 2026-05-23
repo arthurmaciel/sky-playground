@@ -16,15 +16,11 @@ examples =
     , pureFunctions
     , algebraicTypes
     , maybeResult
-    , teaCounter
     , taskEffects
     , jsonDecode
-    , httpServer
-    , stdUiLayout
     ]
 
 
--- ── 01 — Hello, World! ───────────────────────────────────────────────────────
 helloWorld : Example
 helloWorld =
     { index = 0
@@ -42,7 +38,6 @@ main =
     }
 
 
--- ── 02 — Pure Functions ───────────────────────────────────────────────────────
 pureFunctions : Example
 pureFunctions =
     { index = 1
@@ -84,7 +79,6 @@ main =
     }
 
 
--- ── 03 — Algebraic Types ──────────────────────────────────────────────────────
 algebraicTypes : Example
 algebraicTypes =
     { index = 2
@@ -143,7 +137,6 @@ main =
     }
 
 
--- ── 04 — Maybe & Result ───────────────────────────────────────────────────────
 maybeResult : Example
 maybeResult =
     { index = 3
@@ -157,11 +150,13 @@ import Sky.Core.String as String
 
 
 safeDivide : Int -> Int -> Result String Int
-safeDivide _ 0 =
-    Err "Division by zero!"
+safeDivide x y =
+    case (x, y) of
+        (_, 0) ->
+            Err "Division by zero!"
 
-safeDivide a b =
-    Ok (a // b)
+        _ ->
+            Ok (x // y)
 
 
 processInput : String -> String -> String
@@ -194,111 +189,11 @@ main =
     }
 
 
--- ── 05 — TEA Counter ─────────────────────────────────────────────────────────
-teaCounter : Example
-teaCounter =
-    { index = 4
-    , name = "05 · TEA Counter"
-    , description = "Sky.Live · init · update · view"
-    , code = """module Main exposing (main)
-
-import Sky.Core.Prelude exposing (..)
-import Std.Live as Live
-import Std.Ui as Ui
-import Std.Ui.Background as Background
-import Std.Ui.Font as Font
-import Std.Ui.Border as Border
-
-
-type Msg
-    = Increment
-    | Decrement
-    | Reset
-
-
-type alias Model =
-    { count : Int }
-
-
-init : () -> ( Model, Cmd Msg )
-init _ =
-    ( { count = 0 }, Cmd.none )
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        Increment ->
-            ( { model | count = model.count + 1 }, Cmd.none )
-
-        Decrement ->
-            ( { model | count = model.count - 1 }, Cmd.none )
-
-        Reset ->
-            ( { count = 0 }, Cmd.none )
-
-
-counterButton : Msg -> String -> Ui.Element Msg
-counterButton msg label =
-    Ui.button
-        [ Ui.padding 12
-        , Background.color (Ui.rgb 77 158 255)
-        , Font.color (Ui.rgb 255 255 255)
-        , Border.rounded 8
-        , Font.bold
-        ]
-        { onPress = Just msg, label = Ui.text label }
-
-
-view : Model -> Ui.Element Msg
-view model =
-    Ui.layout [ Background.color (Ui.rgb 3 7 15) ]
-        (Ui.column
-            [ Ui.centerX, Ui.centerY, Ui.spacing 24, Ui.padding 40 ]
-            [ Ui.el
-                [ Font.size 28
-                , Font.bold
-                , Font.color (Ui.rgb 77 158 255)
-                ]
-                (Ui.text "Sky Counter ☁")
-            , Ui.el
-                [ Font.size 64
-                , Font.bold
-                , Font.color (Ui.rgb 232 240 255)
-                , Ui.centerX
-                ]
-                (Ui.text (String.fromInt model.count))
-            , Ui.row [ Ui.spacing 12, Ui.centerX ]
-                [ counterButton Decrement "−"
-                , counterButton Reset "⟳"
-                , counterButton Increment "+"
-                ]
-            ])
-
-
-subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
-
-
-main =
-    Live.app
-        { init = init
-        , update = update
-        , view = view
-        , subscriptions = subscriptions
-        , routes = [ Live.route "/" () ]
-        , notFound = ()
-        }
-"""
-    }
-
-
--- ── 06 — Task Effects ────────────────────────────────────────────────────────
+-- ── 05 — Task Effects ────────────────────────────────────────────────────────
 taskEffects : Example
 taskEffects =
-    { index = 5
-    , name = "06 · Task Effects"
+    { index = 4
+    , name = "05 · Task Effects"
     , description = "Task.andThen · onError · auto-force"
     , code = """module Main exposing (main)
 
@@ -307,29 +202,6 @@ import Sky.Core.Error as Error
 import Std.Log as Log exposing (println)
 import Sky.Core.Task as Task
 import Sky.Core.String as String
-
-
--- Every side effect returns Task Error a.
--- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
-
-
--- Every side effect returns Task Error a.
--- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
--- Every side effect returns Task Error a.
--- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
-
-
--- Every side effect returns Task Error a.
--- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
--- Every side effect returns Task Error a.
--- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
-
-
--- Every side effect returns Task Error a.
--- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
--- Every side effect returns Task Error a.
--- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
-
 
 -- Every side effect returns Task Error a.
 -- let _ = task  ⟹  auto-forced by the lowerer (no Task.run needed).
@@ -345,7 +217,7 @@ greetUser name =
 pipeline : Task Error ()
 pipeline =
     greetUser "Sky"
-        |> Task.andThen println
+        |> Task.andThen (\s -> println |> Task.succeed s)
         |> Task.andThen (\_ -> greetUser "")
         |> Task.onError (\e ->
             Log.warn ("Caught error: " ++ Error.toString e))
@@ -360,11 +232,11 @@ main =
     }
 
 
--- ── 07 — JSON Decode ─────────────────────────────────────────────────────────
+-- ── 06 — JSON Decode ─────────────────────────────────────────────────────────
 jsonDecode : Example
 jsonDecode =
-    { index = 6
-    , name = "07 · JSON Decode"
+    { index = 5
+    , name = "06 · JSON Decode"
     , description = "Json.Decode.Pipeline · typed config"
     , code = """module Main exposing (main)
 
@@ -410,180 +282,5 @@ main =
 
         Err e ->
             println ("Parse error: " ++ D.errorToString e)
-"""
-    }
-
-
--- ── 08 — HTTP Server ─────────────────────────────────────────────────────────
-httpServer : Example
-httpServer =
-    { index = 7
-    , name = "08 · HTTP Server"
-    , description = "Sky.Http.Server · routes · JSON"
-    , code = """module Main exposing (main)
-
-import Sky.Core.Prelude exposing (..)
-import Sky.Http.Server as Server
-import Sky.Core.Task as Task
-import Sky.Core.Json.Encode as Json
-import Sky.Core.String as String
-
-
-type alias User =
-    { id : Int
-    , name : String
-    , email : String
-    }
-
-
-users : List User
-users =
-    [ { id = 1, name = "Alice", email = "alice@example.com" }
-    , { id = 2, name = "Bob",   email = "bob@example.com" }
-    ]
-
-
-encodeUser : User -> Json.Value
-encodeUser u =
-    Json.object
-        [ ( "id",    Json.int u.id )
-        , ( "name",  Json.string u.name )
-        , ( "email", Json.string u.email )
-        ]
-
-
-handleRoot : Server.Request -> Task Error Server.Response
-handleRoot _ =
-    Task.succeed (Server.text "Sky HTTP Server ☁")
-
-
-handleUsers : Server.Request -> Task Error Server.Response
-handleUsers _ =
-    let body = Json.encode 2 (Json.list encodeUser users)
-    in Task.succeed (Server.json body)
-
-
-handleUser : Server.Request -> Task Error Server.Response
-handleUser req =
-    let id = Server.param "id" req
-    in
-    case String.toInt id of
-        Nothing ->
-            Task.succeed (Server.withStatus 400 (Server.text "Bad id"))
-
-        Just n ->
-            case List.find (\u -> u.id == n) users of
-                Nothing ->
-                    Task.succeed (Server.withStatus 404 (Server.text "Not found"))
-
-                Just u ->
-                    Task.succeed
-                        (Server.json (Json.encode 2 (encodeUser u)))
-
-
-main =
-    Server.listen 8081
-        [ Server.get "/"               handleRoot
-        , Server.get "/api/users"      handleUsers
-        , Server.get "/api/users/:id"  handleUser
-        ]
-"""
-    }
-
-
--- ── 09 — Std.Ui Layout ───────────────────────────────────────────────────────
-stdUiLayout : Example
-stdUiLayout =
-    { index = 8
-    , name = "09 · Std.Ui Layout"
-    , description = "typed no-CSS DSL · cards · Sky.Live"
-    , code = """module Main exposing (main)
-
-import Sky.Core.Prelude exposing (..)
-import Std.Live as Live
-import Std.Ui as Ui
-import Std.Ui.Background as Background
-import Std.Ui.Border as Border
-import Std.Ui.Font as Font
-
-
-type Msg
-    = NoOp
-
-
-type alias Model =
-    {}
-
-
-init : () -> ( Model, Cmd Msg )
-init _ =
-    ( {}, Cmd.none )
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update _ model =
-    ( model, Cmd.none )
-
-
-subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
-
-
-card : String -> String -> String -> Ui.Element Msg
-card icon title body =
-    Ui.column
-        [ Ui.padding 20
-        , Ui.spacing 8
-        , Background.color (Ui.rgb 10 18 35)
-        , Border.rounded 12
-        , Border.color (Ui.rgba 77 158 255 0.2)
-        , Border.width 1
-        , Ui.width (Ui.px 200)
-        ]
-        [ Ui.el [ Font.size 28 ] (Ui.text icon)
-        , Ui.el
-            [ Font.bold
-            , Font.size 16
-            , Font.color (Ui.rgb 232 240 255)
-            ]
-            (Ui.text title)
-        , Ui.el
-            [ Font.size 13
-            , Font.color (Ui.rgb 130 155 190)
-            ]
-            (Ui.text body)
-        ]
-
-
-view : Model -> Ui.Element Msg
-view _ =
-    Ui.layout
-        [ Background.color (Ui.rgb 3 7 15) ]
-        (Ui.column
-            [ Ui.padding 48, Ui.spacing 32, Ui.centerX ]
-            [ Ui.el
-                [ Font.size 32
-                , Font.bold
-                , Font.color (Ui.rgb 77 158 255)
-                ]
-                (Ui.text "Sky.Ui Demo ☁")
-            , Ui.row [ Ui.spacing 16 ]
-                [ card "⚡" "Fast"    "Compiles to Go"
-                , card "🔒" "Safe"    "Hindley–Milner"
-                , card "🌐" "Live"    "Server-driven UI"
-                ]
-            ])
-
-
-main =
-    Live.app
-        { init = init
-        , update = update
-        , view = view
-        , subscriptions = subscriptions
-        , routes = [ Live.route "/" () ]
-        , notFound = ()
-        }
 """
     }
