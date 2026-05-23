@@ -13,15 +13,14 @@ built entirely in Sky itself, using `Sky.Live` and `Std.Ui`.
 ```bash
 git clone <this-repo>
 cd sky-playground
-sky build src/Main.sky
-./sky-out/app
+sky run
 ```
 
 Then open **http://localhost:8080** in your browser.
 
 ## Features
 
-- 9 built-in examples covering core Sky patterns
+- 6 built-in examples covering core Sky patterns
 - **Format** — runs `sky fmt` on your code and replaces the editor content
 - **Run** — runs `sky build && ./sky-out/app` in a sandboxed temp directory, streams output back
 - **Security sandbox** — the following modules are blocked in the playground (detected client-side
