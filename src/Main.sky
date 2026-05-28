@@ -3,10 +3,10 @@ module Main exposing (main)
 -- Sky.Live + Std.Ui playground — assembles all view modules and wires the
 -- TEA loop. View is split across View/* to avoid HM type-checker heap
 -- exhaustion on Std.Ui-heavy modules (CLAUDE.md Limitation #17).
--- import Examples exposing (examples)
 import Examples exposing (examples)
 import Sky.Core.List as List
 import Sky.Core.Prelude exposing (..)
+import Sky.Core.String as String
 import State exposing (..)
 import Std.Live as Live
 import Std.Ui as Ui exposing (Element)
@@ -17,7 +17,6 @@ import Update exposing (update)
 import View.Common exposing (..)
 import View.Editor exposing (editorPanel)
 import View.Output exposing (outputPanel)
-import View.Sidebar exposing (sidebar)
 
 
 -- ── Init ─────────────────────────────────────────────────────────────────────
@@ -43,80 +42,170 @@ subscriptions _ =
 
 
 -- ── Header ────────────────────────────────────────────────────────────────────
-logoMark : Element Msg
-logoMark =
+logoMark : Int -> Element Msg
+logoMark t =
     Ui.el
         [ Ui.width (Ui.px 30)
         , Ui.height (Ui.px 30)
         , Ui.centerY
-        , Background.color accent
+        , Background.color (accent t)
         , Border.rounded 6
         ]
         (Ui.el
-            [ Ui.centerX, Ui.centerY, Font.size 15, Font.color Ui.white ]
+            [ Ui.centerX, Ui.centerY, Font.size 23, Font.color Ui.white ]
             (Ui.text "☁"))
 
 
-header : Element Msg
-header =
-    Ui.row
-        [ Ui.width Ui.fill
-        , Ui.paddingXY 20 0
-        , Ui.spacing 10
-        , Ui.height (Ui.px 52)
-        , Background.color bg1
-        , Border.color borderColour
-        , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
-        ]
-        [ logoMark
-        , Ui.el
-              [ Font.size 16
-              , Font.bold
-              , Font.color textPrimary
-              , Font.family Font.monospace
-              , Ui.centerY
-              ]
-              (Ui.text "Playground")
-        , Ui.el
-              [ Font.size 10
-              , Font.color accent
-              , Background.color accentDim
-              , Border.color (Ui.rgba 77 158 255 0.3)
-              , Border.width 1
-              , Border.rounded 20
-              , Ui.paddingXY 8 1
-              , Ui.centerY
-              , Font.family Font.monospace
-              ]
-              (Ui.text "Elm → Go")
-        , Ui.el [Ui.width Ui.fill] (Ui.text "")
-        , Ui.link
-              [ Font.size 12
-              , Font.color textMuted
-              , Font.family Font.monospace
-              , Ui.centerY
-              ]
-              { url = "https://github.com/arthurmaciel/sky"
-              , label = Ui.text "GitHub ↗"
-              }
-        ]
+-- ── Theme selector (pure Ui dropdown) ────────────────────────────────────────
+themeSelector : Model -> Element Msg
+themeSelector model =
+    let
+        t = model.themeIndex
+        trigger =
+            Ui.el
+                [ Ui.centerY
+                , Ui.paddingXY 10 5
+                , Background.color (bg2 t)
+                , Border.rounded 5
+                , Border.color (borderColour t)
+                , Border.width 1
+                , Ui.pointer
+                , Ui.onClick ToggleThemeDropdown
+                ]
+                (Ui.el
+                    [ Font.family Font.monospace
+                    , Font.size 15
+                    , Font.color (textSecondary t)
+                    ]
+                    (Ui.text (themeNameAt t)))
+        dropdownItem idx name =
+            Ui.el
+                [ Ui.paddingXY 12 6
+                , Ui.width Ui.fill
+                , Ui.pointer
+                , Ui.onClick (SelectTheme idx)
+                , Font.family Font.monospace
+                , Font.size 15
+                , Font.color
+                      (if idx == t then
+                          accent t
+
+                      else
+                          textSecondary t)
+                ]
+                (Ui.text name)
+        dropdown =
+            Ui.column
+                [ Ui.width (Ui.px 180)
+                , Background.color (bg2 t)
+                , Border.color (borderColour t)
+                , Border.width 1
+                , Border.rounded 5
+                ]
+                (List.indexedMap dropdownItem themeNames)
+    in
+        Ui.el
+            (if model.themeDropdownOpen then
+                [Ui.below dropdown]
+
+            else
+                [])
+            trigger
+
+
+themeNameAt : Int -> String
+themeNameAt idx =
+    case List.head (List.drop idx themeNames) of
+
+        Just name ->
+            name
+
+        Nothing ->
+            "Theme"
+
+
+header : Model -> Element Msg
+header model =
+    let
+        t = model.themeIndex
+    in
+        Ui.row
+            [ Ui.width Ui.fill
+            , Ui.paddingXY 20 0
+            , Ui.spacing 10
+            , Ui.height (Ui.px 52)
+            , Background.color (bg1 t)
+            , Border.color (borderColour t)
+            , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
+            ]
+            [ logoMark t
+            , Ui.el
+                  [ Font.size 24
+                  , Font.bold
+                  , Font.color (textPrimary t)
+                  , Font.family Font.monospace
+                  , Ui.centerY
+                  ]
+                  (Ui.text "Sky playground")
+            , Ui.el [Ui.width Ui.fill] (Ui.text "")
+            , themeSelector model
+            , Ui.el
+                  [ Border.color (borderColour t)
+                  , Border.widthEach
+                        { top = 0, right = 1, bottom = 0, left = 0 }
+                  , Ui.paddingXY 6 0
+                  , Ui.centerY
+                  , Ui.height (Ui.px 20)
+                  ]
+                  (Ui.text "")
+            , Ui.link
+                  [ Font.size 18
+                  , Font.color (textMuted t)
+                  , Font.family Font.monospace
+                  , Ui.centerY
+                  ]
+                  { url = "https://github.com/arthurmaciel/sky"
+                  , label = Ui.text "GitHub ↗"
+                  }
+            ]
 
 
 -- ── View ──────────────────────────────────────────────────────────────────────
 -- Return type is `any` because Ui.layout produces the Sky.Live HTML payload.
 -- The three panels are split across dedicated modules; each returns
 -- Element Msg, which Ui.layout assembles into the final document.
+closeOverlay : Msg -> Element Msg
+closeOverlay closeMsg =
+    Ui.el [ Ui.width Ui.fill, Ui.height Ui.fill, Ui.onClick closeMsg ] Ui.none
+
+
 view : Model -> any
 view model =
-    Ui.layout
-        [Background.color bg0]
-        (Ui.column
-            [ Ui.width Ui.fill, Ui.height Ui.fill ]
-            [ header
-            , Ui.row
-                  [ Ui.width Ui.fill, Ui.height Ui.fill ]
-                  [ sidebar model, editorPanel model, outputPanel model ]
-            ])
+    let
+        t = model.themeIndex
+        exampleOverlay =
+            if model.exampleDropdownOpen then
+                [Ui.inFront (closeOverlay CloseDropdown)]
+
+            else
+                []
+        themeOverlay =
+            if model.themeDropdownOpen then
+                [Ui.inFront (closeOverlay CloseThemeDropdown)]
+
+            else
+                []
+        overlays = exampleOverlay ++ themeOverlay
+    in
+        Ui.layout
+            [Background.color (bg0 t)]
+            (Ui.column
+                (overlays ++ [ Ui.width Ui.fill, Ui.height Ui.fill ])
+                [ header model
+                , Ui.row
+                      [ Ui.width Ui.fill, Ui.height Ui.fill ]
+                      [ editorPanel model, outputPanel model ]
+                ])
 
 
 -- ── Main ──────────────────────────────────────────────────────────────────────

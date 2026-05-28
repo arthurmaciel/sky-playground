@@ -21,12 +21,16 @@ type alias Model =
     , runStatus : RunStatus
     , formatStatus : FormatStatus
     , activeExample : Int
+    , exampleDropdownOpen : Bool
+    , themeIndex : Int
+    , themeDropdownOpen : Bool
     , securityWarning : String
     , activeTab : Tab
     }
 
 type Tab
     = OutputTab
+    | QuickRefTab
     | AboutTab
 
 
@@ -36,7 +40,10 @@ initialModel =
     , runOutput = ""
     , runStatus = Idle
     , formatStatus = FmtIdle
-    , activeExample = 0
+    , activeExample = -1
+    , exampleDropdownOpen = False
+    , themeIndex = 6
+    , themeDropdownOpen = False
     , securityWarning = ""
     , activeTab = OutputTab
     }
@@ -56,5 +63,10 @@ type Msg
     | GotRunResult (Result Error String)
     | GotFormatResult (Result Error String)
     | LoadExample Int
+    | ToggleDropdown
+    | CloseDropdown
+    | SelectTheme Int
+    | ToggleThemeDropdown
+    | CloseThemeDropdown
     | TabChanged Tab
     | DismissWarning

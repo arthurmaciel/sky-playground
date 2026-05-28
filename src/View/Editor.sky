@@ -1,5 +1,6 @@
 module View.Editor exposing (editorPanel)
 
+import Examples exposing (examples)
 import Sky.Core.Prelude exposing (..)
 import Sky.Core.String as String
 import State exposing (..)
@@ -14,61 +15,114 @@ import View.Common exposing (..)
 -- ── Editor panel ─────────────────────────────────────────────────────────────
 editorPanel : Model -> Element Msg
 editorPanel model =
-    Ui.column
-        [ Ui.width Ui.fill
-        , Ui.height Ui.fill
-        , Background.color bg0
-        , Border.color borderColour
-        , Border.widthEach { top = 0, right = 1, bottom = 0, left = 0 }
-        ]
-        [ toolbar model, securityBanner model, codeInput model ]
+    let
+        t = model.themeIndex
+    in
+        Ui.column
+            [ Ui.width Ui.fill
+            , Ui.height Ui.fill
+            , Background.color (bg0 t)
+            , Border.color (borderColour t)
+            , Border.widthEach { top = 0, right = 1, bottom = 0, left = 0 }
+            ]
+            [ toolbar model, securityBanner model, codeInput model ]
 
 
 -- ── Toolbar ───────────────────────────────────────────────────────────────────
 toolbar : Model -> Element Msg
 toolbar model =
-    Ui.row
-        [ Ui.width Ui.fill
-        , Ui.paddingXY 14 8
-        , Ui.spacing 8
-        , Background.color bg1
-        , Border.color borderColour
-        , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
-        ]
-        [ fileNamePill
-        , Ui.el [Ui.width Ui.fill] (Ui.text "")
-        , fmtStatusHint model
-        , secondaryButton FormatClicked (fmtLabel model)
-        , actionButton RunClicked (model.runStatus == Running) (runLabel model)
-        ]
+    let
+        t = model.themeIndex
+    in
+        Ui.row
+            [ Ui.width Ui.fill
+            , Ui.paddingXY 14 8
+            , Ui.spacing 8
+            , Background.color (bg1 t)
+            , Border.color (borderColour t)
+            , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
+            ]
+            [ exampleSelector model
+            , Ui.el [Ui.width Ui.fill] (Ui.text "")
+            , fmtStatusHint model
+            , secondaryButton t FormatClicked (fmtLabel model)
+            , actionButton
+                  t
+                  RunClicked
+                  (model.runStatus == Running)
+                  (runLabel model)
+            ]
 
 
-fileNamePill : Element Msg
-fileNamePill =
-    Ui.row
-        [ Ui.spacing 7
-        , Ui.paddingXY 10 5
-        , Background.color bg2
-        , Border.rounded 5
-        , Border.color borderColour
-        , Border.width 1
-        ]
-        [ Ui.el
-              [ Ui.width (Ui.px 7)
-              , Ui.height (Ui.px 7)
-              , Ui.centerY
-              , Background.color accent
-              , Border.rounded 4
-              ]
-              (Ui.text "")
-        , Ui.el
-              [ Font.size 11
-              , Font.color textSecondary
-              , Font.family Font.monospace
-              , Ui.centerY
-              ]
-              (Ui.text "src/Main.sky")
-        ]
+-- ── Example selector (pure Ui dropdown) ──────────────────────────────────────
+-- Trigger element + Ui.below dropdown panel. No Std.Html, no inline CSS.
+exampleSelector : Model -> Element Msg
+exampleSelector model =
+    let
+        t = model.themeIndex
+        triggerLabel =
+            if model.activeExample < 0 then
+                "Select an example…"
+
+            else
+                case List.head (List.drop model.activeExample examples) of
+
+                    Just ex ->
+                        ex.name
+
+                    Nothing ->
+                        "Select an example…"
+        triggerColour =
+            if model.activeExample < 0 then
+                textMuted t
+
+            else
+                textSecondary t
+        trigger =
+            Ui.el
+                [ Ui.paddingXY 10 5
+                , Background.color (bg2 t)
+                , Border.rounded 5
+                , Border.color (borderColour t)
+                , Border.width 1
+                , Ui.pointer
+                , Ui.onClick ToggleDropdown
+                , Ui.width (Ui.px 260)
+                ]
+                (Ui.el
+                    [ Font.family Font.monospace
+                    , Font.size 17
+                    , Font.color triggerColour
+                    ]
+                    (Ui.text triggerLabel))
+        dropdownItem ex =
+            Ui.el
+                [ Ui.paddingXY 12 8
+                , Ui.width Ui.fill
+                , Ui.pointer
+                , Ui.onClick (LoadExample ex.index)
+                , Font.family Font.monospace
+                , Font.size 17
+                , Font.color (textSecondary t)
+                ]
+                (Ui.text ex.name)
+        dropdown =
+            Ui.column
+                [ Ui.width (Ui.px 260)
+                , Background.color (bg2 t)
+                , Border.color (borderColour t)
+                , Border.width 1
+                , Border.rounded 5
+                ]
+                (List.map dropdownItem examples)
+    in
+        Ui.el
+            (if model.exampleDropdownOpen then
+                [Ui.below dropdown]
+
+            else
+                [])
+            trigger
 
 
 fmtLabel : Model -> String
@@ -98,18 +152,21 @@ runLabel model =
 
 fmtStatusHint : Model -> Element Msg
 fmtStatusHint model =
-    case model.formatStatus of
+    let
+        t = model.themeIndex
+    in
+        case model.formatStatus of
 
-        FmtFailed ->
-            Ui.el
-                [ Font.size 10
-                , Font.family Font.monospace
-                , Font.color colourError
-                ]
-                (Ui.text "fmt failed")
+            FmtFailed ->
+                Ui.el
+                    [ Font.size 15
+                    , Font.family Font.monospace
+                    , Font.color (colourError t)
+                    ]
+                    (Ui.text "fmt failed")
 
-        _ ->
-            Ui.text ""
+            _ ->
+                Ui.text ""
 
 
 -- ── Security warning banner ───────────────────────────────────────────────────
@@ -118,41 +175,47 @@ fmtStatusHint model =
 -- imports before building, so the user can still run the sanitised code.
 securityBanner : Model -> Element Msg
 securityBanner model =
-    if String.isEmpty model.securityWarning then
-        Ui.text ""
+    let
+        t = model.themeIndex
+    in
+        if String.isEmpty model.securityWarning then
+            Ui.text ""
 
-    else
-        Ui.row
-            [ Ui.width Ui.fill
-            , Ui.paddingXY 14 10
-            , Ui.spacing 12
-            , Background.color (Ui.rgba 255 200 74 8.0e-2)
-            , Border.color (Ui.rgba 255 200 74 0.3)
-            , Border.widthEach { top = 0, right = 0, bottom = 1, left = 3 }
-            ]
-            [ Ui.column
-                  [ Ui.width Ui.fill, Ui.spacing 3 ]
-                  [ Ui.el
-                        [ Font.size 11, Font.bold, Font.color colourWarning ]
-                        (Ui.text "⚠  Restricted module detected")
-                  , Ui.el
-                        [ Font.size 11
-                        , Font.color textSecondary
-                        , Font.family Font.monospace
-                        ]
-                        (Ui.text
-                            "Dangerous import lines were stripped before building. See the About tab for details.")
-                  ]
-            , Ui.button
-                  [ Font.size 11
-                  , Font.color textMuted
-                  , Background.color bg2
-                  , Border.rounded 4
-                  , Ui.paddingXY 10 5
-                  , Ui.centerY
-                  ]
-                  { onPress = Just DismissWarning, label = Ui.text "✕" }
-            ]
+        else
+            Ui.row
+                [ Ui.width Ui.fill
+                , Ui.paddingXY 14 10
+                , Ui.spacing 12
+                , Background.color (warningBg t)
+                , Border.color (warningBorder t)
+                , Border.widthEach { top = 0, right = 0, bottom = 1, left = 3 }
+                ]
+                [ Ui.column
+                      [ Ui.width Ui.fill, Ui.spacing 3 ]
+                      [ Ui.el
+                            [ Font.size 17
+                            , Font.bold
+                            , Font.color (colourWarning t)
+                            ]
+                            (Ui.text "⚠  Restricted module detected")
+                      , Ui.el
+                            [ Font.size 17
+                            , Font.color (textSecondary t)
+                            , Font.family Font.monospace
+                            ]
+                            (Ui.text
+                                "Dangerous import lines were stripped before building. See the About tab for details.")
+                      ]
+                , Ui.button
+                      [ Font.size 17
+                      , Font.color (textMuted t)
+                      , Background.color (bg2 t)
+                      , Border.rounded 4
+                      , Ui.paddingXY 10 5
+                      , Ui.centerY
+                      ]
+                      { onPress = Just DismissWarning, label = Ui.text "✕" }
+                ]
 
 
 -- ── Code textarea ─────────────────────────────────────────────────────────────
@@ -161,51 +224,54 @@ securityBanner model =
 -- Sky keywords and identifiers.
 codeInput : Model -> Element Msg
 codeInput model =
-    Ui.row
-        [ Ui.width Ui.fill
-        , Ui.height Ui.fill
-        , Ui.padding 2
-        -- , Ui.clipX
-        , Background.color bg0
-        ]
-        [ lineNumCol model.code
-        , Ui.el
-              [ Ui.width Ui.fill
-              , Ui.height Ui.fill
-              , Font.family Font.monospace
-              , Font.size 16
-              , Font.color (Ui.rgb 200 220 255)
-              , Border.width 0
-              , Ui.padding 16
-              ]
-              <| Input.multiline
-                     [ Background.color bg0
-                     , Ui.width Ui.fill
-                     , Ui.height Ui.fill
-                     ]
-                     { onChange = CodeChanged
-                     , text = model.code
-                     , placeholder = Just
-                           (Input.placeholder
-                               [ Font.color textMuted
-                               , Font.family Font.monospace
-                               , Font.size 16
-                               ]
-                               (Ui.text
-                                   "-- Write your Sky code here, or pick an example from the sidebar…"))
-                     , label = Input.labelHidden "Sky source code editor"
-                     , spellcheck = False
-                     }
-        ]
+    let
+        t = model.themeIndex
+    in
+        Ui.row
+            [ Ui.width Ui.fill
+            , Ui.height Ui.fill
+            , Ui.padding 2
+            , Background.color (bg0 t)
+            ]
+            [ lineNumCol t model.code
+            , Ui.el
+                  [ Ui.width Ui.fill
+                  , Ui.height Ui.fill
+                  , Font.family Font.monospace
+                  , Font.size 24
+                  , Font.color (textPrimary t)
+                  , Border.width 0
+                  , Ui.padding 16
+                  ]
+                  <| Input.multiline
+                         [ Background.color (bg0 t)
+                         , Ui.width Ui.fill
+                         , Ui.height Ui.fill
+                         ]
+                         { onChange = CodeChanged
+                         , text = model.code
+                         , placeholder = Just
+                               (Input.placeholder
+                                   [ Font.color (textMuted t)
+                                   , Font.family Font.monospace
+                                   , Font.size 24
+                                   ]
+                                   (Ui.text
+                                       "-- Write your Sky code here, or pick an example above…"))
+                         , label = Input.labelHidden "Sky source code editor"
+                         , spellcheck = False
+                         }
+            ]
 
 
-lineNumCol code =
+lineNumCol : Int -> String -> Element Msg
+lineNumCol t code =
     let
         codeLines = String.lines code
     in
         Ui.column
             [ Ui.paddingXY 4 16
-            , Font.color (Ui.rgb 150 155 155)
+            , Font.color (textLineNumber t)
             , Ui.height Ui.fill
             ]
             (List.indexedMap

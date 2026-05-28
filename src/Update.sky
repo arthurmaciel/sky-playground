@@ -91,6 +91,7 @@ update msg model =
                     Just ex ->
                         ( { model | code = ex.code
                           , activeExample = i
+                          , exampleDropdownOpen = False
                           , runOutput = ""
                           , runStatus = Idle
                           , formatStatus = FmtIdle
@@ -104,6 +105,25 @@ update msg model =
 
         TabChanged tab ->
             ( { model | activeTab = tab }, Cmd.none )
+
+        ToggleDropdown ->
+            ( { model | exampleDropdownOpen = not model.exampleDropdownOpen }
+            , Cmd.none
+            )
+
+        CloseDropdown ->
+            ( { model | exampleDropdownOpen = False }, Cmd.none )
+
+        SelectTheme i ->
+            ( { model | themeIndex = i, themeDropdownOpen = False }, Cmd.none )
+
+        ToggleThemeDropdown ->
+            ( { model | themeDropdownOpen = not model.themeDropdownOpen }
+            , Cmd.none
+            )
+
+        CloseThemeDropdown ->
+            ( { model | themeDropdownOpen = False }, Cmd.none )
 
         DismissWarning ->
             ( { model | securityWarning = "" }, Cmd.none )

@@ -5,13 +5,22 @@ module View.Common exposing
     , bg3
     , accent
     , accentDim
+    , accentBorder
     , textPrimary
     , textSecondary
     , textMuted
+    , textLineNumber
     , colourSuccess
     , colourError
     , colourWarning
+    , warningBg
+    , warningBorder
+    , warningCardBg
+    , warningCardBorder
     , borderColour
+    , transparent
+    , isDark
+    , themeNames
     -- Reusable elements
     , actionButton
     , secondaryButton
@@ -28,89 +37,570 @@ import Std.Ui.Font as Font
 import State exposing (..)
 
 
--- ── Colour palette ────────────────────────────────────────────────────────────
-bg0 : Ui.Color
-bg0 =
-    Ui.rgb 3 7 15
+-- ── Theme names (index matches palette order) ────────────────────────────────
+themeNames : List String
+themeNames =
+    [ "Midnight"
+    , "GitHub Dark"
+    , "One Dark"
+    , "Dracula"
+    , "Nord"
+    , "Solarized Light"
+    , "Warm Paper"
+    , "GitHub Light"
+    , "Material Light"
+    , "Polar Ice"
+    ]
 
 
-bg1 : Ui.Color
-bg1 =
-    Ui.rgb 6 11 22
+-- ── Helper ───────────────────────────────────────────────────────────────────
+isDark : Int -> Bool
+isDark idx =
+    idx <= 4
 
 
-bg2 : Ui.Color
-bg2 =
-    Ui.rgb 10 18 35
+-- ── Colour palette (Int = themeIndex, 0 = darkest, 9 = lightest) ─────────────
+-- 0 Midnight · 1 GitHub Dark · 2 One Dark · 3 Dracula · 4 Nord
+-- 5 Solarized Light · 6 Warm Paper · 7 GitHub Light · 8 Material Light · 9 Polar Ice
+bg0 : Int -> Ui.Color
+bg0 t =
+    case t of
+
+        0 ->
+            Ui.rgb 0 0 0
+
+        1 ->
+            Ui.rgb 13 17 23
+
+        2 ->
+            Ui.rgb 40 44 52
+
+        3 ->
+            Ui.rgb 40 42 54
+
+        4 ->
+            Ui.rgb 46 52 64
+
+        5 ->
+            Ui.rgb 253 246 227
+
+        6 ->
+            Ui.rgb 253 250 244
+
+        7 ->
+            Ui.rgb 255 255 255
+
+        8 ->
+            Ui.rgb 250 250 250
+
+        _ ->
+            Ui.rgb 248 251 255
 
 
-bg3 : Ui.Color
-bg3 =
-    Ui.rgb 16 27 52
+bg1 : Int -> Ui.Color
+bg1 t =
+    case t of
+
+        0 ->
+            Ui.rgb 10 10 10
+
+        1 ->
+            Ui.rgb 22 27 34
+
+        2 ->
+            Ui.rgb 33 37 43
+
+        3 ->
+            Ui.rgb 68 71 90
+
+        4 ->
+            Ui.rgb 59 66 82
+
+        5 ->
+            Ui.rgb 238 232 213
+
+        6 ->
+            Ui.rgb 245 240 230
+
+        7 ->
+            Ui.rgb 246 248 250
+
+        8 ->
+            Ui.rgb 245 245 245
+
+        _ ->
+            Ui.rgb 240 245 252
 
 
-accent : Ui.Color
-accent =
-    Ui.rgb 77 158 255
+bg2 : Int -> Ui.Color
+bg2 t =
+    case t of
+
+        0 ->
+            Ui.rgb 20 20 20
+
+        1 ->
+            Ui.rgb 33 38 45
+
+        2 ->
+            Ui.rgb 55 59 65
+
+        3 ->
+            Ui.rgb 55 57 72
+
+        4 ->
+            Ui.rgb 67 76 94
+
+        5 ->
+            Ui.rgb 224 218 199
+
+        6 ->
+            Ui.rgb 235 228 216
+
+        7 ->
+            Ui.rgb 234 238 242
+
+        8 ->
+            Ui.rgb 230 230 230
+
+        _ ->
+            Ui.rgb 225 235 248
 
 
-accentDim : Ui.Color
-accentDim =
-    Ui.rgba 77 158 255 0.12
+bg3 : Int -> Ui.Color
+bg3 t =
+    case t of
+
+        0 ->
+            Ui.rgb 30 30 30
+
+        1 ->
+            Ui.rgb 48 54 61
+
+        2 ->
+            Ui.rgb 70 74 80
+
+        3 ->
+            Ui.rgb 68 71 90
+
+        4 ->
+            Ui.rgb 76 86 106
+
+        5 ->
+            Ui.rgb 210 204 185
+
+        6 ->
+            Ui.rgb 222 213 198
+
+        7 ->
+            Ui.rgb 220 224 232
+
+        8 ->
+            Ui.rgb 215 215 215
+
+        _ ->
+            Ui.rgb 210 222 240
 
 
-textPrimary : Ui.Color
-textPrimary =
-    Ui.rgb 232 240 255
+accent : Int -> Ui.Color
+accent t =
+    case t of
+
+        0 ->
+            Ui.rgb 100 149 237
+
+        1 ->
+            Ui.rgb 88 166 255
+
+        2 ->
+            Ui.rgb 97 175 239
+
+        3 ->
+            Ui.rgb 189 147 249
+
+        4 ->
+            Ui.rgb 136 192 208
+
+        5 ->
+            Ui.rgb 38 139 210
+
+        6 ->
+            Ui.rgb 180 100 40
+
+        7 ->
+            Ui.rgb 37 99 235
+
+        8 ->
+            Ui.rgb 25 118 210
+
+        _ ->
+            Ui.rgb 56 132 244
 
 
-textSecondary : Ui.Color
-textSecondary =
-    Ui.rgb 154 176 204
+accentDim : Int -> Ui.Color
+accentDim t =
+    if isDark t then
+        case t of
+
+            3 ->
+                Ui.rgba 189 147 249 0.15
+
+            4 ->
+                Ui.rgba 136 192 208 0.15
+
+            _ ->
+                Ui.rgba 88 166 255 0.15
+
+    else
+        case t of
+
+            6 ->
+                Ui.rgba 180 100 40 0.12
+
+            _ ->
+                Ui.rgba 37 99 235 0.1
 
 
-textMuted : Ui.Color
-textMuted =
-    Ui.rgb 86 100 128
+accentBorder : Int -> Ui.Color
+accentBorder t =
+    if isDark t then
+        case t of
+
+            3 ->
+                Ui.rgba 189 147 249 0.4
+
+            4 ->
+                Ui.rgba 136 192 208 0.4
+
+            _ ->
+                Ui.rgba 88 166 255 0.4
+
+    else
+        case t of
+
+            6 ->
+                Ui.rgba 180 100 40 0.3
+
+            _ ->
+                Ui.rgba 37 99 235 0.3
 
 
-colourSuccess : Ui.Color
-colourSuccess =
-    Ui.rgb 57 217 138
+textPrimary : Int -> Ui.Color
+textPrimary t =
+    case t of
+
+        0 ->
+            Ui.rgb 220 220 220
+
+        1 ->
+            Ui.rgb 201 209 217
+
+        2 ->
+            Ui.rgb 171 178 191
+
+        3 ->
+            Ui.rgb 248 248 242
+
+        4 ->
+            Ui.rgb 236 239 244
+
+        5 ->
+            Ui.rgb 0 43 54
+
+        6 ->
+            Ui.rgb 50 40 30
+
+        7 ->
+            Ui.rgb 36 41 47
+
+        8 ->
+            Ui.rgb 33 33 33
+
+        _ ->
+            Ui.rgb 25 32 42
 
 
-colourError : Ui.Color
-colourError =
-    Ui.rgb 255 95 95
+textSecondary : Int -> Ui.Color
+textSecondary t =
+    case t of
+
+        0 ->
+            Ui.rgb 160 160 160
+
+        1 ->
+            Ui.rgb 139 148 158
+
+        2 ->
+            Ui.rgb 126 132 144
+
+        3 ->
+            Ui.rgb 189 195 211
+
+        4 ->
+            Ui.rgb 181 194 209
+
+        5 ->
+            Ui.rgb 101 123 131
+
+        6 ->
+            Ui.rgb 100 85 68
+
+        7 ->
+            Ui.rgb 87 96 106
+
+        8 ->
+            Ui.rgb 80 80 80
+
+        _ ->
+            Ui.rgb 60 72 88
 
 
-colourWarning : Ui.Color
-colourWarning =
-    Ui.rgb 255 200 74
+textMuted : Int -> Ui.Color
+textMuted t =
+    case t of
+
+        0 ->
+            Ui.rgb 100 100 100
+
+        1 ->
+            Ui.rgb 110 118 129
+
+        2 ->
+            Ui.rgb 92 99 112
+
+        3 ->
+            Ui.rgb 125 131 147
+
+        4 ->
+            Ui.rgb 129 140 153
+
+        5 ->
+            Ui.rgb 147 161 161
+
+        6 ->
+            Ui.rgb 155 142 125
+
+        7 ->
+            Ui.rgb 140 150 163
+
+        8 ->
+            Ui.rgb 150 150 150
+
+        _ ->
+            Ui.rgb 150 165 185
 
 
-borderColour : Ui.Color
-borderColour =
-    Ui.rgba 77 158 255 0.15
+textLineNumber : Int -> Ui.Color
+textLineNumber t =
+    if isDark t then
+        case t of
+
+            0 ->
+                Ui.rgb 60 60 60
+
+            1 ->
+                Ui.rgb 78 86 96
+
+            2 ->
+                Ui.rgb 70 76 88
+
+            3 ->
+                Ui.rgb 80 83 100
+
+            4 ->
+                Ui.rgb 85 95 110
+
+            _ ->
+                Ui.rgb 78 86 96
+
+    else
+        case t of
+
+            6 ->
+                Ui.rgb 190 180 168
+
+            _ ->
+                Ui.rgb 180 185 195
 
 
--- ── Action button (primary — blue fill) ───────────────────────────────────────
-actionButton : Msg -> Bool -> String -> Element Msg
-actionButton onPress isDisabled label =
+colourSuccess : Int -> Ui.Color
+colourSuccess t =
+    if isDark t then
+        case t of
+
+            3 ->
+                Ui.rgb 80 250 123
+
+            4 ->
+                Ui.rgb 163 190 140
+
+            _ ->
+                Ui.rgb 63 185 130
+
+    else
+        case t of
+
+            6 ->
+                Ui.rgb 57 217 138
+
+            _ ->
+                Ui.rgb 40 167 69
+
+
+colourError : Int -> Ui.Color
+colourError t =
+    if isDark t then
+        case t of
+
+            3 ->
+                Ui.rgb 255 85 85
+
+            4 ->
+                Ui.rgb 191 97 106
+
+            _ ->
+                Ui.rgb 248 81 73
+
+    else
+        case t of
+
+            6 ->
+                Ui.rgb 255 95 95
+
+            _ ->
+                Ui.rgb 218 54 51
+
+
+colourWarning : Int -> Ui.Color
+colourWarning t =
+    if isDark t then
+        case t of
+
+            3 ->
+                Ui.rgb 241 250 140
+
+            4 ->
+                Ui.rgb 235 203 139
+
+            _ ->
+                Ui.rgb 210 153 34
+
+    else
+        case t of
+
+            6 ->
+                Ui.rgb 255 200 74
+
+            _ ->
+                Ui.rgb 192 132 26
+
+
+borderColour : Int -> Ui.Color
+borderColour t =
+    if isDark t then
+        case t of
+
+            3 ->
+                Ui.rgba 189 147 249 0.25
+
+            4 ->
+                Ui.rgba 136 192 208 0.25
+
+            _ ->
+                Ui.rgba 88 166 255 0.2
+
+    else
+        case t of
+
+            6 ->
+                Ui.rgba 180 100 40 0.15
+
+            _ ->
+                Ui.rgba 37 99 235 0.15
+
+
+transparent : Ui.Color
+transparent =
+    Ui.rgba 0 0 0 0.0
+
+
+warningBg : Int -> Ui.Color
+warningBg t =
+    if isDark t then
+        Ui.rgba 210 153 34 0.15
+
+    else
+        case t of
+
+            6 ->
+                Ui.rgba 255 200 74 8.0e-2
+
+            _ ->
+                Ui.rgba 192 132 26 0.1
+
+
+warningBorder : Int -> Ui.Color
+warningBorder t =
+    if isDark t then
+        Ui.rgba 210 153 34 0.4
+
+    else
+        case t of
+
+            6 ->
+                Ui.rgba 255 200 74 0.3
+
+            _ ->
+                Ui.rgba 192 132 26 0.3
+
+
+warningCardBg : Int -> Ui.Color
+warningCardBg t =
+    if isDark t then
+        Ui.rgba 210 153 34 0.1
+
+    else
+        case t of
+
+            6 ->
+                Ui.rgba 255 200 74 5.0e-2
+
+            _ ->
+                Ui.rgba 192 132 26 8.0e-2
+
+
+warningCardBorder : Int -> Ui.Color
+warningCardBorder t =
+    if isDark t then
+        Ui.rgba 210 153 34 0.35
+
+    else
+        case t of
+
+            6 ->
+                Ui.rgba 255 200 74 0.25
+
+            _ ->
+                Ui.rgba 192 132 26 0.25
+
+
+-- ── Action button (primary — fill) ───────────────────────────────────────────
+actionButton : Int -> Msg -> Bool -> String -> Element Msg
+actionButton t onPress isDisabled label =
     Ui.button
         [ Ui.paddingXY 18 8
         , Border.rounded 6
         , if isDisabled then
-              Background.color bg3
+              Background.color (bg3 t)
 
           else
-              Background.color accent
+              Background.color (accent t)
         , if isDisabled then
-              Font.color textMuted
+              Font.color (textMuted t)
 
           else
               Font.color Ui.white
-        , Font.size 12
+        , Font.size 18
         , Font.bold
         ]
         { onPress = if isDisabled then
@@ -123,59 +613,71 @@ actionButton onPress isDisabled label =
 
 
 -- ── Secondary button (ghost — dim border) ────────────────────────────────────
-secondaryButton : Msg -> String -> Element Msg
-secondaryButton onPress label =
+secondaryButton : Int -> Msg -> String -> Element Msg
+secondaryButton t onPress label =
     Ui.button
         [ Ui.paddingXY 14 7
         , Border.rounded 6
-        , Background.color bg2
-        , Border.color borderColour
+        , Background.color (bg2 t)
+        , Border.color (borderColour t)
         , Border.width 1
-        , Font.color textSecondary
-        , Font.size 11
+        , Font.color (textSecondary t)
+        , Font.size 17
         , Font.family Font.monospace
         ]
         { onPress = Just onPress, label = Ui.text label }
 
 
 -- ── Status badge ──────────────────────────────────────────────────────────────
-statusBadge : RunStatus -> Element Msg
-statusBadge status =
+statusBadge : Int -> RunStatus -> Element Msg
+statusBadge t status =
     let
         ( badgeColour, badgeLabel ) =
             case status of
 
                 Idle ->
-                    ( textMuted, "idle" )
+                    ( textMuted t, "idle" )
 
                 Running ->
-                    ( colourWarning, "running…" )
+                    ( colourWarning t, "running…" )
 
                 Succeeded ->
-                    ( colourSuccess, "success" )
+                    ( colourSuccess t, "success" )
 
                 Failed ->
-                    ( colourError, "failed" )
+                    ( colourError t, "failed" )
+        borderBase =
+            if isDark t then
+                Ui.rgba 88 166 255 0.15
+
+            else
+                case t of
+
+                    6 ->
+                        Ui.rgba 180 100 40 8.0e-2
+
+                    _ ->
+                        Ui.rgba 37 99 235 0.1
     in
         Ui.el
-            [ Font.size 10
+            [ Font.size 15
             , Font.family Font.monospace
             , Font.color badgeColour
             , Ui.paddingXY 8 4
-            , Background.color bg2
+            , Background.color (bg2 t)
             , Border.rounded 20
-            , Border.color (Ui.rgba 77 158 255 8.0e-2)
+            , Border.color borderBase
             , Border.width 1
             ]
             (Ui.text badgeLabel)
 
 
--- ── Section label (small caps header used in sidebar) ────────────────────────
-sectionLabel : String -> Element Msg
-sectionLabel heading =
+-- ── Section label ─────────────────────────────────────────────────────────────
+sectionLabel : Int -> String -> Element Msg
+sectionLabel t heading =
     Ui.el
-        [ Font.size 9
-        , Font.color textMuted
+        [ Font.size 14
+        , Font.color (textMuted t)
         , Font.family Font.monospace
         , Ui.paddingXY 14 8
         ]
