@@ -19,7 +19,7 @@ editorPanel model =
         t = model.themeIndex
     in
         Ui.column
-            [ Ui.width Ui.fill
+            [ Ui.width (Ui.fillPortion 3)
             , Ui.height Ui.fill
             , Background.color (bg0 t)
             , Border.color (borderColour t)
@@ -38,6 +38,7 @@ toolbar model =
             [ Ui.width Ui.fill
             , Ui.paddingXY 14 8
             , Ui.spacing 8
+            , Ui.centerY
             , Background.color (bg1 t)
             , Border.color (borderColour t)
             , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
@@ -238,7 +239,7 @@ codeInput model =
                   [ Ui.width Ui.fill
                   , Ui.height Ui.fill
                   , Font.family Font.monospace
-                  , Font.size 24
+                  , Font.size 16
                   , Font.color (textPrimary t)
                   , Border.width 0
                   , Ui.padding 16
@@ -254,7 +255,7 @@ codeInput model =
                                (Input.placeholder
                                    [ Font.color (textMuted t)
                                    , Font.family Font.monospace
-                                   , Font.size 24
+                                   , Font.size 16
                                    ]
                                    (Ui.text
                                        "-- Write your Sky code here, or pick an example above…"))
@@ -270,7 +271,8 @@ lineNumCol t code =
         codeLines = String.lines code
     in
         Ui.column
-            [ Ui.paddingXY 4 16
+            [ Ui.paddingXY 1 16
+            , Ui.alignRight
             , Font.color (textLineNumber t)
             , Ui.height Ui.fill
             ]

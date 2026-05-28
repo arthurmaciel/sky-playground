@@ -19,7 +19,7 @@ outputPanel model =
         t = model.themeIndex
     in
         Ui.column
-            [ Ui.width (Ui.fillPortion 3)
+            [ Ui.width (Ui.fillPortion 2)
             , Ui.height Ui.fill
             , Background.color (bg0 t)
             ]
@@ -36,6 +36,7 @@ outputToolbar model =
             [ Ui.width Ui.fill
             , Ui.paddingXY 4 0
             , Ui.spacing 0
+            , Ui.centerY
             , Background.color (bg1 t)
             , Border.color (borderColour t)
             , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
@@ -193,9 +194,9 @@ outputLine lineColour line =
 aboutContent : Int -> Element Msg
 aboutContent t =
     Ui.el
-        [ Ui.width Ui.fill, Ui.height Ui.fill, Ui.scrollbars ]
+        [ Ui.height Ui.fill, Ui.scrollbars ]
         (Ui.column
-            [ Ui.width Ui.fill, Ui.padding 20, Ui.spacing 14 ]
+            [ Ui.padding 20, Ui.spacing 14 ]
             [ infoCard
                   t
                   "☁  Sky Language"
@@ -273,8 +274,7 @@ blockedLibsCard t =
         nameList = String.join " · " blockedModuleNames
     in
         Ui.column
-            [ Ui.width Ui.fill
-            , Ui.spacing 8
+            [ Ui.spacing 8
             , Ui.padding 14
             , Background.color (warningCardBg t)
             , Border.color (warningCardBorder t)
@@ -284,12 +284,12 @@ blockedLibsCard t =
             [ Ui.el
                   [ Font.bold, Font.color (colourWarning t), Font.size 18 ]
                   (Ui.text "⚠  Blocked in playground")
-            , Ui.el
+            , Ui.wrappedRow
                   [ Font.size 17
                   , Font.family Font.monospace
                   , Font.color (textMuted t)
                   ]
-                  (Ui.text nameList)
+                  [Ui.text nameList]
             , Ui.el
                   [ Font.size 17, Font.color (textSecondary t) ]
                   (Ui.text

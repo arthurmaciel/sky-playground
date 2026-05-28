@@ -47,7 +47,6 @@ logoMark t =
     Ui.el
         [ Ui.width (Ui.px 30)
         , Ui.height (Ui.px 30)
-        , Ui.centerY
         , Background.color (accent t)
         , Border.rounded 6
         ]
@@ -63,8 +62,7 @@ themeSelector model =
         t = model.themeIndex
         trigger =
             Ui.el
-                [ Ui.centerY
-                , Ui.paddingXY 10 5
+                [ Ui.paddingXY 10 5
                 , Background.color (bg2 t)
                 , Border.rounded 5
                 , Border.color (borderColour t)
@@ -73,7 +71,9 @@ themeSelector model =
                 , Ui.onClick ToggleThemeDropdown
                 ]
                 (Ui.el
-                    [ Font.family Font.monospace
+                    [ Ui.centerY
+                    , Font.family Font.monospace
+                    -- , Ui.centerY
                     , Font.size 15
                     , Font.color (textSecondary t)
                     ]
@@ -85,6 +85,7 @@ themeSelector model =
                 , Ui.pointer
                 , Ui.onClick (SelectTheme idx)
                 , Font.family Font.monospace
+                -- , Ui.centerY
                 , Font.size 15
                 , Font.color
                       (if idx == t then
@@ -132,6 +133,7 @@ header model =
         Ui.row
             [ Ui.width Ui.fill
             , Ui.paddingXY 20 0
+            , Ui.centerY
             , Ui.spacing 10
             , Ui.height (Ui.px 52)
             , Background.color (bg1 t)
@@ -144,7 +146,6 @@ header model =
                   , Font.bold
                   , Font.color (textPrimary t)
                   , Font.family Font.monospace
-                  , Ui.centerY
                   ]
                   (Ui.text "Sky playground")
             , Ui.el [Ui.width Ui.fill] (Ui.text "")
@@ -154,7 +155,6 @@ header model =
                   , Border.widthEach
                         { top = 0, right = 1, bottom = 0, left = 0 }
                   , Ui.paddingXY 6 0
-                  , Ui.centerY
                   , Ui.height (Ui.px 20)
                   ]
                   (Ui.text "")
@@ -162,7 +162,6 @@ header model =
                   [ Font.size 18
                   , Font.color (textMuted t)
                   , Font.family Font.monospace
-                  , Ui.centerY
                   ]
                   { url = "https://github.com/arthurmaciel/sky"
                   , label = Ui.text "GitHub ↗"
@@ -179,7 +178,7 @@ closeOverlay closeMsg =
     Ui.el [ Ui.width Ui.fill, Ui.height Ui.fill, Ui.onClick closeMsg ] Ui.none
 
 
-view : Model -> any
+view : Model -> Html Msg
 view model =
     let
         t = model.themeIndex
