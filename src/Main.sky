@@ -163,7 +163,7 @@ header model =
                   , Font.color (textMuted t)
                   , Font.family Font.monospace
                   ]
-                  { url = "https://github.com/arthurmaciel/sky"
+                  { url = "https://github.com/arthurmaciel/sky-playground"
                   , label = Ui.text "GitHub ↗"
                   }
             ]

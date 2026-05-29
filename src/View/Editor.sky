@@ -219,10 +219,6 @@ securityBanner model =
                 ]
 
 
--- ── Code textarea ─────────────────────────────────────────────────────────────
--- Uses Std.Ui.Input.multiline which renders a real <textarea>.
--- spellcheck = False prevents browser spell-check from underlining
--- Sky keywords and identifiers.
 codeInput : Model -> Element Msg
 codeInput model =
     let
@@ -246,7 +242,7 @@ codeInput model =
                   ]
                   <| Input.multiline
                          [ Background.color (bg0 t)
-                         , Ui.width Ui.fill
+                         , Ui.width (Ui.fillPortion 10)
                          , Ui.height Ui.fill
                          ]
                          { onChange = CodeChanged
