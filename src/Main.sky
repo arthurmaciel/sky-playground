@@ -1,8 +1,5 @@
 module Main exposing (main)
 
--- Sky.Live + Std.Ui playground — assembles all view modules and wires the
--- TEA loop. View is split across View/* to avoid HM type-checker heap
--- exhaustion on Std.Ui-heavy modules (CLAUDE.md Limitation #17).
 import Examples exposing (examples)
 import Sky.Core.List as List
 import Sky.Core.Prelude exposing (..)
@@ -170,9 +167,6 @@ header model =
 
 
 -- ── View ──────────────────────────────────────────────────────────────────────
--- Return type is `any` because Ui.layout produces the Sky.Live HTML payload.
--- The three panels are split across dedicated modules; each returns
--- Element Msg, which Ui.layout assembles into the final document.
 closeOverlay : Msg -> Element Msg
 closeOverlay closeMsg =
     Ui.el [ Ui.width Ui.fill, Ui.height Ui.fill, Ui.onClick closeMsg ] Ui.none

@@ -48,11 +48,6 @@ initialModel =
     , activeTab = OutputTab
     }
 
--- Using a named ADT instead of () avoids a reflect.Call panic at the Sky.Live
--- route-dispatch boundary. The runtime passes route flags as SkyADT structs;
--- bare () compiles to struct{} inside init but arrives as map[string]interface{}
--- at the call site, causing:
---   reflect: Call using map[string]interface {} as type struct {}
 type Page
     = MainPage
 

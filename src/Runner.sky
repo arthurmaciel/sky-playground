@@ -21,10 +21,6 @@ main = "src/Main.sky"
 
 
 -- ── Shell helper ─────────────────────────────────────────────────────────────
--- Change into `dir`, run `cmd`, redirect stderr → stdout, always exit 0.
--- `; true` at the end makes the sh invocation succeed regardless of
--- whether the inner command failed, so Process.run always returns Ok
--- and the caller can inspect the captured output for errors.
 shellIn : String -> String -> Task Error String
 shellIn dir cmd =
     Process.run "sh" [ "-c", "( cd " ++ dir ++ " && " ++ cmd ++ " ) 2>&1;" ]
@@ -43,12 +39,9 @@ withTempDir prefix action =
                    in
                        File.mkdirAll (dir ++ "/src")
                            |> Task.andThen (\_ -> action dir)
-                           |> Task.andThen
-                                  (\result ->
-                                      Process.run "ls" [ "-a", dir ]
-                                          |> Task.map (\_ -> result)
-                                          |> Task.onError
-                                                 (\_ -> Task.succeed result)))
+                           |> Task.map (\result -> result)
+                           |> Task.onError
+                               (\err -> Task.fail err))
 
 
 -- ── Format ───────────────────────────────────────────────────────────────────
@@ -71,12 +64,13 @@ formatCode code =
                         |> Task.andThen
                                (\_ -> shellIn dir "sky fmt src/Main.sky")
                         |> Task.andThen (\_ -> File.readFile skyFile)
-                        |> Task.onError
-                               (\e ->
-                                   Task.succeed
-                                       ("-- sky fmt error: " ++ Error.toString e
-                                           ++ "\n\n"
-                                           ++ safe)))
+                        -- |> Task.onError
+                        --        (\e ->
+                        --            Task.succeed
+                        --                ("-- sky fmt error: " ++ Error.toString e
+                        --                    ++ "\n\n"
+                        --                    ++ safe))
+                        )
 
 
 -- ── Run ───────────────────────────────────────────────────────────────────────
@@ -125,9 +119,10 @@ runCode code =
                                    File.writeFile (dir ++ "/src/Main.sky") safe)
                         |> Task.andThen
                                (\_ -> shellIn dir "sky build src/Main.sky")
-                        |> Task.andThen
-                               (\buildOut ->
-                                   shellIn dir runScript
-                                       |> Task.map
-                                              (\runOut ->
-                                                  formatOutput buildOut runOut)))
+                        -- |> Task.andThen
+                        --        (\buildOut ->
+                        --            shellIn dir runScript
+                        --                |> Task.map
+                        --                       (\runOut ->
+                        --                           formatOutput buildOut runOut))
+                        )
