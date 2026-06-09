@@ -7,7 +7,7 @@ main = "src/Main.sky"
 port = 8080
 store = "memory"
 ttl = 3600
-statis = "static"
+static = "static"
 
 [log]
 level = "info"

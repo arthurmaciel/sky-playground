@@ -2,3 +2,8 @@
 sky-out
 tmp
 .sky
+
+# Agent skill setup (setup-matt-pocock-skills)
+docs/agents/issue-tracker.md
+docs/agents/triage-labels.md
+docs/agents/domain.md

@@ -15,6 +15,18 @@ type FormatStatus
     | FmtSucceeded
     | FmtFailed
 
+type Theme
+    = Midnight
+    | GitHubDark
+    | OneDark
+    | Dracula
+    | Nord
+    | SolarizedLight
+    | WarmPaper
+    | GitHubLight
+    | MaterialLight
+    | PolarIce
+
 type alias Model =
     { code : String
     , runOutput : String
@@ -22,7 +34,7 @@ type alias Model =
     , formatStatus : FormatStatus
     , activeExample : Int
     , exampleDropdownOpen : Bool
-    , themeIndex : Int
+    , theme : Theme
     , themeDropdownOpen : Bool
     , securityWarning : String
     , activeTab : Tab
@@ -42,11 +54,30 @@ initialModel =
     , formatStatus = FmtIdle
     , activeExample = -1
     , exampleDropdownOpen = False
-    , themeIndex = 6
+    , theme = WarmPaper
     , themeDropdownOpen = False
     , securityWarning = ""
     , activeTab = OutputTab
     }
+
+
+blockedModuleNames : List String
+blockedModuleNames =
+    [ "File"
+    , "Io"
+    , "Process"
+    , "System"
+    , "Db"
+    , "Auth"
+    , "Http"
+    , "Server"
+    , "Live"
+    , "RateLimit"
+    , "Middleware"
+    , "Ffi"
+    , "Context"
+    , "Fmt"
+    ]
 
 type Page
     = MainPage
@@ -60,7 +91,7 @@ type Msg
     | LoadExample Int
     | ToggleDropdown
     | CloseDropdown
-    | SelectTheme Int
+    | SelectTheme Theme
     | ToggleThemeDropdown
     | CloseThemeDropdown
     | TabChanged Tab

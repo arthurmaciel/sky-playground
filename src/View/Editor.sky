@@ -16,13 +16,13 @@ import View.Common exposing (..)
 editorPanel : Model -> Element Msg
 editorPanel model =
     let
-        t = model.themeIndex
+        t = getTheme model.theme
     in
         Ui.column
             [ Ui.width (Ui.fillPortion 3)
             , Ui.height Ui.fill
-            , Background.color (bg0 t)
-            , Border.color (borderColour t)
+            , Background.color t.bg0
+            , Border.color t.borderColour
             , Border.widthEach { top = 0, right = 1, bottom = 0, left = 0 }
             ]
             [ toolbar model, securityBanner model, codeInput model ]
@@ -32,15 +32,15 @@ editorPanel model =
 toolbar : Model -> Element Msg
 toolbar model =
     let
-        t = model.themeIndex
+        t = getTheme model.theme
     in
         Ui.row
             [ Ui.width Ui.fill
             , Ui.paddingXY 14 8
             , Ui.spacing 8
             , Ui.centerY
-            , Background.color (bg1 t)
-            , Border.color (borderColour t)
+            , Background.color t.bg1
+            , Border.color t.borderColour
             , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
             ]
             [ exampleSelector model
@@ -60,7 +60,7 @@ toolbar model =
 exampleSelector : Model -> Element Msg
 exampleSelector model =
     let
-        t = model.themeIndex
+        t = getTheme model.theme
         triggerLabel =
             if model.activeExample < 0 then
                 "Select an example…"
@@ -75,16 +75,16 @@ exampleSelector model =
                         "Select an example…"
         triggerColour =
             if model.activeExample < 0 then
-                textMuted t
+                t.textMuted
 
             else
-                textSecondary t
+                t.textSecondary
         trigger =
             Ui.el
                 [ Ui.paddingXY 10 5
-                , Background.color (bg2 t)
+                , Background.color t.bg2
                 , Border.rounded 5
-                , Border.color (borderColour t)
+                , Border.color t.borderColour
                 , Border.width 1
                 , Ui.pointer
                 , Ui.onClick ToggleDropdown
@@ -92,7 +92,7 @@ exampleSelector model =
                 ]
                 (Ui.el
                     [ Font.family Font.monospace
-                    , Font.size 17
+                    , Font.size 12
                     , Font.color triggerColour
                     ]
                     (Ui.text triggerLabel))
@@ -103,15 +103,15 @@ exampleSelector model =
                 , Ui.pointer
                 , Ui.onClick (LoadExample ex.index)
                 , Font.family Font.monospace
-                , Font.size 17
-                , Font.color (textSecondary t)
+                , Font.size 12
+                , Font.color t.textSecondary
                 ]
                 (Ui.text ex.name)
         dropdown =
             Ui.column
                 [ Ui.width (Ui.px 260)
-                , Background.color (bg2 t)
-                , Border.color (borderColour t)
+                , Background.color t.bg2
+                , Border.color t.borderColour
                 , Border.width 1
                 , Border.rounded 5
                 ]
@@ -119,7 +119,7 @@ exampleSelector model =
     in
         Ui.el
             (if model.exampleDropdownOpen then
-                [Ui.below dropdown]
+                [ Ui.below dropdown, Ui.inFront (closeOverlay CloseDropdown) ]
 
             else
                 [])
@@ -154,15 +154,15 @@ runLabel model =
 fmtStatusHint : Model -> Element Msg
 fmtStatusHint model =
     let
-        t = model.themeIndex
+        t = getTheme model.theme
     in
         case model.formatStatus of
 
             FmtFailed ->
                 Ui.el
-                    [ Font.size 15
+                    [ Font.size 11
                     , Font.family Font.monospace
-                    , Font.color (colourError t)
+                    , Font.color t.colourError
                     ]
                     (Ui.text "fmt failed")
 
@@ -177,7 +177,7 @@ fmtStatusHint model =
 securityBanner : Model -> Element Msg
 securityBanner model =
     let
-        t = model.themeIndex
+        t = getTheme model.theme
     in
         if String.isEmpty model.securityWarning then
             Ui.text ""
@@ -187,30 +187,30 @@ securityBanner model =
                 [ Ui.width Ui.fill
                 , Ui.paddingXY 14 10
                 , Ui.spacing 12
-                , Background.color (warningBg t)
-                , Border.color (warningBorder t)
+                , Background.color t.warningBg
+                , Border.color t.warningBorder
                 , Border.widthEach { top = 0, right = 0, bottom = 1, left = 3 }
                 ]
                 [ Ui.column
                       [ Ui.width Ui.fill, Ui.spacing 3 ]
                       [ Ui.el
-                            [ Font.size 17
+                            [ Font.size 12
                             , Font.bold
-                            , Font.color (colourWarning t)
+                            , Font.color t.colourWarning
                             ]
                             (Ui.text "⚠  Restricted module detected")
                       , Ui.el
-                            [ Font.size 17
-                            , Font.color (textSecondary t)
+                            [ Font.size 12
+                            , Font.color t.textSecondary
                             , Font.family Font.monospace
                             ]
                             (Ui.text
                                 "Dangerous import lines were stripped before building. See the About tab for details.")
                       ]
                 , Ui.button
-                      [ Font.size 17
-                      , Font.color (textMuted t)
-                      , Background.color (bg2 t)
+                      [ Font.size 12
+                      , Font.color t.textMuted
+                      , Background.color t.bg2
                       , Border.rounded 4
                       , Ui.paddingXY 10 5
                       , Ui.centerY
@@ -222,26 +222,26 @@ securityBanner model =
 codeInput : Model -> Element Msg
 codeInput model =
     let
-        t = model.themeIndex
+        t = getTheme model.theme
     in
         Ui.row
             [ Ui.width Ui.fill
             , Ui.height Ui.fill
             , Ui.padding 2
-            , Background.color (bg0 t)
+            , Background.color t.bg0
             ]
             [ lineNumCol t model.code
             , Ui.el
                   [ Ui.width Ui.fill
                   , Ui.height Ui.fill
                   , Font.family Font.monospace
-                  , Font.size 16
-                  , Font.color (textPrimary t)
+                  , Font.size 11
+                  , Font.color t.textPrimary
                   , Border.width 0
                   , Ui.padding 16
                   ]
                   <| Input.multiline
-                         [ Background.color (bg0 t)
+                         [ Background.color t.bg0
                          , Ui.width (Ui.fillPortion 10)
                          , Ui.height Ui.fill
                          ]
@@ -249,9 +249,9 @@ codeInput model =
                          , text = model.code
                          , placeholder = Just
                                (Input.placeholder
-                                   [ Font.color (textMuted t)
+                                   [ Font.color t.textMuted
                                    , Font.family Font.monospace
-                                   , Font.size 16
+                                   , Font.size 11
                                    ]
                                    (Ui.text
                                        "-- Write your Sky code here, or pick an example above…"))
@@ -261,7 +261,7 @@ codeInput model =
             ]
 
 
-lineNumCol : Int -> String -> Element Msg
+lineNumCol : ThemeRecord -> String -> Element Msg
 lineNumCol t code =
     let
         codeLines = String.lines code
@@ -269,7 +269,7 @@ lineNumCol t code =
         Ui.column
             [ Ui.paddingXY 1 16
             , Ui.alignRight
-            , Font.color (textLineNumber t)
+            , Font.color t.textLineNumber
             , Ui.height Ui.fill
             ]
             (List.indexedMap

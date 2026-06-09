@@ -114,8 +114,8 @@ update msg model =
         CloseDropdown ->
             ( { model | exampleDropdownOpen = False }, Cmd.none )
 
-        SelectTheme i ->
-            ( { model | themeIndex = i, themeDropdownOpen = False }, Cmd.none )
+        SelectTheme theme ->
+            ( { model | theme = theme, themeDropdownOpen = False }, Cmd.none )
 
         ToggleThemeDropdown ->
             ( { model | themeDropdownOpen = not model.themeDropdownOpen }

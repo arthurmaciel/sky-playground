@@ -1,6 +1,5 @@
 module View.Output exposing (outputPanel)
 
-import Security exposing (blockedModuleNames)
 import Sky.Core.List as List
 import Sky.Core.Prelude exposing (..)
 import Sky.Core.String as String
@@ -16,12 +15,12 @@ import View.Common exposing (..)
 outputPanel : Model -> Element Msg
 outputPanel model =
     let
-        t = model.themeIndex
+        t = getTheme model.theme
     in
         Ui.column
             [ Ui.width (Ui.fillPortion 2)
             , Ui.height Ui.fill
-            , Background.color (bg0 t)
+            , Background.color t.bg0
             ]
             [ outputToolbar model, activeTabContent model ]
 
@@ -30,15 +29,15 @@ outputPanel model =
 outputToolbar : Model -> Element Msg
 outputToolbar model =
     let
-        t = model.themeIndex
+        t = getTheme model.theme
     in
         Ui.row
             [ Ui.width Ui.fill
             , Ui.paddingXY 4 0
             , Ui.spacing 0
             , Ui.centerY
-            , Background.color (bg1 t)
-            , Border.color (borderColour t)
+            , Background.color t.bg1
+            , Border.color t.borderColour
             , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
             ]
             [ tabButton t model OutputTab "Output"
@@ -51,7 +50,7 @@ outputToolbar model =
             ]
 
 
-tabButton : Int -> Model -> Tab -> String -> Element Msg
+tabButton : ThemeRecord -> Model -> Tab -> String -> Element Msg
 tabButton t model tab label =
     let
         isActive = model.activeTab == tab
@@ -60,17 +59,17 @@ tabButton t model tab label =
             [ Ui.onClick (TabChanged tab)
             , Ui.pointer
             , Ui.paddingXY 14 10
-            , Font.size 17
+            , Font.size 12
             , Font.family Font.monospace
             , Font.color
                   (if isActive then
-                      accent t
+                      t.accent
 
                   else
-                      textMuted t)
+                      t.textMuted)
             , Border.color
                   (if isActive then
-                      accent t
+                      t.accent
 
                   else
                       transparent)
@@ -83,7 +82,7 @@ tabButton t model tab label =
 activeTabContent : Model -> Element Msg
 activeTabContent model =
     let
-        t = model.themeIndex
+        t = getTheme model.theme
     in
         case model.activeTab of
 
@@ -100,7 +99,7 @@ activeTabContent model =
 outputContent : Model -> Element Msg
 outputContent model =
     let
-        t = model.themeIndex
+        t = getTheme model.theme
     in
         case model.runStatus of
 
@@ -115,55 +114,55 @@ outputContent model =
                     Ui.el
                         [ Ui.padding 16
                         , Font.family Font.monospace
-                        , Font.size 24
-                        , Font.color (textMuted t)
+                        , Font.size 12
+                        , Font.color t.textMuted
                         ]
                         (Ui.text
                             "(programme ran successfully — no stdout output)")
 
                 else
-                    scrollableLines (textPrimary t) model.runOutput
+                    scrollableLines t.textPrimary model.runOutput
 
             Failed ->
-                scrollableLines (colourError t) model.runOutput
+                scrollableLines t.colourError model.runOutput
 
 
-idlePlaceholder : Int -> Element Msg
+idlePlaceholder : ThemeRecord -> Element Msg
 idlePlaceholder t =
     Ui.el
         [ Ui.width Ui.fill, Ui.height Ui.fill ]
         (Ui.column
             [ Ui.centerX, Ui.centerY, Ui.spacing 10 ]
             [ Ui.el
-                  [ Font.size 54, Font.color (textMuted t), Ui.centerX ]
+                  [ Font.size 38, Font.color t.textMuted, Ui.centerX ]
                   (Ui.text "☁")
             , Ui.el
-                  [ Font.size 18
+                  [ Font.size 13
                   , Font.family Font.monospace
-                  , Font.color (textMuted t)
+                  , Font.color t.textMuted
                   , Ui.centerX
                   ]
                   (Ui.text "Press ▶ Run to execute your Sky code")
             ])
 
 
-runningView : Int -> Element Msg
+runningView : ThemeRecord -> Element Msg
 runningView t =
     Ui.el
         [ Ui.width Ui.fill, Ui.height Ui.fill ]
         (Ui.column
             [ Ui.centerX, Ui.centerY, Ui.spacing 8, Ui.padding 20 ]
             [ Ui.el
-                  [ Font.size 17
+                  [ Font.size 12
                   , Font.family Font.monospace
-                  , Font.color (colourWarning t)
+                  , Font.color t.colourWarning
                   , Ui.centerX
                   ]
                   (Ui.text "sky build src/Main.sky && ./sky-out/app")
             , Ui.el
-                  [ Font.size 17
+                  [ Font.size 12
                   , Font.family Font.monospace
-                  , Font.color (textMuted t)
+                  , Font.color t.textMuted
                   , Ui.centerX
                   ]
                   (Ui.text "Building and running… (5 s timeout applied)")
@@ -182,7 +181,7 @@ scrollableLines lineColour output =
 outputLine : Ui.Color -> String -> Element Msg
 outputLine lineColour line =
     Ui.el
-        [ Font.family Font.monospace, Font.size 18, Font.color lineColour ]
+        [ Font.family Font.monospace, Font.size 13, Font.color lineColour ]
         (Ui.text
             (if String.isEmpty line then
                 " "
@@ -191,7 +190,7 @@ outputLine lineColour line =
                 line))
 
 
-aboutContent : Int -> Element Msg
+aboutContent : ThemeRecord -> Element Msg
 aboutContent t =
     Ui.el
         [ Ui.height Ui.fill, Ui.scrollbars ]
@@ -233,31 +232,31 @@ aboutContent t =
             ])
 
 
-infoCard : Int -> String -> List String -> Element Msg
+infoCard : ThemeRecord -> String -> List String -> Element Msg
 infoCard t cardTitle bodyLines =
     Ui.column
         [ Ui.width Ui.fill
         , Ui.spacing 6
         , Ui.padding 14
-        , Background.color (bg1 t)
-        , Border.color (borderColour t)
+        , Background.color t.bg1
+        , Border.color t.borderColour
         , Border.width 1
         , Border.rounded 8
         ]
         (Ui.el
-            [ Font.bold, Font.color (accent t), Font.size 18 ]
+            [ Font.bold, Font.color t.accent, Font.size 13 ]
             (Ui.text cardTitle)
             :: List.map
                    (\line ->
                        Ui.el
-                           [ Font.size 17
+                           [ Font.size 12
                            , Font.family Font.monospace
                            , Font.color
                                  (if String.isEmpty line then
-                                     textMuted t
+                                     t.textMuted
 
                                  else
-                                     textSecondary t)
+                                     t.textSecondary)
                            ]
                            (Ui.text
                                (if String.isEmpty line then
@@ -268,7 +267,7 @@ infoCard t cardTitle bodyLines =
                    bodyLines)
 
 
-blockedLibsCard : Int -> Element Msg
+blockedLibsCard : ThemeRecord -> Element Msg
 blockedLibsCard t =
     let
         nameList = String.join " · " blockedModuleNames
@@ -276,33 +275,33 @@ blockedLibsCard t =
         Ui.column
             [ Ui.spacing 8
             , Ui.padding 14
-            , Background.color (warningCardBg t)
-            , Border.color (warningCardBorder t)
+            , Background.color t.warningCardBg
+            , Border.color t.warningCardBorder
             , Border.width 1
             , Border.rounded 8
             ]
             [ Ui.el
-                  [ Font.bold, Font.color (colourWarning t), Font.size 18 ]
+                  [ Font.bold, Font.color t.colourWarning, Font.size 13 ]
                   (Ui.text "⚠  Blocked in playground")
             , Ui.wrappedRow
-                  [ Font.size 17
+                  [ Font.size 12
                   , Font.family Font.monospace
-                  , Font.color (textMuted t)
+                  , Font.color t.textMuted
                   ]
                   [Ui.text nameList]
             , Ui.el
-                  [ Font.size 17, Font.color (textSecondary t) ]
+                  [ Font.size 12, Font.color t.textSecondary ]
                   (Ui.text
                       "These modules access the file system, network, processes, or databases.")
             , Ui.el
-                  [ Font.size 17, Font.color (textSecondary t) ]
+                  [ Font.size 12, Font.color t.textSecondary ]
                   (Ui.text
                       "Dangerous import lines are stripped server-side before any build attempt.")
             ]
 
 
 -- ── Quick-reference panel ─────────────────────────────────────────────────────
-quickRefContent : Int -> Element Msg
+quickRefContent : ThemeRecord -> Element Msg
 quickRefContent t =
     Ui.el
         [ Ui.width Ui.fill, Ui.height Ui.fill, Ui.scrollbars ]
@@ -337,29 +336,29 @@ quickRefContent t =
             ])
 
 
-refGroup : Int -> String -> List String -> Element Msg
+refGroup : ThemeRecord -> String -> List String -> Element Msg
 refGroup t groupTitle lines =
     Ui.column
         [ Ui.width Ui.fill
         , Ui.spacing 6
         , Ui.padding 14
-        , Background.color (bg1 t)
-        , Border.color (borderColour t)
+        , Background.color t.bg1
+        , Border.color t.borderColour
         , Border.width 1
         , Border.rounded 8
         ]
         (Ui.el
-            [ Font.bold, Font.color (accent t), Font.size 18 ]
+            [ Font.bold, Font.color t.accent, Font.size 13 ]
             (Ui.text groupTitle)
             :: List.map
                    (\line ->
                        Ui.el
-                           [ Font.size 17
+                           [ Font.size 12
                            , Font.family Font.monospace
-                           , Font.color (textMuted t)
+                           , Font.color t.textMuted
                            , Ui.paddingXY 6 0
                            , Border.color
-                                 (if isDark t then
+                                 (if t.isDark then
                                      Ui.rgba 88 166 255 0.1
 
                                  else

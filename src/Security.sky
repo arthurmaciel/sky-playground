@@ -1,8 +1,9 @@
-module Security exposing (isDangerous, sanitise, blockedModuleNames, warningMessage)
+module Security exposing (isDangerous, sanitise, warningMessage)
 
 import Sky.Core.Prelude exposing (..)
 import Sky.Core.String as String
 import Sky.Core.List as List
+import State exposing (blockedModuleNames)
 
 
 -- ── Blocked patterns ──────────────────────────────────────────────────────────
@@ -52,24 +53,7 @@ blockedPatterns =
     ]
 
 
--- Human-readable list for the warning UI
-blockedModuleNames : List String
-blockedModuleNames =
-    [ "File"
-    , "Io"
-    , "Process"
-    , "System"
-    , "Db"
-    , "Auth"
-    , "Http"
-    , "Server"
-    , "Live"
-    , "RateLimit"
-    , "Middleware"
-    , "Ffi"
-    , "Context"
-    , "Fmt"
-    ]
+-- Human-readable list for the warning UI (defined in State)
 
 
 -- ── Public API ────────────────────────────────────────────────────────────────

@@ -39,12 +39,12 @@ subscriptions _ =
 
 
 -- ── Header ────────────────────────────────────────────────────────────────────
-logoMark : Int -> Element Msg
+logoMark : ThemeRecord -> Element Msg
 logoMark t =
     Ui.el
         [ Ui.width (Ui.px 30)
         , Ui.height (Ui.px 30)
-        , Background.color (accent t)
+        , Background.color t.accent
         , Border.rounded 6
         ]
         (Ui.el
@@ -56,13 +56,13 @@ logoMark t =
 themeSelector : Model -> Element Msg
 themeSelector model =
     let
-        t = model.themeIndex
+        t = getTheme model.theme
         trigger =
             Ui.el
                 [ Ui.paddingXY 10 5
-                , Background.color (bg2 t)
+                , Background.color t.bg2
                 , Border.rounded 5
-                , Border.color (borderColour t)
+                , Border.color t.borderColour
                 , Border.width 1
                 , Ui.pointer
                 , Ui.onClick ToggleThemeDropdown
@@ -70,62 +70,51 @@ themeSelector model =
                 (Ui.el
                     [ Ui.centerY
                     , Font.family Font.monospace
-                    -- , Ui.centerY
                     , Font.size 15
-                    , Font.color (textSecondary t)
+                    , Font.color t.textSecondary
                     ]
-                    (Ui.text (themeNameAt t)))
-        dropdownItem idx name =
+                    (Ui.text (themeName model.theme)))
+        dropdownItem theme =
             Ui.el
                 [ Ui.paddingXY 12 6
                 , Ui.width Ui.fill
                 , Ui.pointer
-                , Ui.onClick (SelectTheme idx)
+                , Ui.onClick (SelectTheme theme)
                 , Font.family Font.monospace
-                -- , Ui.centerY
                 , Font.size 15
                 , Font.color
-                      (if idx == t then
-                          accent t
+                      (if theme == model.theme then
+                          t.accent
 
                       else
-                          textSecondary t)
+                          t.textSecondary)
                 ]
-                (Ui.text name)
+                (Ui.text (themeName theme))
         dropdown =
             Ui.column
                 [ Ui.width (Ui.px 180)
-                , Background.color (bg2 t)
-                , Border.color (borderColour t)
+                , Background.color t.bg2
+                , Border.color t.borderColour
                 , Border.width 1
                 , Border.rounded 5
                 ]
-                (List.indexedMap dropdownItem themeNames)
+                (List.map dropdownItem allThemes)
     in
         Ui.el
             (if model.themeDropdownOpen then
-                [Ui.below dropdown]
+                [ Ui.below dropdown
+                , Ui.inFront (closeOverlay CloseThemeDropdown)
+                ]
 
             else
                 [])
             trigger
 
 
-themeNameAt : Int -> String
-themeNameAt idx =
-    case List.head (List.drop idx themeNames) of
-
-        Just name ->
-            name
-
-        Nothing ->
-            "Theme"
-
-
 header : Model -> Element Msg
 header model =
     let
-        t = model.themeIndex
+        t = getTheme model.theme
     in
         Ui.row
             [ Ui.width Ui.fill
@@ -133,22 +122,22 @@ header model =
             , Ui.centerY
             , Ui.spacing 10
             , Ui.height (Ui.px 52)
-            , Background.color (bg1 t)
-            , Border.color (borderColour t)
+            , Background.color t.bg1
+            , Border.color t.borderColour
             , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
             ]
             [ logoMark t
             , Ui.el
                   [ Font.size 24
                   , Font.bold
-                  , Font.color (textPrimary t)
+                  , Font.color t.textPrimary
                   , Font.family Font.monospace
                   ]
                   (Ui.text "Sky playground")
             , Ui.el [Ui.width Ui.fill] (Ui.text "")
             , themeSelector model
             , Ui.el
-                  [ Border.color (borderColour t)
+                  [ Border.color t.borderColour
                   , Border.widthEach
                         { top = 0, right = 1, bottom = 0, left = 0 }
                   , Ui.paddingXY 6 0
@@ -157,7 +146,7 @@ header model =
                   (Ui.text "")
             , Ui.link
                   [ Font.size 18
-                  , Font.color (textMuted t)
+                  , Font.color t.textMuted
                   , Font.family Font.monospace
                   ]
                   { url = "https://github.com/arthurmaciel/sky-playground"
@@ -167,33 +156,15 @@ header model =
 
 
 -- ── View ──────────────────────────────────────────────────────────────────────
-closeOverlay : Msg -> Element Msg
-closeOverlay closeMsg =
-    Ui.el [ Ui.width Ui.fill, Ui.height Ui.fill, Ui.onClick closeMsg ] Ui.none
-
-
 view : Model -> Html Msg
 view model =
     let
-        t = model.themeIndex
-        exampleOverlay =
-            if model.exampleDropdownOpen then
-                [Ui.inFront (closeOverlay CloseDropdown)]
-
-            else
-                []
-        themeOverlay =
-            if model.themeDropdownOpen then
-                [Ui.inFront (closeOverlay CloseThemeDropdown)]
-
-            else
-                []
-        overlays = exampleOverlay ++ themeOverlay
+        t = getTheme model.theme
     in
         Ui.layout
-            [Background.color (bg0 t)]
+            [Background.color t.bg0]
             (Ui.column
-                (overlays ++ [ Ui.width Ui.fill, Ui.height Ui.fill ])
+                [ Ui.width Ui.fill, Ui.height Ui.fill ]
                 [ header model
                 , Ui.row
                       [ Ui.width Ui.fill, Ui.height Ui.fill ]
