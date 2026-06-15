@@ -10,6 +10,8 @@ import Std.Ui.Border as Border
 import Std.Ui.Font as Font
 import Std.Ui.Input as Input
 import View.Common exposing (..)
+import Std.Html as Html
+import Std.Html.Attributes as Attr
 
 
 -- ── Editor panel ─────────────────────────────────────────────────────────────
@@ -47,11 +49,6 @@ toolbar model =
             , Ui.el [Ui.width Ui.fill] (Ui.text "")
             , fmtStatusHint model
             , secondaryButton t FormatClicked (fmtLabel model)
-            , actionButton
-                  t
-                  RunClicked
-                  (model.runStatus == Running)
-                  (runLabel model)
             ]
 
 
@@ -123,6 +120,11 @@ exampleSelector model =
 
             else
                 [])
+            -- , actionButton
+            --       t
+            --       RunClicked
+            --       (model.runStatus == Running)
+            --       (runLabel model)
             trigger
 
 
@@ -224,43 +226,77 @@ codeInput model =
     let
         t = getTheme model.theme
     in
-        Ui.row
-            [ Ui.width Ui.fill
-            , Ui.height Ui.fill
-            , Ui.padding 2
-            , Background.color t.bg0
-            ]
-            [ lineNumCol t model.code
-            , Ui.el
-                  [ Ui.width Ui.fill
+        Ui.form
+            [Ui.onSubmit RunClicked]
+            [ Ui.el
+                  [ Ui.htmlAttribute "id" "editor"
+                  , Ui.width Ui.fill
                   , Ui.height Ui.fill
-                  , Font.family Font.monospace
-                  , Font.size 11
-                  , Font.color t.textPrimary
-                  , Border.width 0
-                  , Ui.padding 16
                   ]
-                  <| Input.multiline
-                         [ Background.color t.bg0
-                         , Ui.width (Ui.fillPortion 10)
-                         , Ui.height Ui.fill
-                         ]
-                         { onChange = CodeChanged
-                         , text = model.code
-                         , placeholder = Just
-                               (Input.placeholder
-                                   [ Font.color t.textMuted
-                                   , Font.family Font.monospace
-                                   , Font.size 11
-                                   ]
-                                   (Ui.text
-                                       "-- Write your Sky code here, or pick an example above…"))
-                         , label = Input.labelHidden "Sky source code editor"
-                         , spellcheck = False
-                         }
+                  Ui.none
+            , Ui.html
+                  (Html.node
+                      "textarea"
+                      [ Attr.name "code"
+                      , Attr.attribute "hidden" ""
+                      , Attr.id "code-mirror"
+                      ]
+                      [])
+            , Ui.button [] { onPress = Nothing, label = Ui.text "Run" }
             ]
 
 
+            -- Ui.row
+            -- [ Ui.height Ui.fill, Ui.width Ui.fill ]
+            -- [ Ui.el
+            --       [ Ui.htmlAttribute "id" "editor"
+            --       , Ui.height Ui.fill
+            --       , Ui.width Ui.fill
+            --       ]
+            --       (Ui.text "")
+            -- , Ui.el
+            --       [ Ui.htmlAttribute "id" "code-content"
+            --       , Ui.AttrStyle "white-space" "pre-line"
+            --       ]
+            --       (Ui.text "")
+            -- ]
+
+
+        -- Ui.row
+        --     [ Ui.width Ui.fill
+        --     , Ui.height Ui.fill
+        --     , Ui.padding 2
+        --     , Background.color t.bg0
+        --     ]
+        --     [ lineNumCol t model.code
+        --     , Ui.el
+        --           [ Ui.width Ui.fill
+        --           , Ui.height Ui.fill
+        --           , Font.family Font.monospace
+        --           , Font.size 11
+        --           , Font.color t.textPrimary
+        --           , Border.width 0
+        --           , Ui.padding 16
+        --           ]
+        --           <| Input.multiline
+        --                  [ Background.color t.bg0
+        --                  , Ui.width (Ui.fillPortion 10)
+        --                  , Ui.height Ui.fill
+        --                  ]
+        --                  { onChange = CodeChanged
+        --                  , text = model.code
+        --                  , placeholder = Just
+        --                        (Input.placeholder
+        --                            [ Font.color t.textMuted
+        --                            , Font.family Font.monospace
+        --                            , Font.size 11
+        --                            ]
+        --                            (Ui.text
+        --                                "-- Write your Sky code here, or pick an example above…"))
+        --                  , label = Input.labelHidden "Sky source code editor"
+        --                  , spellcheck = False
+        --                  }
+        --     ]
 lineNumCol : ThemeRecord -> String -> Element Msg
 lineNumCol t code =
     let

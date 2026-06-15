@@ -50,10 +50,10 @@ update msg model =
                     , Cmd.none
                     )
 
-        RunClicked ->
+        RunClicked payload ->
             let
                 warning =
-                    if Security.isDangerous model.code then
+                    if Security.isDangerous payload.code then
                         Security.warningMessage
 
                     else
@@ -64,7 +64,7 @@ update msg model =
                   , securityWarning = warning
                   , activeTab = OutputTab
                   }
-                , Cmd.perform (Runner.runCode model.code) GotRunResult
+                , Cmd.perform (Runner.runCode payload.code) GotRunResult
                 )
 
         GotRunResult result ->
