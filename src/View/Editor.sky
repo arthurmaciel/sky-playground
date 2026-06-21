@@ -96,6 +96,7 @@ exampleSelector model =
         dropdownItem ex =
             Ui.el
                 [ Ui.paddingXY 12 8
+                  -- , Ui.style "z-index" "-1"
                 , Ui.width Ui.fill
                 , Ui.pointer
                 , Ui.onClick (LoadExample ex.index)
@@ -108,6 +109,7 @@ exampleSelector model =
             Ui.column
                 [ Ui.width (Ui.px 260)
                 , Background.color t.bg2
+                , Ui.htmlAttribute "style" "z-index: 5"
                 , Border.color t.borderColour
                 , Border.width 1
                 , Border.rounded 5

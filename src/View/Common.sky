@@ -352,8 +352,8 @@ closeOverlay closeMsg =
 
 
 -- ── Action button (primary — fill) ───────────────────────────────────────────
-actionButton : ThemeRecord -> Msg -> Bool -> String -> Element Msg
-actionButton t onPress isDisabled label =
+actionButton : ThemeRecord -> Maybe Msg -> Bool -> String -> Element Msg
+actionButton t maybeOnPress isDisabled label =
     Ui.button
         [ Ui.paddingXY 18 8
         , Border.rounded 6
@@ -374,7 +374,13 @@ actionButton t onPress isDisabled label =
               Nothing
 
           else
-              Just onPress
+              case maybeOnPress of
+
+                  Nothing ->
+                      Nothing
+
+                  _ ->
+                      maybeOnPress
         , label = Ui.text label
         }
 
