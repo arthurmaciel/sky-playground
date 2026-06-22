@@ -97,7 +97,6 @@ exampleSelector model =
         dropdownItem ex =
             Ui.el
                 [ Ui.paddingXY 12 8
-                  -- , Ui.style "z-index" "-1"
                 , Ui.width Ui.fill
                 , Ui.pointer
                 , Ui.onClick (LoadExample ex.index)
@@ -123,11 +122,6 @@ exampleSelector model =
 
             else
                 [])
-            -- , actionButton
-            --       t
-            --       RunClicked
-            --       (model.runStatus == Running)
-            --       (runLabel model)
             trigger
 
 
@@ -244,8 +238,8 @@ codeInput model =
                       , Attr.attribute "hidden" ""
                       , Attr.id "code-mirror"
                       ]
-                      [])
-            , actionButton t NoOp False "Run"
+                      [Html.text model.code])
+            , Ui.row [Ui.paddingXY 0 6] [actionButton t NoOp False "Run"]
             ]
 
 

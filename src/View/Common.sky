@@ -355,8 +355,8 @@ closeOverlay closeMsg =
 actionButton : ThemeRecord -> Msg -> Bool -> String -> Element Msg
 actionButton t onPress isDisabled label =
     Ui.button
-        [ Ui.paddingXY 18 8
-        , Ui.width (Ui.px 36)
+        [ Ui.paddingXY 18 6
+        , Ui.width Ui.shrink
         , Border.rounded 6
         , if isDisabled then
               Background.color t.bg3
