@@ -82,6 +82,9 @@ update msg model =
                     , Cmd.none
                     )
 
+        NoOp ->
+            ( model, Cmd.none )
+
         LoadExample i ->
             let
                 maybeEx = List.head (List.drop i examples)

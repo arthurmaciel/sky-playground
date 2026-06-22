@@ -27,6 +27,7 @@ editorPanel model =
             , Border.color t.borderColour
             , Border.widthEach { top = 0, right = 1, bottom = 0, left = 0 }
             ]
+                    -- [Html.text model.code]
             [ toolbar model, securityBanner model, codeInput model ]
 
 
@@ -244,7 +245,7 @@ codeInput model =
                       , Attr.id "code-mirror"
                       ]
                       [])
-            , Ui.button [] { onPress = Nothing, label = Ui.text "Run" }
+            , actionButton t NoOp False "Run"
             ]
 
 
