@@ -16,16 +16,54 @@ type FormatStatus
     | FmtFailed
 
 type Theme
-    = Midnight
-    | GitHubDark
-    | OneDark
+    = Ambiance
+    | Chaos
+    | Chrome
+    | Cloud9Day
+    | Cloud9Night
+    | Cloud9NightLowColor
+    | CloudEditor
+    | CloudEditorDark
+    | Clouds
+    | CloudsMidnight
+    | Cobalt
+    | CrimsonEditor
+    | Dawn
     | Dracula
-    | Nord
+    | Dreamweaver
+    | Eclipse
+    | GitHub
+    | GitHubDark
+    | GitHubLightDefault
+    | Gob
+    | Gruvbox
+    | GruvboxDarkHard
+    | GruvboxLightHard
+    | IdleFingers
+    | IPlastic
+    | Katzenmilch
+    | KrTheme
+    | Kuroir
+    | Merbivore
+    | MerbivoreSoft
+    | MonoIndustrial
+    | Monokai
+    | NordDark
+    | OneDark
+    | PastelOnDark
+    | SolarizedDark
     | SolarizedLight
-    | WarmPaper
-    | GitHubLight
-    | MaterialLight
-    | PolarIce
+    | SQLServer
+    | Terminal
+    | TextMate
+    | Tomorrow
+    | TomorrowNight
+    | TomorrowNightBlue
+    | TomorrowNightBright
+    | TomorrowNightEighties
+    | Twilight
+    | VibrantInk
+    | Xcode
 
 type alias Model =
     { currentCode : String
@@ -54,7 +92,7 @@ initialModel =
     , formatStatus = FmtIdle
     , activeExample = -1
     , exampleDropdownOpen = False
-    , theme = WarmPaper
+    , theme = GitHubDark
     , themeDropdownOpen = False
     , securityWarning = ""
     , activeTab = OutputTab

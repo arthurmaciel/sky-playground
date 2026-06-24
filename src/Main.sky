@@ -104,7 +104,12 @@ themeSelector model =
                 (List.map dropdownItem allThemes)
         id = "theme-selector-wrapper"
         name = id ++ "-" ++ themeName model.theme
-        attrs = [ Ui.htmlAttribute "id" id, Ui.htmlAttribute "name" name ]
+        acePath = aceThemePath model.theme
+        attrs =
+            [ Ui.htmlAttribute "id" id
+            , Ui.htmlAttribute "name" name
+            , Ui.htmlAttribute "data-ace-theme" acePath
+            ]
     in
         Ui.el
             (if model.themeDropdownOpen then

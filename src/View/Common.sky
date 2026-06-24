@@ -1,15 +1,16 @@
 module View.Common exposing
     ( ThemeRecord
-    , getTheme
-    , themeName
-    , allThemes
-    , transparent
-    , closeOverlay
-    -- Reusable elements
+    , aceThemePath
     , actionButton
+    , allThemes
+    , closeOverlay
+    , getTheme
+    , sectionLabel
     , secondaryButton
     , statusBadge
-    , sectionLabel
+    , statusBadgeBorder
+    , themeName
+    , transparent
     )
 
 import Sky.Core.Prelude exposing (..)
@@ -18,9 +19,8 @@ import Std.Ui as Ui exposing (Element)
 import Std.Ui.Background as Background
 import Std.Ui.Border as Border
 import Std.Ui.Font as Font
-import State exposing (..)
+import State exposing (RunStatus(..), Theme(..))
 
--- ── Theme data ────────────────────────────────────────────────────────────────
 type alias ThemeRecord =
     { bg0 : Ui.Color
     , bg1 : Ui.Color
@@ -34,8 +34,8 @@ type alias ThemeRecord =
     , textMuted : Ui.Color
     , textLineNumber : Ui.Color
     , colourSuccess : Ui.Color
-    , colourError : Ui.Color
     , colourWarning : Ui.Color
+    , colourError : Ui.Color
     , warningBg : Ui.Color
     , warningBorder : Ui.Color
     , warningCardBg : Ui.Color
@@ -44,20 +44,59 @@ type alias ThemeRecord =
     , statusBadgeBorder : Ui.Color
     , isDark : Bool
     }
+-- ── Transparent color ─────────────────────────────────────────────────────────
 
 
 allThemes : List Theme
 allThemes =
-    [ Midnight
-    , GitHubDark
-    , OneDark
+    [ Ambiance
+    , Chaos
+    , Chrome
+    , Cloud9Day
+    , Cloud9Night
+    , Cloud9NightLowColor
+    , CloudEditor
+    , CloudEditorDark
+    , Clouds
+    , CloudsMidnight
+    , Cobalt
+    , CrimsonEditor
+    , Dawn
     , Dracula
-    , Nord
+    , Dreamweaver
+    , Eclipse
+    , GitHub
+    , GitHubDark
+    , GitHubLightDefault
+    , Gob
+    , Gruvbox
+    , GruvboxDarkHard
+    , GruvboxLightHard
+    , IdleFingers
+    , IPlastic
+    , Katzenmilch
+    , KrTheme
+    , Kuroir
+    , Merbivore
+    , MerbivoreSoft
+    , MonoIndustrial
+    , Monokai
+    , NordDark
+    , OneDark
+    , PastelOnDark
+    , SolarizedDark
     , SolarizedLight
-    , WarmPaper
-    , GitHubLight
-    , MaterialLight
-    , PolarIce
+    , SQLServer
+    , Terminal
+    , TextMate
+    , Tomorrow
+    , TomorrowNight
+    , TomorrowNightBlue
+    , TomorrowNightBright
+    , TomorrowNightEighties
+    , Twilight
+    , VibrantInk
+    , Xcode
     ]
 
 
@@ -65,63 +104,716 @@ themeName : Theme -> String
 themeName theme =
     case theme of
 
-        Midnight ->
-            "Midnight"
+        Ambiance ->
+            "Ambiance"
 
-        GitHubDark ->
-            "GitHub Dark"
+        Chaos ->
+            "Chaos"
 
-        OneDark ->
-            "One Dark"
+        Chrome ->
+            "Chrome"
+
+        Cloud9Day ->
+            "Cloud9 Day"
+
+        Cloud9Night ->
+            "Cloud9 Night"
+
+        Cloud9NightLowColor ->
+            "Cloud9 Night (Low Color)"
+
+        CloudEditor ->
+            "Cloud Editor"
+
+        CloudEditorDark ->
+            "Cloud Editor Dark"
+
+        Clouds ->
+            "Clouds"
+
+        CloudsMidnight ->
+            "Clouds Midnight"
+
+        Cobalt ->
+            "Cobalt"
+
+        CrimsonEditor ->
+            "Crimson Editor"
+
+        Dawn ->
+            "Dawn"
 
         Dracula ->
             "Dracula"
 
-        Nord ->
-            "Nord"
+        Dreamweaver ->
+            "Dreamweaver"
+
+        Eclipse ->
+            "Eclipse"
+
+        GitHub ->
+            "GitHub"
+
+        GitHubDark ->
+            "GitHub Dark"
+
+        GitHubLightDefault ->
+            "GitHub Light Default"
+
+        Gob ->
+            "Gob"
+
+        Gruvbox ->
+            "Gruvbox"
+
+        GruvboxDarkHard ->
+            "Gruvbox Dark Hard"
+
+        GruvboxLightHard ->
+            "Gruvbox Light Hard"
+
+        IdleFingers ->
+            "Idle Fingers"
+
+        IPlastic ->
+            "iPlastic"
+
+        Katzenmilch ->
+            "Katzenmilch"
+
+        KrTheme ->
+            "krTheme"
+
+        Kuroir ->
+            "Kuroir"
+
+        Merbivore ->
+            "Merbivore"
+
+        MerbivoreSoft ->
+            "Merbivore Soft"
+
+        MonoIndustrial ->
+            "Mono Industrial"
+
+        Monokai ->
+            "Monokai"
+
+        NordDark ->
+            "Nord Dark"
+
+        OneDark ->
+            "One Dark"
+
+        PastelOnDark ->
+            "Pastel on Dark"
+
+        SolarizedDark ->
+            "Solarized Dark"
 
         SolarizedLight ->
             "Solarized Light"
 
-        WarmPaper ->
-            "Warm Paper"
+        SQLServer ->
+            "SQL Server"
 
-        GitHubLight ->
-            "GitHub Light"
+        Terminal ->
+            "Terminal"
 
-        MaterialLight ->
-            "Material Light"
+        TextMate ->
+            "TextMate"
 
-        PolarIce ->
-            "Polar Ice"
+        Tomorrow ->
+            "Tomorrow"
+
+        TomorrowNight ->
+            "Tomorrow Night"
+
+        TomorrowNightBlue ->
+            "Tomorrow Night Blue"
+
+        TomorrowNightBright ->
+            "Tomorrow Night Bright"
+
+        TomorrowNightEighties ->
+            "Tomorrow Night Eighties"
+
+        Twilight ->
+            "Twilight"
+
+        VibrantInk ->
+            "Vibrant Ink"
+
+        Xcode ->
+            "Xcode"
+
+
+aceThemePath : Theme -> String
+aceThemePath theme =
+    "ace/theme/" ++ aceThemeId theme
+
+
+aceThemeId : Theme -> String
+aceThemeId theme =
+    case theme of
+
+        Ambiance ->
+            "ambiance"
+
+        Chaos ->
+            "chaos"
+
+        Chrome ->
+            "chrome"
+
+        Cloud9Day ->
+            "cloud9_day"
+
+        Cloud9Night ->
+            "cloud9_night"
+
+        Cloud9NightLowColor ->
+            "cloud9_night_low_color"
+
+        CloudEditor ->
+            "cloud_editor"
+
+        CloudEditorDark ->
+            "cloud_editor_dark"
+
+        Clouds ->
+            "clouds"
+
+        CloudsMidnight ->
+            "clouds_midnight"
+
+        Cobalt ->
+            "cobalt"
+
+        CrimsonEditor ->
+            "crimson_editor"
+
+        Dawn ->
+            "dawn"
+
+        Dracula ->
+            "dracula"
+
+        Dreamweaver ->
+            "dreamweaver"
+
+        Eclipse ->
+            "eclipse"
+
+        GitHub ->
+            "github"
+
+        GitHubDark ->
+            "github_dark"
+
+        GitHubLightDefault ->
+            "github_light_default"
+
+        Gob ->
+            "gob"
+
+        Gruvbox ->
+            "gruvbox"
+
+        GruvboxDarkHard ->
+            "gruvbox_dark_hard"
+
+        GruvboxLightHard ->
+            "gruvbox_light_hard"
+
+        IdleFingers ->
+            "idle_fingers"
+
+        IPlastic ->
+            "iplastic"
+
+        Katzenmilch ->
+            "katzenmilch"
+
+        KrTheme ->
+            "kr_theme"
+
+        Kuroir ->
+            "kuroir"
+
+        Merbivore ->
+            "merbivore"
+
+        MerbivoreSoft ->
+            "merbivore_soft"
+
+        MonoIndustrial ->
+            "mono_industrial"
+
+        Monokai ->
+            "monokai"
+
+        NordDark ->
+            "nord_dark"
+
+        OneDark ->
+            "one_dark"
+
+        PastelOnDark ->
+            "pastel_on_dark"
+
+        SolarizedDark ->
+            "solarized_dark"
+
+        SolarizedLight ->
+            "solarized_light"
+
+        SQLServer ->
+            "sqlserver"
+
+        Terminal ->
+            "terminal"
+
+        TextMate ->
+            "textmate"
+
+        Tomorrow ->
+            "tomorrow"
+
+        TomorrowNight ->
+            "tomorrow_night"
+
+        TomorrowNightBlue ->
+            "tomorrow_night_blue"
+
+        TomorrowNightBright ->
+            "tomorrow_night_bright"
+
+        TomorrowNightEighties ->
+            "tomorrow_night_eighties"
+
+        Twilight ->
+            "twilight"
+
+        VibrantInk ->
+            "vibrant_ink"
+
+        Xcode ->
+            "xcode"
 
 
 getTheme : Theme -> ThemeRecord
 getTheme theme =
     case theme of
 
-        Midnight ->
-            { bg0 = Ui.rgb 0 0 0
-            , bg1 = Ui.rgb 10 10 10
-            , bg2 = Ui.rgb 20 20 20
-            , bg3 = Ui.rgb 30 30 30
-            , accent = Ui.rgb 100 149 237
-            , accentDim = Ui.rgba 88 166 255 0.15
-            , accentBorder = Ui.rgba 88 166 255 0.4
-            , textPrimary = Ui.rgb 220 220 220
-            , textSecondary = Ui.rgb 160 160 160
-            , textMuted = Ui.rgb 100 100 100
-            , textLineNumber = Ui.rgb 60 60 60
-            , colourSuccess = Ui.rgb 63 185 130
-            , colourError = Ui.rgb 248 81 73
-            , colourWarning = Ui.rgb 210 153 34
-            , warningBg = Ui.rgba 210 153 34 0.15
-            , warningBorder = Ui.rgba 210 153 34 0.4
-            , warningCardBg = Ui.rgba 210 153 34 0.1
-            , warningCardBorder = Ui.rgba 210 153 34 0.35
-            , borderColour = Ui.rgba 88 166 255 0.2
-            , statusBadgeBorder = Ui.rgba 88 166 255 0.15
+        Ambiance ->
+            { bg0 = Ui.rgb 32 32 32
+            , bg1 = Ui.rgb 61 61 61
+            , bg2 = Ui.rgb 73 73 76
+            , bg3 = Ui.rgb 86 86 91
+            , accent = Ui.rgb 205 168 105
+            , accentDim = Ui.rgba 205 168 105 0.15
+            , accentBorder = Ui.rgba 205 168 105 0.4
+            , textPrimary = Ui.rgb 230 225 220
+            , textSecondary = Ui.rgb 157 155 152
+            , textMuted = Ui.rgb 85 85 85
+            , textLineNumber = Ui.rgb 34 34 34
+            , colourSuccess = Ui.rgb 143 157 106
+            , colourWarning = Ui.rgb 120 207 138
+            , colourError = Ui.rgb 210 168 161
+            , warningBg = Ui.rgba 120 207 138 0.15
+            , warningBorder = Ui.rgba 120 207 138 0.4
+            , warningCardBg = Ui.rgba 120 207 138 0.1
+            , warningCardBorder = Ui.rgba 120 207 138 0.35
+            , borderColour = Ui.rgba 205 168 105 0.2
+            , statusBadgeBorder = Ui.rgba 205 168 105 0.15
             , isDark = True
+            }
+-- ── Secondary button (ghost — dim border) ────────────────────────────────────
+
+        Chaos ->
+            { bg0 = Ui.rgb 22 22 22
+            , bg1 = Ui.rgb 20 20 20
+            , bg2 = Ui.rgb 32 32 35
+            , bg3 = Ui.rgb 45 45 50
+            , accent = Ui.rgb 0 105 143
+            , accentDim = Ui.rgba 0 105 143 0.15
+            , accentBorder = Ui.rgba 0 105 143 0.4
+            , textPrimary = Ui.rgb 230 225 220
+            , textSecondary = Ui.rgb 157 155 152
+            , textMuted = Ui.rgb 85 85 85
+            , textLineNumber = Ui.rgb 89 89 89
+            , colourSuccess = Ui.rgb 88 197 84
+            , colourWarning = Ui.rgb 88 197 84
+            , colourError = Ui.rgb 255 255 255
+            , warningBg = Ui.rgba 88 197 84 0.15
+            , warningBorder = Ui.rgba 88 197 84 0.4
+            , warningCardBg = Ui.rgba 88 197 84 0.1
+            , warningCardBorder = Ui.rgba 88 197 84 0.35
+            , borderColour = Ui.rgba 0 105 143 0.2
+            , statusBadgeBorder = Ui.rgba 0 105 143 0.15
+            , isDark = True
+            }
+
+        Chrome ->
+            { bg0 = Ui.rgb 255 255 255
+            , bg1 = Ui.rgb 235 235 235
+            , bg2 = Ui.rgb 227 227 227
+            , bg3 = Ui.rgb 219 219 219
+            , accent = Ui.rgb 147 15 128
+            , accentDim = Ui.rgba 147 15 128 0.15
+            , accentBorder = Ui.rgba 147 15 128 0.4
+            , textPrimary = Ui.rgb 0 0 0
+            , textSecondary = Ui.rgb 85 85 85
+            , textMuted = Ui.rgb 128 128 128
+            , textLineNumber = Ui.rgb 51 51 51
+            , colourSuccess = Ui.rgb 26 26 166
+            , colourWarning = Ui.rgb 0 0 205
+            , colourError = Ui.rgb 153 0 0
+            , warningBg = Ui.rgba 0 0 205 0.15
+            , warningBorder = Ui.rgba 0 0 205 0.4
+            , warningCardBg = Ui.rgba 0 0 205 0.1
+            , warningCardBorder = Ui.rgba 0 0 205 0.35
+            , borderColour = Ui.rgba 147 15 128 0.2
+            , statusBadgeBorder = Ui.rgba 147 15 128 0.15
+            , isDark = False
+            }
+
+        Cloud9Day ->
+            { bg0 = Ui.rgb 251 251 251
+            , bg1 = Ui.rgb 236 236 236
+            , bg2 = Ui.rgb 228 228 228
+            , bg3 = Ui.rgb 220 220 220
+            , accent = Ui.rgb 24 122 234
+            , accentDim = Ui.rgba 24 122 234 0.15
+            , accentBorder = Ui.rgba 24 122 234 0.4
+            , textPrimary = Ui.rgb 0 0 0
+            , textSecondary = Ui.rgb 85 85 85
+            , textMuted = Ui.rgb 76 136 107
+            , textLineNumber = Ui.rgb 51 51 51
+            , colourSuccess = Ui.rgb 3 106 7
+            , colourWarning = Ui.rgb 0 0 205
+            , colourError = Ui.rgb 255 0 0
+            , warningBg = Ui.rgba 0 0 205 0.15
+            , warningBorder = Ui.rgba 0 0 205 0.4
+            , warningCardBg = Ui.rgba 0 0 205 0.1
+            , warningCardBorder = Ui.rgba 0 0 205 0.35
+            , borderColour = Ui.rgba 24 122 234 0.2
+            , statusBadgeBorder = Ui.rgba 24 122 234 0.15
+            , isDark = False
+            }
+
+        Cloud9Night ->
+            { bg0 = Ui.rgb 24 24 24
+            , bg1 = Ui.rgb 48 49 48
+            , bg2 = Ui.rgb 60 61 60
+            , bg3 = Ui.rgb 73 74 73
+            , accent = Ui.rgb 195 151 216
+            , accentDim = Ui.rgba 195 151 216 0.15
+            , accentBorder = Ui.rgba 195 151 216 0.4
+            , textPrimary = Ui.rgb 235 235 235
+            , textSecondary = Ui.rgb 150 152 150
+            , textMuted = Ui.rgb 150 152 150
+            , textLineNumber = Ui.rgb 238 238 238
+            , colourSuccess = Ui.rgb 185 202 74
+            , colourWarning = Ui.rgb 231 140 69
+            , colourError = Ui.rgb 223 95 95
+            , warningBg = Ui.rgba 231 140 69 0.15
+            , warningBorder = Ui.rgba 231 140 69 0.4
+            , warningCardBg = Ui.rgba 231 140 69 0.1
+            , warningCardBorder = Ui.rgba 231 140 69 0.35
+            , borderColour = Ui.rgba 195 151 216 0.2
+            , statusBadgeBorder = Ui.rgba 195 151 216 0.15
+            , isDark = True
+            }
+
+        Cloud9NightLowColor ->
+            { bg0 = Ui.rgb 24 24 24
+            , bg1 = Ui.rgb 48 49 48
+            , bg2 = Ui.rgb 60 61 60
+            , bg3 = Ui.rgb 73 74 73
+            , accent = Ui.rgb 195 151 216
+            , accentDim = Ui.rgba 195 151 216 0.15
+            , accentBorder = Ui.rgba 195 151 216 0.4
+            , textPrimary = Ui.rgb 235 235 235
+            , textSecondary = Ui.rgb 150 152 150
+            , textMuted = Ui.rgb 150 152 150
+            , textLineNumber = Ui.rgb 238 238 238
+            , colourSuccess = Ui.rgb 185 202 74
+            , colourWarning = Ui.rgb 218 166 55
+            , colourError = Ui.rgb 223 95 95
+            , warningBg = Ui.rgba 218 166 55 0.15
+            , warningBorder = Ui.rgba 218 166 55 0.4
+            , warningCardBg = Ui.rgba 218 166 55 0.1
+            , warningCardBorder = Ui.rgba 218 166 55 0.35
+            , borderColour = Ui.rgba 195 151 216 0.2
+            , statusBadgeBorder = Ui.rgba 195 151 216 0.15
+            , isDark = True
+            }
+
+        CloudEditor ->
+            { bg0 = Ui.rgb 255 255 255
+            , bg1 = Ui.rgb 255 255 255
+            , bg2 = Ui.rgb 243 243 243
+            , bg3 = Ui.rgb 235 235 235
+            , accent = Ui.rgb 151 73 209
+            , accentDim = Ui.rgba 151 73 209 0.15
+            , accentBorder = Ui.rgba 151 73 209 0.4
+            , textPrimary = Ui.rgb 58 58 66
+            , textSecondary = Ui.rgb 105 112 119
+            , textMuted = Ui.rgb 105 112 119
+            , textLineNumber = Ui.rgb 58 58 66
+            , colourSuccess = Ui.rgb 32 122 127
+            , colourWarning = Ui.rgb 161 97 1
+            , colourError = Ui.rgb 209 50 18
+            , warningBg = Ui.rgba 161 97 1 0.15
+            , warningBorder = Ui.rgba 161 97 1 0.4
+            , warningCardBg = Ui.rgba 161 97 1 0.1
+            , warningCardBorder = Ui.rgba 161 97 1 0.35
+            , borderColour = Ui.rgba 151 73 209 0.2
+            , statusBadgeBorder = Ui.rgba 151 73 209 0.15
+            , isDark = False
+            }
+
+        CloudEditorDark ->
+            { bg0 = Ui.rgb 40 44 52
+            , bg1 = Ui.rgb 40 44 52
+            , bg2 = Ui.rgb 52 56 64
+            , bg3 = Ui.rgb 65 69 77
+            , accent = Ui.rgb 198 116 220
+            , accentDim = Ui.rgba 198 116 220 0.15
+            , accentBorder = Ui.rgba 198 116 220 0.4
+            , textPrimary = Ui.rgb 220 223 228
+            , textSecondary = Ui.rgb 142 150 160
+            , textMuted = Ui.rgb 181 186 192
+            , textLineNumber = Ui.rgb 142 150 169
+            , colourSuccess = Ui.rgb 111 179 66
+            , colourWarning = Ui.rgb 229 195 131
+            , colourError = Ui.rgb 233 106 113
+            , warningBg = Ui.rgba 229 195 131 0.15
+            , warningBorder = Ui.rgba 229 195 131 0.4
+            , warningCardBg = Ui.rgba 229 195 131 0.1
+            , warningCardBorder = Ui.rgba 229 195 131 0.35
+            , borderColour = Ui.rgba 198 116 220 0.2
+            , statusBadgeBorder = Ui.rgba 198 116 220 0.15
+            , isDark = True
+            }
+
+        Clouds ->
+            { bg0 = Ui.rgb 255 255 255
+            , bg1 = Ui.rgb 235 235 235
+            , bg2 = Ui.rgb 227 227 227
+            , bg3 = Ui.rgb 219 219 219
+            , accent = Ui.rgb 175 149 111
+            , accentDim = Ui.rgba 175 149 111 0.15
+            , accentBorder = Ui.rgba 175 149 111 0.4
+            , textPrimary = Ui.rgb 0 0 0
+            , textSecondary = Ui.rgb 128 128 128
+            , textMuted = Ui.rgb 188 200 186
+            , textLineNumber = Ui.rgb 51 51 51
+            , colourSuccess = Ui.rgb 93 144 205
+            , colourWarning = Ui.rgb 70 166 9
+            , colourError = Ui.rgb 197 39 39
+            , warningBg = Ui.rgba 70 166 9 0.15
+            , warningBorder = Ui.rgba 70 166 9 0.4
+            , warningCardBg = Ui.rgba 70 166 9 0.1
+            , warningCardBorder = Ui.rgba 70 166 9 0.35
+            , borderColour = Ui.rgba 175 149 111 0.2
+            , statusBadgeBorder = Ui.rgba 175 149 111 0.15
+            , isDark = False
+            }
+
+        CloudsMidnight ->
+            { bg0 = Ui.rgb 25 25 25
+            , bg1 = Ui.rgb 35 35 35
+            , bg2 = Ui.rgb 47 47 47
+            , bg3 = Ui.rgb 60 60 60
+            , accent = Ui.rgb 146 124 93
+            , accentDim = Ui.rgba 146 124 93 0.15
+            , accentBorder = Ui.rgba 146 124 93 0.4
+            , textPrimary = Ui.rgb 146 146 146
+            , textSecondary = Ui.rgb 100 100 100
+            , textMuted = Ui.rgb 60 64 59
+            , textLineNumber = Ui.rgb 146 146 146
+            , colourSuccess = Ui.rgb 93 144 205
+            , colourWarning = Ui.rgb 70 166 9
+            , colourError = Ui.rgb 233 46 46
+            , warningBg = Ui.rgba 70 166 9 0.15
+            , warningBorder = Ui.rgba 70 166 9 0.4
+            , warningCardBg = Ui.rgba 70 166 9 0.1
+            , warningCardBorder = Ui.rgba 70 166 9 0.35
+            , borderColour = Ui.rgba 146 124 93 0.2
+            , statusBadgeBorder = Ui.rgba 146 124 93 0.15
+            , isDark = True
+            }
+
+        Cobalt ->
+            { bg0 = Ui.rgb 0 34 64
+            , bg1 = Ui.rgb 1 30 58
+            , bg2 = Ui.rgb 13 42 72
+            , bg3 = Ui.rgb 26 55 86
+            , accent = Ui.rgb 255 157 0
+            , accentDim = Ui.rgba 255 157 0 0.15
+            , accentBorder = Ui.rgba 255 157 0 0.4
+            , textPrimary = Ui.rgb 255 255 255
+            , textSecondary = Ui.rgb 128 145 160
+            , textMuted = Ui.rgb 0 136 255
+            , textLineNumber = Ui.rgb 128 145 160
+            , colourSuccess = Ui.rgb 58 217 0
+            , colourWarning = Ui.rgb 255 98 140
+            , colourError = Ui.rgb 128 15 0
+            , warningBg = Ui.rgba 255 98 140 0.15
+            , warningBorder = Ui.rgba 255 98 140 0.4
+            , warningCardBg = Ui.rgba 255 98 140 0.1
+            , warningCardBorder = Ui.rgba 255 98 140 0.35
+            , borderColour = Ui.rgba 255 157 0 0.2
+            , statusBadgeBorder = Ui.rgba 255 157 0 0.15
+            , isDark = True
+            }
+
+        CrimsonEditor ->
+            { bg0 = Ui.rgb 255 255 255
+            , bg1 = Ui.rgb 235 235 235
+            , bg2 = Ui.rgb 227 227 227
+            , bg3 = Ui.rgb 219 219 219
+            , accent = Ui.rgb 0 0 255
+            , accentDim = Ui.rgba 0 0 255 0.15
+            , accentBorder = Ui.rgba 0 0 255 0.4
+            , textPrimary = Ui.rgb 64 64 64
+            , textSecondary = Ui.rgb 128 128 128
+            , textMuted = Ui.rgb 76 136 107
+            , textLineNumber = Ui.rgb 51 51 51
+            , colourSuccess = Ui.rgb 128 0 128
+            , colourWarning = Ui.rgb 0 0 64
+            , colourError = Ui.rgb 224 0 0
+            , warningBg = Ui.rgba 0 0 64 0.15
+            , warningBorder = Ui.rgba 0 0 64 0.4
+            , warningCardBg = Ui.rgba 0 0 64 0.1
+            , warningCardBorder = Ui.rgba 0 0 64 0.35
+            , borderColour = Ui.rgba 0 0 255 0.2
+            , statusBadgeBorder = Ui.rgba 0 0 255 0.15
+            , isDark = False
+            }
+
+        Dawn ->
+            { bg0 = Ui.rgb 249 249 249
+            , bg1 = Ui.rgb 235 235 235
+            , bg2 = Ui.rgb 227 227 227
+            , bg3 = Ui.rgb 219 219 219
+            , accent = Ui.rgb 121 73 56
+            , accentDim = Ui.rgba 121 73 56 0.15
+            , accentBorder = Ui.rgba 121 73 56 0.4
+            , textPrimary = Ui.rgb 8 8 8
+            , textSecondary = Ui.rgb 90 82 95
+            , textMuted = Ui.rgb 90 82 95
+            , textLineNumber = Ui.rgb 51 51 51
+            , colourSuccess = Ui.rgb 11 97 37
+            , colourWarning = Ui.rgb 129 31 36
+            , colourError = Ui.rgb 181 42 29
+            , warningBg = Ui.rgba 129 31 36 0.15
+            , warningBorder = Ui.rgba 129 31 36 0.4
+            , warningCardBg = Ui.rgba 129 31 36 0.1
+            , warningCardBorder = Ui.rgba 129 31 36 0.35
+            , borderColour = Ui.rgba 121 73 56 0.2
+            , statusBadgeBorder = Ui.rgba 121 73 56 0.15
+            , isDark = False
+            }
+
+        Dracula ->
+            { bg0 = Ui.rgb 40 42 54
+            , bg1 = Ui.rgb 40 42 54
+            , bg2 = Ui.rgb 55 57 69
+            , bg3 = Ui.rgb 68 71 90
+            , accent = Ui.rgb 255 121 198
+            , accentDim = Ui.rgba 255 121 198 0.15
+            , accentBorder = Ui.rgba 255 121 198 0.4
+            , textPrimary = Ui.rgb 248 248 242
+            , textSecondary = Ui.rgb 144 145 148
+            , textMuted = Ui.rgb 98 114 164
+            , textLineNumber = Ui.rgb 144 145 148
+            , colourSuccess = Ui.rgb 241 250 140
+            , colourWarning = Ui.rgb 189 147 249
+            , colourError = Ui.rgb 255 85 85
+            , warningBg = Ui.rgba 189 147 249 0.15
+            , warningBorder = Ui.rgba 189 147 249 0.4
+            , warningCardBg = Ui.rgba 189 147 249 0.1
+            , warningCardBorder = Ui.rgba 189 147 249 0.35
+            , borderColour = Ui.rgba 255 121 198 0.2
+            , statusBadgeBorder = Ui.rgba 255 121 198 0.15
+            , isDark = True
+            }
+
+        Dreamweaver ->
+            { bg0 = Ui.rgb 255 255 255
+            , bg1 = Ui.rgb 232 232 232
+            , bg2 = Ui.rgb 224 224 224
+            , bg3 = Ui.rgb 216 216 216
+            , accent = Ui.rgb 0 0 255
+            , accentDim = Ui.rgba 0 0 255 0.15
+            , accentBorder = Ui.rgba 0 0 255 0.4
+            , textPrimary = Ui.rgb 0 0 0
+            , textSecondary = Ui.rgb 128 128 128
+            , textMuted = Ui.rgb 76 136 107
+            , textLineNumber = Ui.rgb 51 51 51
+            , colourSuccess = Ui.rgb 0 0 255
+            , colourWarning = Ui.rgb 0 0 153
+            , colourError = Ui.rgb 153 0 0
+            , warningBg = Ui.rgba 0 0 153 0.15
+            , warningBorder = Ui.rgba 0 0 153 0.4
+            , warningCardBg = Ui.rgba 0 0 153 0.1
+            , warningCardBorder = Ui.rgba 0 0 153 0.35
+            , borderColour = Ui.rgba 0 0 255 0.2
+            , statusBadgeBorder = Ui.rgba 0 0 255 0.15
+            , isDark = False
+            }
+
+        Eclipse ->
+            { bg0 = Ui.rgb 255 255 255
+            , bg1 = Ui.rgb 235 235 235
+            , bg2 = Ui.rgb 227 227 227
+            , bg3 = Ui.rgb 219 219 219
+            , accent = Ui.rgb 127 0 85
+            , accentDim = Ui.rgba 127 0 85 0.15
+            , accentBorder = Ui.rgba 127 0 85 0.4
+            , textPrimary = Ui.rgb 0 0 0
+            , textSecondary = Ui.rgb 113 150 130
+            , textMuted = Ui.rgb 113 150 130
+            , textLineNumber = Ui.rgb 136 136 136
+            , colourSuccess = Ui.rgb 42 0 255
+            , colourWarning = Ui.rgb 127 0 127
+            , colourError = Ui.rgb 153 0 0
+            , warningBg = Ui.rgba 127 0 127 0.15
+            , warningBorder = Ui.rgba 127 0 127 0.4
+            , warningCardBg = Ui.rgba 127 0 127 0.1
+            , warningCardBorder = Ui.rgba 127 0 127 0.35
+            , borderColour = Ui.rgba 127 0 85 0.2
+            , statusBadgeBorder = Ui.rgba 127 0 85 0.15
+            , isDark = False
+            }
+
+        GitHub ->
+            { bg0 = Ui.rgb 255 255 255
+            , bg1 = Ui.rgb 232 232 232
+            , bg2 = Ui.rgb 224 224 224
+            , bg3 = Ui.rgb 216 216 216
+            , accent = Ui.rgb 0 0 0
+            , accentDim = Ui.rgba 0 0 0 0.15
+            , accentBorder = Ui.rgba 0 0 0 0.4
+            , textPrimary = Ui.rgb 0 0 0
+            , textSecondary = Ui.rgb 153 136 136
+            , textMuted = Ui.rgb 153 136 136
+            , textLineNumber = Ui.rgb 170 170 170
+            , colourSuccess = Ui.rgb 209 68 68
+            , colourWarning = Ui.rgb 0 153 153
+            , colourError = Ui.rgb 153 0 0
+            , warningBg = Ui.rgba 0 153 153 0.15
+            , warningBorder = Ui.rgba 0 153 153 0.4
+            , warningCardBg = Ui.rgba 0 153 153 0.1
+            , warningCardBorder = Ui.rgba 0 153 153 0.35
+            , borderColour = Ui.rgba 0 0 0 0.2
+            , statusBadgeBorder = Ui.rgba 0 0 0 0.15
+            , isDark = False
             }
 
         GitHubDark ->
@@ -137,206 +829,734 @@ getTheme theme =
             , textMuted = Ui.rgb 110 118 129
             , textLineNumber = Ui.rgb 78 86 96
             , colourSuccess = Ui.rgb 63 185 130
-            , colourError = Ui.rgb 248 81 73
             , colourWarning = Ui.rgb 210 153 34
+            , colourError = Ui.rgb 248 81 73
             , warningBg = Ui.rgba 210 153 34 0.15
             , warningBorder = Ui.rgba 210 153 34 0.4
             , warningCardBg = Ui.rgba 210 153 34 0.1
             , warningCardBorder = Ui.rgba 210 153 34 0.35
             , borderColour = Ui.rgba 88 166 255 0.2
             , statusBadgeBorder = Ui.rgba 88 166 255 0.15
+            , isDark = True
+            }
+
+        GitHubLightDefault ->
+            { bg0 = Ui.rgb 255 255 255
+            , bg1 = Ui.rgb 255 255 255
+            , bg2 = Ui.rgb 243 243 243
+            , bg3 = Ui.rgb 235 235 235
+            , accent = Ui.rgb 215 58 73
+            , accentDim = Ui.rgba 215 58 73 0.15
+            , accentBorder = Ui.rgba 215 58 73 0.4
+            , textPrimary = Ui.rgb 36 41 46
+            , textSecondary = Ui.rgb 106 115 125
+            , textMuted = Ui.rgb 106 115 125
+            , textLineNumber = Ui.rgb 106 115 125
+            , colourSuccess = Ui.rgb 3 47 98
+            , colourWarning = Ui.rgb 0 92 197
+            , colourError = Ui.rgb 179 29 28
+            , warningBg = Ui.rgba 0 92 197 0.15
+            , warningBorder = Ui.rgba 0 92 197 0.4
+            , warningCardBg = Ui.rgba 0 92 197 0.1
+            , warningCardBorder = Ui.rgba 0 92 197 0.35
+            , borderColour = Ui.rgba 215 58 73 0.2
+            , statusBadgeBorder = Ui.rgba 215 58 73 0.15
+            , isDark = False
+            }
+
+        Gob ->
+            { bg0 = Ui.rgb 11 11 11
+            , bg1 = Ui.rgb 11 24 24
+            , bg2 = Ui.rgb 16 36 36
+            , bg3 = Ui.rgb 22 48 48
+            , accent = Ui.rgb 16 216 232
+            , accentDim = Ui.rgba 16 216 232 0.15
+            , accentBorder = Ui.rgba 16 216 232 0.4
+            , textPrimary = Ui.rgb 0 255 0
+            , textSecondary = Ui.rgb 3 238 3
+            , textMuted = Ui.rgb 0 224 96
+            , textLineNumber = Ui.rgb 3 238 3
+            , colourSuccess = Ui.rgb 16 240 96
+            , colourWarning = Ui.rgb 16 240 160
+            , colourError = Ui.rgb 248 248 248
+            , warningBg = Ui.rgba 16 240 160 0.15
+            , warningBorder = Ui.rgba 16 240 160 0.4
+            , warningCardBg = Ui.rgba 16 240 160 0.1
+            , warningCardBorder = Ui.rgba 16 240 160 0.35
+            , borderColour = Ui.rgba 16 216 232 0.2
+            , statusBadgeBorder = Ui.rgba 16 216 232 0.15
+            , isDark = True
+            }
+
+        Gruvbox ->
+            { bg0 = Ui.rgb 29 32 33
+            , bg1 = Ui.rgb 60 56 54
+            , bg2 = Ui.rgb 72 68 66
+            , bg3 = Ui.rgb 85 81 79
+            , accent = Ui.rgb 142 192 124
+            , accentDim = Ui.rgba 142 192 124 0.15
+            , accentBorder = Ui.rgba 142 192 124 0.4
+            , textPrimary = Ui.rgb 235 219 178
+            , textSecondary = Ui.rgb 189 174 147
+            , textMuted = Ui.rgb 146 131 117
+            , textLineNumber = Ui.rgb 146 131 117
+            , colourSuccess = Ui.rgb 184 186 55
+            , colourWarning = Ui.rgb 250 189 47
+            , colourError = Ui.rgb 251 73 52
+            , warningBg = Ui.rgba 250 189 47 0.15
+            , warningBorder = Ui.rgba 250 189 47 0.4
+            , warningCardBg = Ui.rgba 250 189 47 0.1
+            , warningCardBorder = Ui.rgba 250 189 47 0.35
+            , borderColour = Ui.rgba 142 192 124 0.2
+            , statusBadgeBorder = Ui.rgba 142 192 124 0.15
+            , isDark = True
+            }
+
+        GruvboxDarkHard ->
+            { bg0 = Ui.rgb 29 32 33
+            , bg1 = Ui.rgb 29 32 33
+            , bg2 = Ui.rgb 50 48 46
+            , bg3 = Ui.rgb 69 66 64
+            , accent = Ui.rgb 251 73 52
+            , accentDim = Ui.rgba 251 73 52 0.15
+            , accentBorder = Ui.rgba 251 73 52 0.4
+            , textPrimary = Ui.rgb 235 219 178
+            , textSecondary = Ui.rgb 189 174 147
+            , textMuted = Ui.rgb 146 131 117
+            , textLineNumber = Ui.rgb 132 126 106
+            , colourSuccess = Ui.rgb 184 187 38
+            , colourWarning = Ui.rgb 250 189 47
+            , colourError = Ui.rgb 251 73 52
+            , warningBg = Ui.rgba 250 189 47 0.15
+            , warningBorder = Ui.rgba 250 189 47 0.4
+            , warningCardBg = Ui.rgba 250 189 47 0.1
+            , warningCardBorder = Ui.rgba 250 189 47 0.35
+            , borderColour = Ui.rgba 251 73 52 0.2
+            , statusBadgeBorder = Ui.rgba 251 73 52 0.15
+            , isDark = True
+            }
+
+        GruvboxLightHard ->
+            { bg0 = Ui.rgb 249 245 215
+            , bg1 = Ui.rgb 249 245 215
+            , bg2 = Ui.rgb 235 231 201
+            , bg3 = Ui.rgb 221 217 187
+            , accent = Ui.rgb 157 0 6
+            , accentDim = Ui.rgba 157 0 6 0.15
+            , accentBorder = Ui.rgba 157 0 6 0.4
+            , textPrimary = Ui.rgb 60 56 54
+            , textSecondary = Ui.rgb 101 97 93
+            , textMuted = Ui.rgb 146 131 117
+            , textLineNumber = Ui.rgb 155 151 135
+            , colourSuccess = Ui.rgb 121 116 14
+            , colourWarning = Ui.rgb 143 63 113
+            , colourError = Ui.rgb 157 0 6
+            , warningBg = Ui.rgba 143 63 113 0.15
+            , warningBorder = Ui.rgba 143 63 113 0.4
+            , warningCardBg = Ui.rgba 143 63 113 0.1
+            , warningCardBorder = Ui.rgba 143 63 113 0.35
+            , borderColour = Ui.rgba 157 0 6 0.2
+            , statusBadgeBorder = Ui.rgba 157 0 6 0.15
+            , isDark = False
+            }
+
+        IdleFingers ->
+            { bg0 = Ui.rgb 50 50 50
+            , bg1 = Ui.rgb 59 59 59
+            , bg2 = Ui.rgb 71 71 71
+            , bg3 = Ui.rgb 84 84 84
+            , accent = Ui.rgb 204 120 51
+            , accentDim = Ui.rgba 204 120 51 0.15
+            , accentBorder = Ui.rgba 204 120 51 0.4
+            , textPrimary = Ui.rgb 255 255 255
+            , textSecondary = Ui.rgb 153 153 153
+            , textMuted = Ui.rgb 188 148 88
+            , textLineNumber = Ui.rgb 153 153 153
+            , colourSuccess = Ui.rgb 165 194 97
+            , colourWarning = Ui.rgb 108 153 187
+            , colourError = Ui.rgb 255 0 0
+            , warningBg = Ui.rgba 108 153 187 0.15
+            , warningBorder = Ui.rgba 108 153 187 0.4
+            , warningCardBg = Ui.rgba 108 153 187 0.1
+            , warningCardBorder = Ui.rgba 108 153 187 0.35
+            , borderColour = Ui.rgba 204 120 51 0.2
+            , statusBadgeBorder = Ui.rgba 204 120 51 0.15
+            , isDark = True
+            }
+
+        IPlastic ->
+            { bg0 = Ui.rgb 238 238 238
+            , bg1 = Ui.rgb 221 221 221
+            , bg2 = Ui.rgb 213 213 213
+            , bg3 = Ui.rgb 205 205 205
+            , accent = Ui.rgb 0 0 255
+            , accentDim = Ui.rgba 0 0 255 0.15
+            , accentBorder = Ui.rgba 0 0 255 0.4
+            , textPrimary = Ui.rgb 51 51 51
+            , textSecondary = Ui.rgb 102 102 102
+            , textMuted = Ui.rgb 119 119 119
+            , textLineNumber = Ui.rgb 102 102 102
+            , colourSuccess = Ui.rgb 165 95 3
+            , colourWarning = Ui.rgb 0 102 255
+            , colourError = Ui.rgb 249 38 114
+            , warningBg = Ui.rgba 0 102 255 0.15
+            , warningBorder = Ui.rgba 0 102 255 0.4
+            , warningCardBg = Ui.rgba 0 102 255 0.1
+            , warningCardBorder = Ui.rgba 0 102 255 0.35
+            , borderColour = Ui.rgba 0 0 255 0.2
+            , statusBadgeBorder = Ui.rgba 0 0 255 0.15
+            , isDark = False
+            }
+
+        Katzenmilch ->
+            { bg0 = Ui.rgb 243 242 243
+            , bg1 = Ui.rgb 232 232 232
+            , bg2 = Ui.rgb 224 224 224
+            , bg3 = Ui.rgb 216 216 216
+            , accent = Ui.rgb 103 74 168
+            , accentDim = Ui.rgba 103 74 168 0.15
+            , accentBorder = Ui.rgba 103 74 168 0.4
+            , textPrimary = Ui.rgb 15 0 9
+            , textSecondary = Ui.rgb 100 79 80
+            , textMuted = Ui.rgba 64 79 80 0.67
+            , textLineNumber = Ui.rgb 51 51 51
+            , colourSuccess = Ui.rgb 90 95 155
+            , colourWarning = Ui.rgba 79 130 123 0.93
+            , colourError = Ui.rgb 204 27 39
+            , warningBg = Ui.rgba 79 130 123 0.15
+            , warningBorder = Ui.rgba 79 130 123 0.4
+            , warningCardBg = Ui.rgba 79 130 123 0.1
+            , warningCardBorder = Ui.rgba 79 130 123 0.35
+            , borderColour = Ui.rgba 103 74 168 0.2
+            , statusBadgeBorder = Ui.rgba 103 74 168 0.15
+            , isDark = False
+            }
+
+        KrTheme ->
+            { bg0 = Ui.rgb 11 10 9
+            , bg1 = Ui.rgb 28 25 23
+            , bg2 = Ui.rgb 40 37 35
+            , bg3 = Ui.rgb 53 50 48
+            , accent = Ui.rgb 148 156 139
+            , accentDim = Ui.rgba 148 156 139 0.15
+            , accentBorder = Ui.rgba 148 156 139 0.4
+            , textPrimary = Ui.rgb 252 255 224
+            , textSecondary = Ui.rgb 112 109 91
+            , textMuted = Ui.rgba 164 161 181 0.8
+            , textLineNumber = Ui.rgb 252 255 224
+            , colourSuccess = Ui.rgb 159 194 138
+            , colourWarning = Ui.rgba 210 117 24 0.76
+            , colourError = Ui.rgb 164 19 0
+            , warningBg = Ui.rgba 210 117 24 0.15
+            , warningBorder = Ui.rgba 210 117 24 0.4
+            , warningCardBg = Ui.rgba 210 117 24 0.1
+            , warningCardBorder = Ui.rgba 210 117 24 0.35
+            , borderColour = Ui.rgba 148 156 139 0.2
+            , statusBadgeBorder = Ui.rgba 148 156 139 0.15
+            , isDark = True
+            }
+
+        Kuroir ->
+            { bg0 = Ui.rgb 232 233 232
+            , bg1 = Ui.rgb 232 232 232
+            , bg2 = Ui.rgb 224 224 224
+            , bg3 = Ui.rgb 216 216 216
+            , accent = Ui.rgb 205 104 57
+            , accentDim = Ui.rgba 205 104 57 0.15
+            , accentBorder = Ui.rgba 205 104 57 0.4
+            , textPrimary = Ui.rgb 54 54 54
+            , textSecondary = Ui.rgb 148 148 148
+            , textMuted = Ui.rgba 148 148 148 0.91
+            , textLineNumber = Ui.rgb 51 51 51
+            , colourSuccess = Ui.rgb 99 147 0
+            , colourWarning = Ui.rgb 154 89 37
+            , colourError = Ui.rgb 253 18 36
+            , warningBg = Ui.rgba 154 89 37 0.15
+            , warningBorder = Ui.rgba 154 89 37 0.4
+            , warningCardBg = Ui.rgba 154 89 37 0.1
+            , warningCardBorder = Ui.rgba 154 89 37 0.35
+            , borderColour = Ui.rgba 205 104 57 0.2
+            , statusBadgeBorder = Ui.rgba 205 104 57 0.15
+            , isDark = False
+            }
+
+        Merbivore ->
+            { bg0 = Ui.rgb 22 22 22
+            , bg1 = Ui.rgb 32 32 32
+            , bg2 = Ui.rgb 44 44 44
+            , bg3 = Ui.rgb 57 57 57
+            , accent = Ui.rgb 252 111 9
+            , accentDim = Ui.rgba 252 111 9 0.15
+            , accentBorder = Ui.rgba 252 111 9 0.4
+            , textPrimary = Ui.rgb 230 225 220
+            , textSecondary = Ui.rgb 173 46 164
+            , textMuted = Ui.rgba 173 46 164 0.8
+            , textLineNumber = Ui.rgb 230 225 220
+            , colourSuccess = Ui.rgb 141 255 10
+            , colourWarning = Ui.rgb 88 197 84
+            , colourError = Ui.rgb 153 0 0
+            , warningBg = Ui.rgba 88 197 84 0.15
+            , warningBorder = Ui.rgba 88 197 84 0.4
+            , warningCardBg = Ui.rgba 88 197 84 0.1
+            , warningCardBorder = Ui.rgba 88 197 84 0.35
+            , borderColour = Ui.rgba 252 111 9 0.2
+            , statusBadgeBorder = Ui.rgba 252 111 9 0.15
+            , isDark = True
+            }
+
+        MerbivoreSoft ->
+            { bg0 = Ui.rgb 28 28 28
+            , bg1 = Ui.rgb 38 36 36
+            , bg2 = Ui.rgb 50 48 48
+            , bg3 = Ui.rgb 63 61 61
+            , accent = Ui.rgb 252 128 58
+            , accentDim = Ui.rgba 252 128 58 0.15
+            , accentBorder = Ui.rgba 252 128 58 0.4
+            , textPrimary = Ui.rgb 230 225 220
+            , textSecondary = Ui.rgb 172 75 184
+            , textMuted = Ui.rgba 172 75 184 0.8
+            , textLineNumber = Ui.rgb 230 225 220
+            , colourSuccess = Ui.rgb 142 198 95
+            , colourWarning = Ui.rgb 127 197 120
+            , colourError = Ui.rgb 254 56 56
+            , warningBg = Ui.rgba 127 197 120 0.15
+            , warningBorder = Ui.rgba 127 197 120 0.4
+            , warningCardBg = Ui.rgba 127 197 120 0.1
+            , warningCardBorder = Ui.rgba 127 197 120 0.35
+            , borderColour = Ui.rgba 252 128 58 0.2
+            , statusBadgeBorder = Ui.rgba 252 128 58 0.15
+            , isDark = True
+            }
+
+        MonoIndustrial ->
+            { bg0 = Ui.rgb 34 44 40
+            , bg1 = Ui.rgb 29 37 33
+            , bg2 = Ui.rgb 41 53 48
+            , bg3 = Ui.rgb 54 66 61
+            , accent = Ui.rgb 163 158 100
+            , accentDim = Ui.rgba 163 158 100 0.15
+            , accentBorder = Ui.rgba 163 158 100 0.4
+            , textPrimary = Ui.rgb 255 255 255
+            , textSecondary = Ui.rgb 197 201 201
+            , textMuted = Ui.rgb 102 108 104
+            , textLineNumber = Ui.rgb 197 201 201
+            , colourSuccess = Ui.rgb 255 255 255
+            , colourWarning = Ui.rgb 232 136 0
+            , colourError = Ui.rgba 153 0 0 0.68
+            , warningBg = Ui.rgba 232 136 0 0.15
+            , warningBorder = Ui.rgba 232 136 0 0.4
+            , warningCardBg = Ui.rgba 232 136 0 0.1
+            , warningCardBorder = Ui.rgba 232 136 0 0.35
+            , borderColour = Ui.rgba 163 158 100 0.2
+            , statusBadgeBorder = Ui.rgba 163 158 100 0.15
+            , isDark = True
+            }
+
+        Monokai ->
+            { bg0 = Ui.rgb 39 40 34
+            , bg1 = Ui.rgb 47 49 41
+            , bg2 = Ui.rgb 59 61 53
+            , bg3 = Ui.rgb 72 74 66
+            , accent = Ui.rgb 249 38 114
+            , accentDim = Ui.rgba 249 38 114 0.15
+            , accentBorder = Ui.rgba 249 38 114 0.4
+            , textPrimary = Ui.rgb 248 248 242
+            , textSecondary = Ui.rgb 143 144 138
+            , textMuted = Ui.rgb 117 113 94
+            , textLineNumber = Ui.rgb 143 144 138
+            , colourSuccess = Ui.rgb 230 219 116
+            , colourWarning = Ui.rgb 174 129 255
+            , colourError = Ui.rgb 249 38 114
+            , warningBg = Ui.rgba 174 129 255 0.15
+            , warningBorder = Ui.rgba 174 129 255 0.4
+            , warningCardBg = Ui.rgba 174 129 255 0.1
+            , warningCardBorder = Ui.rgba 174 129 255 0.35
+            , borderColour = Ui.rgba 249 38 114 0.2
+            , statusBadgeBorder = Ui.rgba 249 38 114 0.15
+            , isDark = True
+            }
+
+        NordDark ->
+            { bg0 = Ui.rgb 46 52 64
+            , bg1 = Ui.rgb 59 66 82
+            , bg2 = Ui.rgb 67 76 94
+            , bg3 = Ui.rgb 76 86 106
+            , accent = Ui.rgb 129 161 193
+            , accentDim = Ui.rgba 129 161 193 0.15
+            , accentBorder = Ui.rgba 129 161 193 0.4
+            , textPrimary = Ui.rgb 216 222 233
+            , textSecondary = Ui.rgb 143 161 178
+            , textMuted = Ui.rgb 97 110 136
+            , textLineNumber = Ui.rgb 97 110 136
+            , colourSuccess = Ui.rgb 163 190 140
+            , colourWarning = Ui.rgb 180 142 173
+            , colourError = Ui.rgb 191 97 106
+            , warningBg = Ui.rgba 180 142 173 0.15
+            , warningBorder = Ui.rgba 180 142 173 0.4
+            , warningCardBg = Ui.rgba 180 142 173 0.1
+            , warningCardBorder = Ui.rgba 180 142 173 0.35
+            , borderColour = Ui.rgba 129 161 193 0.2
+            , statusBadgeBorder = Ui.rgba 129 161 193 0.15
             , isDark = True
             }
 
         OneDark ->
             { bg0 = Ui.rgb 40 44 52
-            , bg1 = Ui.rgb 33 37 43
-            , bg2 = Ui.rgb 55 59 65
-            , bg3 = Ui.rgb 70 74 80
-            , accent = Ui.rgb 97 175 239
-            , accentDim = Ui.rgba 88 166 255 0.15
-            , accentBorder = Ui.rgba 88 166 255 0.4
+            , bg1 = Ui.rgb 40 44 52
+            , bg2 = Ui.rgb 52 56 64
+            , bg3 = Ui.rgb 65 69 77
+            , accent = Ui.rgb 198 120 221
+            , accentDim = Ui.rgba 198 120 221 0.15
+            , accentBorder = Ui.rgba 198 120 221 0.4
             , textPrimary = Ui.rgb 171 178 191
-            , textSecondary = Ui.rgb 126 132 144
+            , textSecondary = Ui.rgb 106 111 122
             , textMuted = Ui.rgb 92 99 112
-            , textLineNumber = Ui.rgb 70 76 88
-            , colourSuccess = Ui.rgb 63 185 130
-            , colourError = Ui.rgb 248 81 73
-            , colourWarning = Ui.rgb 210 153 34
-            , warningBg = Ui.rgba 210 153 34 0.15
-            , warningBorder = Ui.rgba 210 153 34 0.4
-            , warningCardBg = Ui.rgba 210 153 34 0.1
-            , warningCardBorder = Ui.rgba 210 153 34 0.35
-            , borderColour = Ui.rgba 88 166 255 0.2
-            , statusBadgeBorder = Ui.rgba 88 166 255 0.15
+            , textLineNumber = Ui.rgb 106 111 122
+            , colourSuccess = Ui.rgb 152 195 121
+            , colourWarning = Ui.rgb 209 154 102
+            , colourError = Ui.rgb 224 108 117
+            , warningBg = Ui.rgba 209 154 102 0.15
+            , warningBorder = Ui.rgba 209 154 102 0.4
+            , warningCardBg = Ui.rgba 209 154 102 0.1
+            , warningCardBorder = Ui.rgba 209 154 102 0.35
+            , borderColour = Ui.rgba 198 120 221 0.2
+            , statusBadgeBorder = Ui.rgba 198 120 221 0.15
             , isDark = True
             }
 
-        Dracula ->
-            { bg0 = Ui.rgb 40 42 54
-            , bg1 = Ui.rgb 68 71 90
-            , bg2 = Ui.rgb 55 57 72
-            , bg3 = Ui.rgb 68 71 90
-            , accent = Ui.rgb 189 147 249
-            , accentDim = Ui.rgba 189 147 249 0.15
-            , accentBorder = Ui.rgba 189 147 249 0.4
-            , textPrimary = Ui.rgb 248 248 242
-            , textSecondary = Ui.rgb 189 195 211
-            , textMuted = Ui.rgb 125 131 147
-            , textLineNumber = Ui.rgb 80 83 100
-            , colourSuccess = Ui.rgb 80 250 123
-            , colourError = Ui.rgb 255 85 85
-            , colourWarning = Ui.rgb 241 250 140
-            , warningBg = Ui.rgba 210 153 34 0.15
-            , warningBorder = Ui.rgba 210 153 34 0.4
-            , warningCardBg = Ui.rgba 210 153 34 0.1
-            , warningCardBorder = Ui.rgba 210 153 34 0.35
-            , borderColour = Ui.rgba 189 147 249 0.25
-            , statusBadgeBorder = Ui.rgba 88 166 255 0.15
+        PastelOnDark ->
+            { bg0 = Ui.rgb 44 40 40
+            , bg1 = Ui.rgb 53 48 48
+            , bg2 = Ui.rgb 65 60 60
+            , bg3 = Ui.rgb 78 73 73
+            , accent = Ui.rgb 117 122 216
+            , accentDim = Ui.rgba 117 122 216 0.15
+            , accentBorder = Ui.rgba 117 122 216 0.4
+            , textPrimary = Ui.rgb 143 147 143
+            , textSecondary = Ui.rgb 110 113 110
+            , textMuted = Ui.rgb 166 198 255
+            , textLineNumber = Ui.rgb 143 147 143
+            , colourSuccess = Ui.rgb 102 169 104
+            , colourWarning = Ui.rgb 204 204 204
+            , colourError = Ui.rgb 210 168 161
+            , warningBg = Ui.rgba 204 204 204 0.15
+            , warningBorder = Ui.rgba 204 204 204 0.4
+            , warningCardBg = Ui.rgba 204 204 204 0.1
+            , warningCardBorder = Ui.rgba 204 204 204 0.35
+            , borderColour = Ui.rgba 117 122 216 0.2
+            , statusBadgeBorder = Ui.rgba 117 122 216 0.15
             , isDark = True
             }
 
-        Nord ->
-            { bg0 = Ui.rgb 46 52 64
-            , bg1 = Ui.rgb 59 66 82
-            , bg2 = Ui.rgb 67 76 94
-            , bg3 = Ui.rgb 76 86 106
-            , accent = Ui.rgb 136 192 208
-            , accentDim = Ui.rgba 136 192 208 0.15
-            , accentBorder = Ui.rgba 136 192 208 0.4
-            , textPrimary = Ui.rgb 236 239 244
-            , textSecondary = Ui.rgb 181 194 209
-            , textMuted = Ui.rgb 129 140 153
-            , textLineNumber = Ui.rgb 85 95 110
-            , colourSuccess = Ui.rgb 163 190 140
-            , colourError = Ui.rgb 191 97 106
-            , colourWarning = Ui.rgb 235 203 139
-            , warningBg = Ui.rgba 210 153 34 0.15
-            , warningBorder = Ui.rgba 210 153 34 0.4
-            , warningCardBg = Ui.rgba 210 153 34 0.1
-            , warningCardBorder = Ui.rgba 210 153 34 0.35
-            , borderColour = Ui.rgba 136 192 208 0.25
-            , statusBadgeBorder = Ui.rgba 88 166 255 0.15
+        SolarizedDark ->
+            { bg0 = Ui.rgb 0 43 54
+            , bg1 = Ui.rgb 1 49 63
+            , bg2 = Ui.rgb 2 65 82
+            , bg3 = Ui.rgb 3 82 101
+            , accent = Ui.rgb 133 153 0
+            , accentDim = Ui.rgba 133 153 0 0.15
+            , accentBorder = Ui.rgba 133 153 0 0.4
+            , textPrimary = Ui.rgb 131 148 150
+            , textSecondary = Ui.rgb 101 123 131
+            , textMuted = Ui.rgb 101 123 131
+            , textLineNumber = Ui.rgb 208 237 247
+            , colourSuccess = Ui.rgb 42 161 152
+            , colourWarning = Ui.rgb 211 54 130
+            , colourError = Ui.rgb 211 1 2
+            , warningBg = Ui.rgba 211 54 130 0.15
+            , warningBorder = Ui.rgba 211 54 130 0.4
+            , warningCardBg = Ui.rgba 211 54 130 0.1
+            , warningCardBorder = Ui.rgba 211 54 130 0.35
+            , borderColour = Ui.rgba 133 153 0 0.2
+            , statusBadgeBorder = Ui.rgba 133 153 0 0.15
             , isDark = True
             }
 
         SolarizedLight ->
             { bg0 = Ui.rgb 253 246 227
-            , bg1 = Ui.rgb 238 232 213
-            , bg2 = Ui.rgb 224 218 199
-            , bg3 = Ui.rgb 210 204 185
-            , accent = Ui.rgb 38 139 210
-            , accentDim = Ui.rgba 37 99 235 0.1
-            , accentBorder = Ui.rgba 37 99 235 0.3
-            , textPrimary = Ui.rgb 0 43 54
+            , bg1 = Ui.rgb 251 241 211
+            , bg2 = Ui.rgb 239 229 199
+            , bg3 = Ui.rgb 227 217 187
+            , accent = Ui.rgb 133 153 0
+            , accentDim = Ui.rgba 133 153 0 0.15
+            , accentBorder = Ui.rgba 133 153 0 0.4
+            , textPrimary = Ui.rgb 88 110 117
             , textSecondary = Ui.rgb 101 123 131
             , textMuted = Ui.rgb 147 161 161
-            , textLineNumber = Ui.rgb 180 185 195
-            , colourSuccess = Ui.rgb 40 167 69
-            , colourError = Ui.rgb 218 54 51
-            , colourWarning = Ui.rgb 192 132 26
-            , warningBg = Ui.rgba 192 132 26 0.1
-            , warningBorder = Ui.rgba 192 132 26 0.3
-            , warningCardBg = Ui.rgba 192 132 26 8.0e-2
-            , warningCardBorder = Ui.rgba 192 132 26 0.25
-            , borderColour = Ui.rgba 37 99 235 0.15
-            , statusBadgeBorder = Ui.rgba 37 99 235 0.1
+            , textLineNumber = Ui.rgb 51 51 51
+            , colourSuccess = Ui.rgb 42 161 152
+            , colourWarning = Ui.rgb 211 54 130
+            , colourError = Ui.rgb 211 1 2
+            , warningBg = Ui.rgba 211 54 130 0.15
+            , warningBorder = Ui.rgba 211 54 130 0.4
+            , warningCardBg = Ui.rgba 211 54 130 0.1
+            , warningCardBorder = Ui.rgba 211 54 130 0.35
+            , borderColour = Ui.rgba 133 153 0 0.2
+            , statusBadgeBorder = Ui.rgba 133 153 0 0.15
             , isDark = False
             }
 
-        WarmPaper ->
-            { bg0 = Ui.rgb 253 250 244
-            , bg1 = Ui.rgb 245 240 230
-            , bg2 = Ui.rgb 235 228 216
-            , bg3 = Ui.rgb 222 213 198
-            , accent = Ui.rgb 180 100 40
-            , accentDim = Ui.rgba 180 100 40 0.12
-            , accentBorder = Ui.rgba 180 100 40 0.3
-            , textPrimary = Ui.rgb 50 40 30
-            , textSecondary = Ui.rgb 100 85 68
-            , textMuted = Ui.rgb 155 142 125
-            , textLineNumber = Ui.rgb 190 180 168
-            , colourSuccess = Ui.rgb 57 217 138
-            , colourError = Ui.rgb 255 95 95
-            , colourWarning = Ui.rgb 255 200 74
-            , warningBg = Ui.rgba 255 200 74 8.0e-2
-            , warningBorder = Ui.rgba 255 200 74 0.3
-            , warningCardBg = Ui.rgba 255 200 74 5.0e-2
-            , warningCardBorder = Ui.rgba 255 200 74 0.25
-            , borderColour = Ui.rgba 180 100 40 0.15
-            , statusBadgeBorder = Ui.rgba 180 100 40 8.0e-2
-            , isDark = False
-            }
-
-        GitHubLight ->
+        SQLServer ->
             { bg0 = Ui.rgb 255 255 255
-            , bg1 = Ui.rgb 246 248 250
-            , bg2 = Ui.rgb 234 238 242
-            , bg3 = Ui.rgb 220 224 232
-            , accent = Ui.rgb 37 99 235
-            , accentDim = Ui.rgba 37 99 235 0.1
-            , accentBorder = Ui.rgba 37 99 235 0.3
-            , textPrimary = Ui.rgb 36 41 47
-            , textSecondary = Ui.rgb 87 96 106
-            , textMuted = Ui.rgb 140 150 163
-            , textLineNumber = Ui.rgb 180 185 195
-            , colourSuccess = Ui.rgb 40 167 69
-            , colourError = Ui.rgb 218 54 51
-            , colourWarning = Ui.rgb 192 132 26
-            , warningBg = Ui.rgba 192 132 26 0.1
-            , warningBorder = Ui.rgba 192 132 26 0.3
-            , warningCardBg = Ui.rgba 192 132 26 8.0e-2
-            , warningCardBorder = Ui.rgba 192 132 26 0.25
-            , borderColour = Ui.rgba 37 99 235 0.15
-            , statusBadgeBorder = Ui.rgba 37 99 235 0.1
+            , bg1 = Ui.rgb 235 235 235
+            , bg2 = Ui.rgb 227 227 227
+            , bg3 = Ui.rgb 219 219 219
+            , accent = Ui.rgb 0 0 255
+            , accentDim = Ui.rgba 0 0 255 0.15
+            , accentBorder = Ui.rgba 0 0 255 0.4
+            , textPrimary = Ui.rgb 0 0 0
+            , textSecondary = Ui.rgb 128 128 128
+            , textMuted = Ui.rgb 0 128 0
+            , textLineNumber = Ui.rgb 51 51 51
+            , colourSuccess = Ui.rgb 255 0 0
+            , colourWarning = Ui.rgb 0 0 0
+            , colourError = Ui.rgb 153 0 0
+            , warningBg = Ui.rgba 0 0 0 0.15
+            , warningBorder = Ui.rgba 0 0 0 0.4
+            , warningCardBg = Ui.rgba 0 0 0 0.1
+            , warningCardBorder = Ui.rgba 0 0 0 0.35
+            , borderColour = Ui.rgba 0 0 255 0.2
+            , statusBadgeBorder = Ui.rgba 0 0 255 0.15
             , isDark = False
             }
 
-        MaterialLight ->
-            { bg0 = Ui.rgb 250 250 250
-            , bg1 = Ui.rgb 245 245 245
-            , bg2 = Ui.rgb 230 230 230
-            , bg3 = Ui.rgb 215 215 215
-            , accent = Ui.rgb 25 118 210
-            , accentDim = Ui.rgba 37 99 235 0.1
-            , accentBorder = Ui.rgba 37 99 235 0.3
-            , textPrimary = Ui.rgb 33 33 33
-            , textSecondary = Ui.rgb 80 80 80
-            , textMuted = Ui.rgb 150 150 150
-            , textLineNumber = Ui.rgb 180 185 195
-            , colourSuccess = Ui.rgb 40 167 69
-            , colourError = Ui.rgb 218 54 51
-            , colourWarning = Ui.rgb 192 132 26
-            , warningBg = Ui.rgba 192 132 26 0.1
-            , warningBorder = Ui.rgba 192 132 26 0.3
-            , warningCardBg = Ui.rgba 192 132 26 8.0e-2
-            , warningCardBorder = Ui.rgba 192 132 26 0.25
-            , borderColour = Ui.rgba 37 99 235 0.15
-            , statusBadgeBorder = Ui.rgba 37 99 235 0.1
+        Terminal ->
+            { bg0 = Ui.rgb 0 0 0
+            , bg1 = Ui.rgb 26 0 5
+            , bg2 = Ui.rgb 38 12 17
+            , bg3 = Ui.rgb 51 24 29
+            , accent = Ui.rgb 255 99 71
+            , accentDim = Ui.rgba 255 99 71 0.15
+            , accentBorder = Ui.rgba 255 99 71 0.4
+            , textPrimary = Ui.rgb 222 222 222
+            , textSecondary = Ui.rgb 128 145 160
+            , textMuted = Ui.rgb 255 99 71
+            , textLineNumber = Ui.rgb 128 145 160
+            , colourSuccess = Ui.rgb 185 202 74
+            , colourWarning = Ui.rgb 231 140 69
+            , colourError = Ui.rgb 255 0 0
+            , warningBg = Ui.rgba 231 140 69 0.15
+            , warningBorder = Ui.rgba 231 140 69 0.4
+            , warningCardBg = Ui.rgba 231 140 69 0.1
+            , warningCardBorder = Ui.rgba 231 140 69 0.35
+            , borderColour = Ui.rgba 255 99 71 0.2
+            , statusBadgeBorder = Ui.rgba 255 99 71 0.15
+            , isDark = True
+            }
+
+        TextMate ->
+            { bg0 = Ui.rgb 255 255 255
+            , bg1 = Ui.rgb 240 240 240
+            , bg2 = Ui.rgb 232 232 232
+            , bg3 = Ui.rgb 224 224 224
+            , accent = Ui.rgb 0 0 255
+            , accentDim = Ui.rgba 0 0 255 0.15
+            , accentBorder = Ui.rgba 0 0 255 0.4
+            , textPrimary = Ui.rgb 0 0 0
+            , textSecondary = Ui.rgb 128 128 128
+            , textMuted = Ui.rgb 76 136 107
+            , textLineNumber = Ui.rgb 51 51 51
+            , colourSuccess = Ui.rgb 3 106 7
+            , colourWarning = Ui.rgb 0 0 205
+            , colourError = Ui.rgb 255 0 0
+            , warningBg = Ui.rgba 0 0 205 0.15
+            , warningBorder = Ui.rgba 0 0 205 0.4
+            , warningCardBg = Ui.rgba 0 0 205 0.1
+            , warningCardBorder = Ui.rgba 0 0 205 0.35
+            , borderColour = Ui.rgba 0 0 255 0.2
+            , statusBadgeBorder = Ui.rgba 0 0 255 0.15
             , isDark = False
             }
 
-        PolarIce ->
-            { bg0 = Ui.rgb 248 251 255
-            , bg1 = Ui.rgb 240 245 252
-            , bg2 = Ui.rgb 225 235 248
-            , bg3 = Ui.rgb 210 222 240
-            , accent = Ui.rgb 56 132 244
-            , accentDim = Ui.rgba 37 99 235 0.1
-            , accentBorder = Ui.rgba 37 99 235 0.3
-            , textPrimary = Ui.rgb 25 32 42
-            , textSecondary = Ui.rgb 60 72 88
-            , textMuted = Ui.rgb 150 165 185
-            , textLineNumber = Ui.rgb 180 185 195
-            , colourSuccess = Ui.rgb 40 167 69
-            , colourError = Ui.rgb 218 54 51
-            , colourWarning = Ui.rgb 192 132 26
-            , warningBg = Ui.rgba 192 132 26 0.1
-            , warningBorder = Ui.rgba 192 132 26 0.3
-            , warningCardBg = Ui.rgba 192 132 26 8.0e-2
-            , warningCardBorder = Ui.rgba 192 132 26 0.25
-            , borderColour = Ui.rgba 37 99 235 0.15
-            , statusBadgeBorder = Ui.rgba 37 99 235 0.1
+        Tomorrow ->
+            { bg0 = Ui.rgb 255 255 255
+            , bg1 = Ui.rgb 246 246 246
+            , bg2 = Ui.rgb 238 238 238
+            , bg3 = Ui.rgb 230 230 230
+            , accent = Ui.rgb 137 89 168
+            , accentDim = Ui.rgba 137 89 168 0.15
+            , accentBorder = Ui.rgba 137 89 168 0.4
+            , textPrimary = Ui.rgb 77 77 76
+            , textSecondary = Ui.rgb 142 144 140
+            , textMuted = Ui.rgb 142 144 140
+            , textLineNumber = Ui.rgb 77 77 76
+            , colourSuccess = Ui.rgb 113 140 0
+            , colourWarning = Ui.rgb 245 135 31
+            , colourError = Ui.rgb 200 40 41
+            , warningBg = Ui.rgba 245 135 31 0.15
+            , warningBorder = Ui.rgba 245 135 31 0.4
+            , warningCardBg = Ui.rgba 245 135 31 0.1
+            , warningCardBorder = Ui.rgba 245 135 31 0.35
+            , borderColour = Ui.rgba 137 89 168 0.2
+            , statusBadgeBorder = Ui.rgba 137 89 168 0.15
+            , isDark = False
+            }
+
+        TomorrowNight ->
+            { bg0 = Ui.rgb 29 31 33
+            , bg1 = Ui.rgb 37 40 44
+            , bg2 = Ui.rgb 49 52 58
+            , bg3 = Ui.rgb 61 64 70
+            , accent = Ui.rgb 178 148 187
+            , accentDim = Ui.rgba 178 148 187 0.15
+            , accentBorder = Ui.rgba 178 148 187 0.4
+            , textPrimary = Ui.rgb 197 200 198
+            , textSecondary = Ui.rgb 150 152 150
+            , textMuted = Ui.rgb 150 152 150
+            , textLineNumber = Ui.rgb 197 200 198
+            , colourSuccess = Ui.rgb 181 189 104
+            , colourWarning = Ui.rgb 222 147 95
+            , colourError = Ui.rgb 223 95 95
+            , warningBg = Ui.rgba 222 147 95 0.15
+            , warningBorder = Ui.rgba 222 147 95 0.4
+            , warningCardBg = Ui.rgba 222 147 95 0.1
+            , warningCardBorder = Ui.rgba 222 147 95 0.35
+            , borderColour = Ui.rgba 178 148 187 0.2
+            , statusBadgeBorder = Ui.rgba 178 148 187 0.15
+            , isDark = True
+            }
+
+        TomorrowNightBlue ->
+            { bg0 = Ui.rgb 0 36 81
+            , bg1 = Ui.rgb 0 32 75
+            , bg2 = Ui.rgb 12 44 93
+            , bg3 = Ui.rgb 24 56 105
+            , accent = Ui.rgb 235 187 255
+            , accentDim = Ui.rgba 235 187 255 0.15
+            , accentBorder = Ui.rgba 235 187 255 0.4
+            , textPrimary = Ui.rgb 255 255 255
+            , textSecondary = Ui.rgb 114 133 183
+            , textMuted = Ui.rgba 114 133 183 0.8
+            , textLineNumber = Ui.rgb 115 136 181
+            , colourSuccess = Ui.rgb 209 241 169
+            , colourWarning = Ui.rgb 255 197 143
+            , colourError = Ui.rgb 249 157 165
+            , warningBg = Ui.rgba 255 197 143 0.15
+            , warningBorder = Ui.rgba 255 197 143 0.4
+            , warningCardBg = Ui.rgba 255 197 143 0.1
+            , warningCardBorder = Ui.rgba 255 197 143 0.35
+            , borderColour = Ui.rgba 235 187 255 0.2
+            , statusBadgeBorder = Ui.rgba 235 187 255 0.15
+            , isDark = True
+            }
+
+        TomorrowNightBright ->
+            { bg0 = Ui.rgb 0 0 0
+            , bg1 = Ui.rgb 26 26 26
+            , bg2 = Ui.rgb 38 38 38
+            , bg3 = Ui.rgb 51 51 51
+            , accent = Ui.rgb 195 151 216
+            , accentDim = Ui.rgba 195 151 216 0.15
+            , accentBorder = Ui.rgba 195 151 216 0.4
+            , textPrimary = Ui.rgb 222 222 222
+            , textSecondary = Ui.rgb 150 152 150
+            , textMuted = Ui.rgb 150 152 150
+            , textLineNumber = Ui.rgb 222 222 222
+            , colourSuccess = Ui.rgb 185 202 74
+            , colourWarning = Ui.rgb 231 140 69
+            , colourError = Ui.rgb 223 95 95
+            , warningBg = Ui.rgba 231 140 69 0.15
+            , warningBorder = Ui.rgba 231 140 69 0.4
+            , warningCardBg = Ui.rgba 231 140 69 0.1
+            , warningCardBorder = Ui.rgba 231 140 69 0.35
+            , borderColour = Ui.rgba 195 151 216 0.2
+            , statusBadgeBorder = Ui.rgba 195 151 216 0.15
+            , isDark = True
+            }
+
+        TomorrowNightEighties ->
+            { bg0 = Ui.rgb 45 45 45
+            , bg1 = Ui.rgb 39 39 39
+            , bg2 = Ui.rgb 51 51 51
+            , bg3 = Ui.rgb 63 63 63
+            , accent = Ui.rgb 204 153 204
+            , accentDim = Ui.rgba 204 153 204 0.15
+            , accentBorder = Ui.rgba 204 153 204 0.4
+            , textPrimary = Ui.rgb 204 204 204
+            , textSecondary = Ui.rgb 153 153 153
+            , textMuted = Ui.rgb 153 153 153
+            , textLineNumber = Ui.rgb 204 204 204
+            , colourSuccess = Ui.rgb 153 204 153
+            , colourWarning = Ui.rgb 249 145 87
+            , colourError = Ui.rgb 242 119 122
+            , warningBg = Ui.rgba 249 145 87 0.15
+            , warningBorder = Ui.rgba 249 145 87 0.4
+            , warningCardBg = Ui.rgba 249 145 87 0.1
+            , warningCardBorder = Ui.rgba 249 145 87 0.35
+            , borderColour = Ui.rgba 204 153 204 0.2
+            , statusBadgeBorder = Ui.rgba 204 153 204 0.15
+            , isDark = True
+            }
+
+        Twilight ->
+            { bg0 = Ui.rgb 20 20 20
+            , bg1 = Ui.rgb 35 35 35
+            , bg2 = Ui.rgb 47 47 47
+            , bg3 = Ui.rgb 60 60 60
+            , accent = Ui.rgb 205 168 105
+            , accentDim = Ui.rgba 205 168 105 0.15
+            , accentBorder = Ui.rgba 205 168 105 0.4
+            , textPrimary = Ui.rgb 248 248 248
+            , textSecondary = Ui.rgb 128 128 128
+            , textMuted = Ui.rgb 95 90 96
+            , textLineNumber = Ui.rgb 226 226 226
+            , colourSuccess = Ui.rgb 143 157 106
+            , colourWarning = Ui.rgb 207 106 76
+            , colourError = Ui.rgb 210 168 161
+            , warningBg = Ui.rgba 207 106 76 0.15
+            , warningBorder = Ui.rgba 207 106 76 0.4
+            , warningCardBg = Ui.rgba 207 106 76 0.1
+            , warningCardBorder = Ui.rgba 207 106 76 0.35
+            , borderColour = Ui.rgba 205 168 105 0.2
+            , statusBadgeBorder = Ui.rgba 205 168 105 0.15
+            , isDark = True
+            }
+
+        VibrantInk ->
+            { bg0 = Ui.rgb 15 15 15
+            , bg1 = Ui.rgb 26 26 26
+            , bg2 = Ui.rgb 38 38 38
+            , bg3 = Ui.rgb 51 51 51
+            , accent = Ui.rgb 255 102 0
+            , accentDim = Ui.rgba 255 102 0 0.15
+            , accentBorder = Ui.rgba 255 102 0 0.4
+            , textPrimary = Ui.rgb 255 255 255
+            , textSecondary = Ui.rgb 190 190 190
+            , textMuted = Ui.rgba 153 51 204 0.8
+            , textLineNumber = Ui.rgb 190 190 190
+            , colourSuccess = Ui.rgb 102 255 0
+            , colourWarning = Ui.rgb 153 204 153
+            , colourError = Ui.rgb 204 255 51
+            , warningBg = Ui.rgba 153 204 153 0.15
+            , warningBorder = Ui.rgba 153 204 153 0.4
+            , warningCardBg = Ui.rgba 153 204 153 0.1
+            , warningCardBorder = Ui.rgba 153 204 153 0.35
+            , borderColour = Ui.rgba 255 102 0 0.2
+            , statusBadgeBorder = Ui.rgba 255 102 0 0.15
+            , isDark = True
+            }
+
+        Xcode ->
+            { bg0 = Ui.rgb 255 255 255
+            , bg1 = Ui.rgb 232 232 232
+            , bg2 = Ui.rgb 224 224 224
+            , bg3 = Ui.rgb 216 216 216
+            , accent = Ui.rgb 200 0 164
+            , accentDim = Ui.rgba 200 0 164 0.15
+            , accentBorder = Ui.rgba 200 0 164 0.4
+            , textPrimary = Ui.rgb 0 0 0
+            , textSecondary = Ui.rgb 128 128 128
+            , textMuted = Ui.rgb 0 142 0
+            , textLineNumber = Ui.rgb 51 51 51
+            , colourSuccess = Ui.rgb 223 0 2
+            , colourWarning = Ui.rgb 58 0 220
+            , colourError = Ui.rgb 223 0 2
+            , warningBg = Ui.rgba 58 0 220 0.15
+            , warningBorder = Ui.rgba 58 0 220 0.4
+            , warningCardBg = Ui.rgba 58 0 220 0.1
+            , warningCardBorder = Ui.rgba 58 0 220 0.35
+            , borderColour = Ui.rgba 200 0 164 0.2
+            , statusBadgeBorder = Ui.rgba 200 0 164 0.15
             , isDark = False
             }
 
@@ -344,14 +1564,15 @@ getTheme theme =
 transparent : Ui.Color
 transparent =
     Ui.rgba 0 0 0 0.0
+-- ── Overlay (click to close) ──────────────────────────────────────────────────
 
 
 closeOverlay : Msg -> Element Msg
 closeOverlay closeMsg =
     Ui.el [ Ui.width Ui.fill, Ui.height Ui.fill, Ui.onClick closeMsg ] Ui.none
-
-
 -- ── Action button (primary — fill) ───────────────────────────────────────────
+
+
 actionButton : ThemeRecord -> Msg -> Bool -> String -> Element Msg
 actionButton t onPress isDisabled label =
     Ui.button
@@ -380,7 +1601,6 @@ actionButton t onPress isDisabled label =
         }
 
 
--- ── Secondary button (ghost — dim border) ────────────────────────────────────
 secondaryButton : ThemeRecord -> Msg -> String -> Element Msg
 secondaryButton t onPress label =
     Ui.button
@@ -394,9 +1614,9 @@ secondaryButton t onPress label =
         , Font.family Font.monospace
         ]
         { onPress = Just onPress, label = Ui.text label }
-
-
 -- ── Status badge ──────────────────────────────────────────────────────────────
+
+
 statusBadge : ThemeRecord -> RunStatus -> Element Msg
 statusBadge t status =
     let
@@ -426,9 +1646,27 @@ statusBadge t status =
             , Border.width 1
             ]
             (Ui.text badgeLabel)
+-- ── Status badge border color ────────────────────────────────────────────────
 
 
+statusBadgeBorder : ThemeRecord -> RunStatus -> Ui.Color
+statusBadgeBorder t status =
+    case status of
+
+        Idle ->
+            t.borderColour
+
+        Running ->
+            t.statusBadgeBorder
+
+        Succeeded ->
+            t.statusBadgeBorder
+
+        Failed ->
+            t.colourError
 -- ── Section label ─────────────────────────────────────────────────────────────
+
+
 sectionLabel : ThemeRecord -> String -> Element Msg
 sectionLabel t heading =
     Ui.el
