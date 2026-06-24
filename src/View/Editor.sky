@@ -14,7 +14,20 @@ import Std.Html as Html
 import Std.Html.Attributes as Attr
 
 
--- ── Editor panel ─────────────────────────────────────────────────────────────
+exampleMirror : Model -> Element msg
+exampleMirror model =
+    let
+        id = "example-mirror-wrapper"
+        name = id ++ "-" ++ String.fromInt model.activeExample
+    in
+        Ui.el [ Ui.htmlAttribute "id" id, Ui.htmlAttribute "name" name ]
+            <| Ui.html
+                   (Html.node
+                       "textarea"
+                       [ Attr.name "example-mirror", Attr.id "example-mirror" ]
+                       [Html.text model.currentCode])
+
+
 editorPanel : Model -> Element Msg
 editorPanel model =
     let
@@ -27,11 +40,13 @@ editorPanel model =
             , Border.color t.borderColour
             , Border.widthEach { top = 0, right = 1, bottom = 0, left = 0 }
             ]
-                    -- [Html.text model.code]
-            [ toolbar model, securityBanner model, codeInput model ]
+            [ exampleMirror model
+            , toolbar model
+            , securityBanner model
+            , codeInput model
+            ]
 
 
--- ── Toolbar ───────────────────────────────────────────────────────────────────
 toolbar : Model -> Element Msg
 toolbar model =
     let
@@ -53,8 +68,6 @@ toolbar model =
             ]
 
 
--- ── Example selector (pure Ui dropdown) ──────────────────────────────────────
--- Trigger element + Ui.below dropdown panel. No Std.Html, no inline CSS.
 exampleSelector : Model -> Element Msg
 exampleSelector model =
     let
@@ -167,12 +180,12 @@ fmtStatusHint model =
 
             _ ->
                 Ui.text ""
-
-
 -- ── Security warning banner ───────────────────────────────────────────────────
 -- Shown when the user's code contains an import of a blocked module.
 -- The banner is informational — the server already strips the dangerous
 -- imports before building, so the user can still run the sanitised code.
+
+
 securityBanner : Model -> Element Msg
 securityBanner model =
     let
@@ -234,78 +247,7 @@ codeInput model =
             , Ui.html
                   (Html.node
                       "textarea"
-                      [ Attr.name "code"
-                      , Attr.attribute "hidden" ""
-                      , Attr.id "code-mirror"
-                      ]
-                      [Html.text model.code])
+                      [ Attr.name "ace-mirror", Attr.id "ace-mirror" ]
+                      [])
             , Ui.row [Ui.paddingXY 0 6] [actionButton t NoOp False "Run"]
             ]
-
-
-            -- Ui.row
-            -- [ Ui.height Ui.fill, Ui.width Ui.fill ]
-            -- [ Ui.el
-            --       [ Ui.htmlAttribute "id" "editor"
-            --       , Ui.height Ui.fill
-            --       , Ui.width Ui.fill
-            --       ]
-            --       (Ui.text "")
-            -- , Ui.el
-            --       [ Ui.htmlAttribute "id" "code-content"
-            --       , Ui.AttrStyle "white-space" "pre-line"
-            --       ]
-            --       (Ui.text "")
-            -- ]
-
-
-        -- Ui.row
-        --     [ Ui.width Ui.fill
-        --     , Ui.height Ui.fill
-        --     , Ui.padding 2
-        --     , Background.color t.bg0
-        --     ]
-        --     [ lineNumCol t model.code
-        --     , Ui.el
-        --           [ Ui.width Ui.fill
-        --           , Ui.height Ui.fill
-        --           , Font.family Font.monospace
-        --           , Font.size 11
-        --           , Font.color t.textPrimary
-        --           , Border.width 0
-        --           , Ui.padding 16
-        --           ]
-        --           <| Input.multiline
-        --                  [ Background.color t.bg0
-        --                  , Ui.width (Ui.fillPortion 10)
-        --                  , Ui.height Ui.fill
-        --                  ]
-        --                  { onChange = CodeChanged
-        --                  , text = model.code
-        --                  , placeholder = Just
-        --                        (Input.placeholder
-        --                            [ Font.color t.textMuted
-        --                            , Font.family Font.monospace
-        --                            , Font.size 11
-        --                            ]
-        --                            (Ui.text
-        --                                "-- Write your Sky code here, or pick an example above…"))
-        --                  , label = Input.labelHidden "Sky source code editor"
-        --                  , spellcheck = False
-        --                  }
-        --     ]
-lineNumCol : ThemeRecord -> String -> Element Msg
-lineNumCol t code =
-    let
-        codeLines = String.lines code
-    in
-        Ui.column
-            [ Ui.paddingXY 1 16
-            , Ui.alignRight
-            , Font.color t.textLineNumber
-            , Ui.height Ui.fill
-            ]
-            (List.indexedMap
-                (\i l ->
-                    (Ui.el [Ui.alignRight] (Ui.text (String.fromInt (i + 1)))))
-                codeLines)

@@ -11,7 +11,6 @@ import Std.Ui.Font as Font
 import View.Common exposing (..)
 
 
--- ── Output panel ─────────────────────────────────────────────────────────────
 outputPanel : Model -> Element Msg
 outputPanel model =
     let
@@ -25,7 +24,6 @@ outputPanel model =
             [ outputToolbar model, activeTabContent model ]
 
 
--- ── Tab toolbar ───────────────────────────────────────────────────────────────
 outputToolbar : Model -> Element Msg
 outputToolbar model =
     let
@@ -78,7 +76,6 @@ tabButton t model tab label =
             (Ui.text label)
 
 
--- ── Active tab content ────────────────────────────────────────────────────────
 activeTabContent : Model -> Element Msg
 activeTabContent model =
     let
@@ -300,7 +297,6 @@ blockedLibsCard t =
             ]
 
 
--- ── Quick-reference panel ─────────────────────────────────────────────────────
 quickRefContent : ThemeRecord -> Element Msg
 quickRefContent t =
     Ui.el

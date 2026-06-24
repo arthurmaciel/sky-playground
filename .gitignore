@@ -7,3 +7,6 @@ tmp
 docs/agents/issue-tracker.md
 docs/agents/triage-labels.md
 docs/agents/domain.md
+node_modules/
+package-lock.json
+package.json

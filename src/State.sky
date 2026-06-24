@@ -28,7 +28,7 @@ type Theme
     | PolarIce
 
 type alias Model =
-    { code : String
+    { currentCode : String
     , runOutput : String
     , runStatus : RunStatus
     , formatStatus : FormatStatus
@@ -48,7 +48,7 @@ type Tab
 
 initialModel : Model
 initialModel =
-    { code = ""
+    { currentCode = ""
     , runOutput = ""
     , runStatus = Idle
     , formatStatus = FmtIdle

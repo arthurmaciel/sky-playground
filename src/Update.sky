@@ -15,7 +15,9 @@ update msg model =
     case msg of
 
         CodeChanged newCode ->
-            ( { model | code = newCode, securityWarning = "" }, Cmd.none )
+            ( { model | currentCode = newCode, securityWarning = "" }
+            , Cmd.none
+            )
 
         FormatClicked ->
             let
@@ -23,7 +25,7 @@ update msg model =
             -- we still proceed (Runner.runCode calls Security.sanitise
             -- internally, stripping them before the build).
                 warning =
-                    if Security.isDangerous model.code then
+                    if Security.isDangerous model.currentCode then
                         Security.warningMessage
 
                     else
@@ -32,14 +34,18 @@ update msg model =
                 ( { model | formatStatus = FmtRunning
                   , securityWarning = warning
                   }
-                , Cmd.perform (Runner.formatCode model.code) GotFormatResult
+                , Cmd.perform
+                      (Runner.formatCode model.currentCode)
+                      GotFormatResult
                 )
 
         GotFormatResult result ->
             case result of
 
                 Ok formatted ->
-                    ( { model | code = formatted, formatStatus = FmtSucceeded }
+                    ( { model | currentCode = formatted
+                      , formatStatus = FmtSucceeded
+                      }
                     , Cmd.none
                     )
 
@@ -92,7 +98,7 @@ update msg model =
                 case maybeEx of
 
                     Just ex ->
-                        ( { model | code = ex.code
+                        ( { model | currentCode = ex.code
                           , activeExample = i
                           , exampleDropdownOpen = False
                           , runOutput = ""

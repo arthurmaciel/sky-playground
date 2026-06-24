@@ -32,15 +32,15 @@ init _ =
                     "module Main exposing (main)\n\nimport Sky.Core.Prelude exposing (..)\nimport Std.Log exposing (println)\n\nmain =\n    println \"Hello, Sky! ☁\"\n"
     in
         ( { initialModel | code = firstCode }, Cmd.none )
-
-
 -- ── Subscriptions ─────────────────────────────────────────────────────────────
+
+
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.none
-
-
 -- ── Header ────────────────────────────────────────────────────────────────────
+
+
 logoMark : ThemeRecord -> Element Msg
 logoMark t =
     Ui.el
@@ -49,12 +49,13 @@ logoMark t =
         , Background.color t.accent
         , Border.rounded 6
         ]
+-- ── View ──────────────────────────────────────────────────────────────────────
         (Ui.el
             [ Ui.centerX, Ui.centerY, Font.size 23, Font.color Ui.white ]
             (Ui.text "☁"))
-
-
 -- ── Theme selector (pure Ui dropdown) ────────────────────────────────────────
+
+
 themeSelector : Model -> Element Msg
 themeSelector model =
     let
@@ -101,15 +102,19 @@ themeSelector model =
                 , Border.rounded 5
                 ]
                 (List.map dropdownItem allThemes)
+        id = "theme-selector-wrapper"
+        name = id ++ "-" ++ themeName model.theme
+        attrs = [ Ui.htmlAttribute "id" id, Ui.htmlAttribute "name" name ]
     in
         Ui.el
             (if model.themeDropdownOpen then
                 [ Ui.below dropdown
                 , Ui.inFront (closeOverlay CloseThemeDropdown)
                 ]
+                    ++ attrs
 
             else
-                [])
+                attrs)
             trigger
 
 
@@ -157,7 +162,6 @@ header model =
             ]
 
 
--- ── View ──────────────────────────────────────────────────────────────────────
 view : Model -> Html Msg
 view model =
     let
@@ -191,7 +195,6 @@ view model =
             ]
 
 
--- ── Main ──────────────────────────────────────────────────────────────────────
 main =
     Live.app
         { init = init

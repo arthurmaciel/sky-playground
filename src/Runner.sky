@@ -80,24 +80,16 @@ runCode code =
             "sky-run"
             (\dir ->
                 let
-                    appPath = "sky-out/app"
-                    runScript = "timeout 5s " ++ appPath
                     formatOutput buildOutput runOutput =
                         let
                             buildSection =
                                 "── Build ──────────────────────────────────────\n"
-                                    ++ if String.isEmpty (String.trim buildOutput) then
-                                           ""
-
-                                       else
-                                           buildOutput ++ "\n"
+                                    ++ (String.trim buildOutput)
+                                    ++ "\n"
                             runSection =
                                 "── Run ────────────────────────────────────────\n"
-                                    ++ if String.isEmpty (String.trim runOutput) then
-                                           ""
-
-                                       else
-                                           runOutput ++ "\n"
+                                    ++ (String.trim runOutput)
+                                    ++ "\n"
                         in
                             buildSection ++ runSection
                 in
@@ -109,7 +101,7 @@ runCode code =
                                (\_ -> shellIn dir "sky build src/Main.sky")
                         |> Task.andThen
                                (\buildOut ->
-                                   shellIn dir runScript
+                                   shellIn dir "timeout 5s ./sky-out/app"
                                        |> Task.map
                                               (\runOut ->
                                                   formatOutput buildOut runOut)))

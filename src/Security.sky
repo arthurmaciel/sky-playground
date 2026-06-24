@@ -53,10 +53,6 @@ blockedPatterns =
     ]
 
 
--- Human-readable list for the warning UI (defined in State)
-
-
--- ── Public API ────────────────────────────────────────────────────────────────
 isDangerous : String -> Bool
 isDangerous code =
     List.any (\pat -> String.contains pat code) blockedPatterns
