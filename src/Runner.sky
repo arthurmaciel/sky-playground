@@ -21,36 +21,37 @@ main = "src/Main.sky"
 
 shellIn : String -> String -> Task Error String
 shellIn dir cmd =
-    Process.run "sh" [ "-c", "( cd " ++ dir ++ " && " ++ cmd ++ " ) 2>&1;" ]
+    Process.run "sh" [ "-c", "( cd " ++ dir ++ " && " ++ cmd ++ " )" ]
 
 
 withTempDir : String -> (String -> Task Error a) -> Task Error a
 withTempDir prefix action =
-    Crypto.randomToken 4
-        |> Task.andThen
-               (\token ->
-                   let
-                       dir = "tmp/" ++ prefix ++ "-" ++ token
-                       cleanup =
-                           let
-                               _ = Process.run "rm" [ "-rf", dir ]
-                           in
-                               Task.succeed ()
-                   in
-                       File.mkdirAll (dir ++ "/src")
-                           |> Task.andThen (\_ -> action dir)
-                           |> Task.andThen
-                                  (\result ->
-                                      let
-                                          _ = cleanup
-                                      in
-                                          Task.succeed result)
-                           |> Task.onError
-                                  (\err ->
-                                      let
-                                          _ = cleanup
-                                      in
-                                          Task.fail err))
+    let
+        runWithTempDir token =
+            let
+                dir = "tmp/" ++ prefix ++ "-" ++ token
+                src = dir ++ "/src"
+                cleanup =
+                    let
+                        _ = Process.run "rm" [ "-rf", dir ]
+                    in
+                        Task.succeed ()
+            in
+                File.mkdirAll src |> Task.andThen (\_ -> action dir)
+                    -- |> Task.andThen
+                    --        (\result ->
+                    --            let
+                    --                _ = cleanup
+                    --            in
+                    --                Task.succeed result)
+                    -- |> Task.onError
+                    --        (\err ->
+                    --            let
+                    --                _ = cleanup
+                    --            in
+                    --                Task.fail err)
+    in
+        Crypto.randomToken 4 |> Task.andThen runWithTempDir
 
 
 formatCode : String -> Task Error String
@@ -75,33 +76,29 @@ runCode : String -> Task Error String
 runCode code =
     let
         safe = Security.sanitise code
+        debug output =
+            let
+                _ = println code
+            in
+                Task.succeed output
+        buildAndRun dir =
+            let
+                writeToml = File.writeFile (dir ++ "/sky.toml") sandboxToml
+                writeMain = File.writeFile (dir ++ "/src/Main.sky") safe
+                build _ = shellIn dir "sky build src/Main.sky"
+                run buildOut =
+                    shellIn dir "./sky-out/app"
+                        |> Task.andThen
+                               (\runOut ->
+                                   Task.succeed (formatOutput buildOut runOut))
+                formatOutput buildOutput runOutput =
+                    "── Build ─────────────\n" ++ (String.trim buildOutput)
+                        ++ "\n"
+                        ++ "── Run ──────────────\n"
+                        ++ (String.trim runOutput)
+                        ++ "\n"
+            in
+                Task.sequence [ writeToml, writeMain ] |> Task.andThen build
+                    |> Task.andThen run
     in
-        withTempDir
-            "sky-run"
-            (\dir ->
-                let
-                    formatOutput buildOutput runOutput =
-                        let
-                            buildSection =
-                                "── Build ──────────────────────────────────────\n"
-                                    ++ (String.trim buildOutput)
-                                    ++ "\n"
-                            runSection =
-                                "── Run ────────────────────────────────────────\n"
-                                    ++ (String.trim runOutput)
-                                    ++ "\n"
-                        in
-                            buildSection ++ runSection
-                in
-                    File.writeFile (dir ++ "/sky.toml") sandboxToml
-                        |> Task.andThen
-                               (\_ ->
-                                   File.writeFile (dir ++ "/src/Main.sky") safe)
-                        |> Task.andThen
-                               (\_ -> shellIn dir "sky build src/Main.sky")
-                        |> Task.andThen
-                               (\buildOut ->
-                                   shellIn dir "timeout 5s ./sky-out/app"
-                                       |> Task.map
-                                              (\runOut ->
-                                                  formatOutput buildOut runOut)))
+        withTempDir "sky-run" buildAndRun |> Task.andThen debug

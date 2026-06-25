@@ -24,10 +24,7 @@ exampleMirror model =
             <| Ui.html
                    (Html.node
                        "textarea"
-                       [ Attr.name "example-mirror"
-                       , Attr.id "example-mirror"
-                       , Attr.attribute "hidden" ""
-                       ]
+                       [ Attr.name "example-mirror", Attr.id "example-mirror" ]
                        [Html.text model.currentCode])
 
 
@@ -239,21 +236,24 @@ codeInput model =
     let
         t = getTheme model.theme
     in
-        Ui.form
-            [Ui.onSubmit RunClicked]
+        Ui.column
+            []
             [ Ui.el
                   [ Ui.htmlAttribute "id" "editor"
                   , Ui.width Ui.fill
                   , Ui.height Ui.fill
                   ]
                   Ui.none
-            , Ui.html
-                  (Html.node
-                      "textarea"
-                      [ Attr.name "ace-mirror"
-                      , Attr.id "ace-mirror"
-                      , Attr.attribute "hidden" ""
-                      ]
-                      [])
-            , Ui.row [Ui.paddingXY 0 6] [actionButton t NoOp False "Run"]
+            , Ui.form
+                  [Ui.onSubmit RunClicked]
+                  [ Ui.html
+                        (Html.node
+                            "textarea"
+                            [ Attr.name "ace-mirror", Attr.id "ace-mirror" ]
+                            [])
+                  , Ui.input
+                        [ Ui.htmlAttribute "type" "submit"
+                        , Ui.htmlAttribute "value" "Run"
+                        ]
+                  ]
             ]

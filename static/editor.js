@@ -1,13 +1,14 @@
 var editor = ace.edit("editor");
 editor.session.setMode("ace/mode/elm");
 editor.setFontSize(18);
+editor.setOption("printMargin", false);
 editor.textInput.getElement().id = "editor-textarea";
 editor.textInput.getElement().name = "editor-textarea";
 
 var themeSelectorWrapper = document.getElementById('theme-selector-wrapper');
 editor.setTheme(themeSelectorWrapper ? themeSelectorWrapper.getAttribute('data-ace-theme') : "ace/theme/chrome");
 
-initialCode = "-- Insert you code bellow or select an example above";
+initialCode = "-- Insert you code here or select an example above";
 editor.setValue(initialCode, -1);
 
 var aceMirror = document.getElementById('ace-mirror');
@@ -37,7 +38,7 @@ var dropDownObserver = new MutationObserver((mutations) => {
       editor.setValue(exampleMirror.value, -1);
     } else if (mutation.target.id === themeSelectorWrapper.id) {
       var acePath = themeSelectorWrapper.getAttribute('data-ace-theme');
-      editor.setTheme(acePath || "ace/theme/chrome");
+      editor.setTheme(acePath || "ace/theme/github_dark");
     }
   });
 });
@@ -47,7 +48,6 @@ dropDownObserver.observe(exampleMirrorWrapper, {
 });
 
 dropDownObserver.observe(themeSelectorWrapper, {
-  // childList: true,
   attributes: true,
 });
 

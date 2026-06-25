@@ -21,24 +21,12 @@ import Std.Html.Attributes as HtmlAttrs
 -- ── Init ─────────────────────────────────────────────────────────────────────
 init : {  } -> ( Model, Cmd Msg )
 init _ =
-    let
-        firstCode =
-            case List.head examples of
-
-                Just ex ->
-                    ex.code
-
-                Nothing ->
-                    "module Main exposing (main)\n\nimport Sky.Core.Prelude exposing (..)\nimport Std.Log exposing (println)\n\nmain =\n    println \"Hello, Sky! ☁\"\n"
-    in
-        ( { initialModel | code = firstCode }, Cmd.none )
--- ── Subscriptions ─────────────────────────────────────────────────────────────
+    ( initialModel, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.none
--- ── Header ────────────────────────────────────────────────────────────────────
 
 
 logoMark : ThemeRecord -> Element Msg
@@ -49,11 +37,9 @@ logoMark t =
         , Background.color t.accent
         , Border.rounded 6
         ]
--- ── View ──────────────────────────────────────────────────────────────────────
         (Ui.el
             [ Ui.centerX, Ui.centerY, Font.size 23, Font.color Ui.white ]
             (Ui.text "☁"))
--- ── Theme selector (pure Ui dropdown) ────────────────────────────────────────
 
 
 themeSelector : Model -> Element Msg
@@ -128,12 +114,12 @@ header model =
     let
         t = getTheme model.theme
     in
-        Ui.row
+        Ui.wrappedRow
             [ Ui.width Ui.fill
+            , Ui.height Ui.shrink
             , Ui.paddingXY 20 0
             , Ui.centerY
             , Ui.spacing 10
-            , Ui.height (Ui.px 52)
             , Background.color t.bg1
             , Border.color t.borderColour
             , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
@@ -193,7 +179,7 @@ view model =
                   (Ui.column
                       [ Ui.width Ui.fill, Ui.height Ui.fill ]
                       [ header model
-                      , Ui.row
+                      , Ui.wrappedRow
                             [ Ui.width Ui.fill, Ui.height Ui.fill ]
                             [ editorPanel model, outputPanel model ]
                       ])
