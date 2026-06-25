@@ -1,10 +1,9 @@
 module Main exposing (main)
 
-import Examples exposing (examples)
-import Sky.Core.List as List
 import Sky.Core.Prelude exposing (..)
-import Sky.Core.String as String
 import State exposing (..)
+import Std.Html as Html
+import Std.Html.Attributes as HtmlAttrs
 import Std.Live as Live
 import Std.Ui as Ui exposing (Element)
 import Std.Ui.Background as Background
@@ -14,8 +13,6 @@ import Update exposing (update)
 import View.Common exposing (..)
 import View.Editor exposing (editorPanel)
 import View.Output exposing (outputPanel)
-import Std.Html as Html
-import Std.Html.Attributes as HtmlAttrs
 
 
 -- ── Init ─────────────────────────────────────────────────────────────────────
@@ -27,6 +24,50 @@ init _ =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.none
+
+
+view : Model -> Html Msg
+view model =
+    let
+        t = getTheme model.theme
+    in
+        Html.div
+            []
+            [ Html.script
+                  [HtmlAttrs.src
+                      "https://cdn.jsdelivr.net/npm/ace-builds/src-min-noconflict/ace.min.js"]
+                  []
+            , Html.script
+                  [HtmlAttrs.src
+                      "https://cdn.jsdelivr.net/npm/ace-builds/src/mode-elm.min.js"]
+                  []
+            , Html.link
+                  [ HtmlAttrs.href
+                        "https://cdn.jsdelivr.net/npm/ace-builds/css/ace.min.css"
+                  , HtmlAttrs.rel "stylesheet"
+                  ]
+            , Html.node "script" [HtmlAttrs.src "/static/editor.js"] []
+            , Ui.layout
+                  [Background.color t.bg0]
+                  (Ui.column
+                      [ Ui.width Ui.fill, Ui.height Ui.fill ]
+                      [ header model
+                      , Ui.wrappedRow
+                            [ Ui.width Ui.fill, Ui.height Ui.fill ]
+                            [ editorPanel model, outputPanel model ]
+                      ])
+            ]
+
+
+main =
+    Live.app
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , routes = [Live.route "/" MainPage]
+        , notFound = MainPage
+        }
 
 
 logoMark : ThemeRecord -> Element Msg
@@ -151,47 +192,3 @@ header model =
                   , label = Ui.text "GitHub ↗"
                   }
             ]
-
-
-view : Model -> Html Msg
-view model =
-    let
-        t = getTheme model.theme
-    in
-        Html.div
-            []
-            [ Html.script
-                  [HtmlAttrs.src
-                      "https://cdn.jsdelivr.net/npm/ace-builds/src-min-noconflict/ace.min.js"]
-                  []
-            , Html.script
-                  [HtmlAttrs.src
-                      "https://cdn.jsdelivr.net/npm/ace-builds/src/mode-elm.min.js"]
-                  []
-            , Html.link
-                  [ HtmlAttrs.href
-                        "https://cdn.jsdelivr.net/npm/ace-builds/css/ace.min.css"
-                  , HtmlAttrs.rel "stylesheet"
-                  ]
-            , Html.node "script" [HtmlAttrs.src "/static/editor.js"] []
-            , Ui.layout
-                  [Background.color t.bg0]
-                  (Ui.column
-                      [ Ui.width Ui.fill, Ui.height Ui.fill ]
-                      [ header model
-                      , Ui.wrappedRow
-                            [ Ui.width Ui.fill, Ui.height Ui.fill ]
-                            [ editorPanel model, outputPanel model ]
-                      ])
-            ]
-
-
-main =
-    Live.app
-        { init = init
-        , update = update
-        , view = view
-        , subscriptions = subscriptions
-        , routes = [Live.route "/" MainPage]
-        , notFound = MainPage
-        }

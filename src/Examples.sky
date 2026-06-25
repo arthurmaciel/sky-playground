@@ -8,6 +8,7 @@ type alias Example =
     , description : String
     , code : String
     }
+-- ── 05 — Task Effects ────────────────────────────────────────────────────────
 
 
 examples : List Example
@@ -36,6 +37,7 @@ main =
     println "Hello, Sky! ☁"
 """
     }
+-- ── 06 — JSON Decode ─────────────────────────────────────────────────────────
 
 
 pureFunctions : Example
@@ -130,7 +132,7 @@ main =
             , Rectangle 4.0 6.0
             , Triangle 3.0 4.0 5.0
             ]
-        _ = List.map (\s -> println (describeArea s)) shapes
+        _ = List.map (\s -> let _ = println (describeArea s) in ()) shapes
     in
         println "Done."
 """
@@ -189,7 +191,6 @@ main =
     }
 
 
--- ── 05 — Task Effects ────────────────────────────────────────────────────────
 taskEffects : Example
 taskEffects =
     { index = 4
@@ -232,7 +233,6 @@ main =
     }
 
 
--- ── 06 — JSON Decode ─────────────────────────────────────────────────────────
 jsonDecode : Example
 jsonDecode =
     { index = 5

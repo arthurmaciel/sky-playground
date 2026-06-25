@@ -38,18 +38,18 @@ withTempDir prefix action =
                         Task.succeed ()
             in
                 File.mkdirAll src |> Task.andThen (\_ -> action dir)
-                    -- |> Task.andThen
-                    --        (\result ->
-                    --            let
-                    --                _ = cleanup
-                    --            in
-                    --                Task.succeed result)
-                    -- |> Task.onError
-                    --        (\err ->
-                    --            let
-                    --                _ = cleanup
-                    --            in
-                    --                Task.fail err)
+                    |> Task.andThen
+                           (\result ->
+                               let
+                                   _ = cleanup
+                               in
+                                   Task.succeed result)
+                    |> Task.onError
+                           (\err ->
+                               let
+                                   _ = cleanup
+                               in
+                                   Task.fail err)
     in
         Crypto.randomToken 4 |> Task.andThen runWithTempDir
 
@@ -76,11 +76,6 @@ runCode : String -> Task Error String
 runCode code =
     let
         safe = Security.sanitise code
-        debug output =
-            let
-                _ = println code
-            in
-                Task.succeed output
         buildAndRun dir =
             let
                 writeToml = File.writeFile (dir ++ "/sky.toml") sandboxToml
@@ -101,4 +96,4 @@ runCode code =
                 Task.sequence [ writeToml, writeMain ] |> Task.andThen build
                     |> Task.andThen run
     in
-        withTempDir "sky-run" buildAndRun |> Task.andThen debug
+        withTempDir "sky-run" buildAndRun
