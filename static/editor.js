@@ -1,21 +1,22 @@
 var editor = ace.edit("editor");
 editor.session.setMode("ace/mode/elm");
-editor.setFontSize(16);
+editor.setFontSize(18);
 editor.setOption("printMargin", false);
 editor.textInput.getElement().id = "editor-textarea";
 editor.textInput.getElement().name = "editor-textarea";
 
-var aceMirror = document.getElementById('ace-mirror');
-const exampleMirror = document.getElementById('example-mirror');
-const exampleMirrorWrapper = document.getElementById('example-mirror-wrapper');
-const themeSelectorWrapper = document.getElementById('theme-selector-wrapper');
-
+var themeSelectorWrapper = document.getElementById('theme-selector-wrapper');
 editor.setTheme(themeSelectorWrapper ? themeSelectorWrapper.getAttribute('data-ace-theme') : "ace/theme/chrome");
+
 initialCode = "-- Insert you code here or select an example above";
-editor.setValue(initialCode, 0);
+editor.setValue(initialCode, -1);
 editor.focus();
 editor.selection.moveCursorToPosition({row: 0, column: 0});
 editor.selection.selectLine();
+
+var aceMirror = document.getElementById('ace-mirror');
+var exampleMirror = document.getElementById('example-mirror');
+var exampleMirrorWrapper = document.getElementById('example-mirror-wrapper');
 
 // Sync Ace editor and example-mirror
 editor.session.on("change", () => {

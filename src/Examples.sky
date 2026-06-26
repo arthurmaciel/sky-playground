@@ -72,7 +72,7 @@ process s =
 
 main =
     let
-        _ = println (greet "Arthur")
+        _ = println (greet "stranger")
         _ = println (String.fromInt (double 21))
         _ = println (process "  sky lang  ")
     in
