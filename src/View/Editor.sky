@@ -243,28 +243,33 @@ codeInput model =
                   , Ui.height Ui.fill
                   ]
                   Ui.none
-            , Ui.form
-                  [Ui.onSubmit RunClicked]
-                  [Ui.html
-                      (Html.node
-                          "textarea"
-                          [ Attr.name "code"
-                          , Attr.id "ace-mirror"
-                          , Attr.attribute "hidden" ""
-                          ]
-                          [])]
-            , Ui.el [Ui.paddingXY 6 6] <| actionButton t NoOp False "Run ▶"
-            , Ui.form
-                  [Ui.onSubmit FormatClicked]
-                  [ Ui.html
-                        (Html.node
-                            "textarea"
-                            [ Attr.name "fmtcode"
-                            , Attr.id "fmt-code-mirror"
-                            , Attr.attribute "hidden" ""
-                            ]
-                            [])
-                  , Ui.el [Ui.paddingXY 6 6]
-                        <| secondaryButton t NoOp (fmtLabel model)
+            , Ui.row
+                  []
+                  [ Ui.form
+                        [Ui.onSubmit FormatClicked]
+                        [ Ui.html
+                              (Html.node
+                                  "textarea"
+                                  [ Attr.name "fmtcode"
+                                  , Attr.id "fmt-code-mirror"
+                                  , Attr.attribute "hidden" ""
+                                  ]
+                                  [])
+                        , Ui.el [Ui.paddingXY 6 6]
+                              <| secondaryButton t NoOp (fmtLabel model)
+                        ]
+                  , Ui.form
+                        [Ui.onSubmit RunClicked]
+                        [ Ui.html
+                              (Html.node
+                                  "textarea"
+                                  [ Attr.name "code"
+                                  , Attr.id "ace-mirror"
+                                  , Attr.attribute "hidden" ""
+                                  ]
+                                  [])
+                        , Ui.el [Ui.paddingXY 6 6]
+                              <| actionButton t NoOp False "Run ▶"
+                        ]
                   ]
             ]

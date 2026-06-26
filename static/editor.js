@@ -8,10 +8,8 @@ editor.textInput.getElement().name = "editor-textarea";
 var themeSelectorWrapper = document.getElementById('theme-selector-wrapper');
 editor.setTheme(themeSelectorWrapper ? themeSelectorWrapper.getAttribute('data-ace-theme') : "ace/theme/chrome");
 
-initialCode = "-- Insert you code here or select an example above";
-editor.setValue(initialCode, -1);
 editor.focus();
-editor.selection.moveCursorToPosition({row: 0, column: 0});
+editor.selection.moveCursorToPosition({ row: 0, column: 0 });
 editor.selection.selectLine();
 
 var aceMirror = document.getElementById('ace-mirror');

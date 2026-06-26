@@ -47,7 +47,7 @@ view model =
                   , HtmlAttrs.rel "stylesheet"
                   ]
             -- , Ui.el [Ui.width Ui.fill] (Ui.text "")
-            , Html.node "script" [HtmlAttrs.src "/static/editor.js?v0.1"] []
+            , Html.node "script" [HtmlAttrs.src "/static/editor.js"] []
             , Ui.layout
                   [Background.color t.bg0]
                   (Ui.column
