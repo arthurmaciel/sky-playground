@@ -76,17 +76,17 @@ runCode code =
                 writeToml = File.writeFile (dir ++ "/sky.toml") sandboxToml
                 writeMain = File.writeFile (dir ++ "/src/Main.sky") safe
                 build _ = shellIn dir "sky build src/Main.sky"
-                run buildOut =
-                    shellIn dir "timeout 10s ./sky-out/app"
-                        |> Task.andThen
-                               (\runOut ->
-                                   Task.succeed (formatOutput buildOut runOut))
                 formatOutput buildOutput runOutput =
                     "── Build ─────────────\n" ++ (String.trim buildOutput)
                         ++ "\n"
                         ++ "── Run ──────────────\n"
                         ++ (String.trim runOutput)
                         ++ "\n"
+                run buildOut =
+                    shellIn dir "timeout 10s ./sky-out/app"
+                        |> Task.andThen
+                               (\runOut ->
+                                   Task.succeed (formatOutput buildOut runOut))
             in
                 Task.sequence [ writeToml, writeMain ] |> Task.andThen build
                     |> Task.andThen run

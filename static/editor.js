@@ -16,11 +16,13 @@ editor.selection.selectLine();
 
 var aceMirror = document.getElementById('ace-mirror');
 var exampleMirror = document.getElementById('example-mirror');
+var fmtCodeMirror = document.getElementById('fmt-code-mirror');
 var exampleMirrorWrapper = document.getElementById('example-mirror-wrapper');
 
 // Sync Ace editor and example-mirror
 editor.session.on("change", () => {
   aceMirror.value = editor.getValue();
+  fmtCodeMirror.value = editor.getValue();
 });
 
 // Trigger initial sync

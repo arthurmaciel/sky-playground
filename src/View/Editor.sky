@@ -24,7 +24,10 @@ exampleMirror model =
             <| Ui.html
                    (Html.node
                        "textarea"
-                       [ Attr.name "example-mirror", Attr.id "example-mirror" ]
+                       [ Attr.name "example-mirror"
+                       , Attr.id "example-mirror"
+                       , Attr.attribute "hidden" ""
+                       ]
                        [Html.text model.currentCode])
 
 
@@ -242,16 +245,26 @@ codeInput model =
                   Ui.none
             , Ui.form
                   [Ui.onSubmit RunClicked]
+                  [Ui.html
+                      (Html.node
+                          "textarea"
+                          [ Attr.name "code"
+                          , Attr.id "ace-mirror"
+                          , Attr.attribute "hidden" ""
+                          ]
+                          [])]
+            , Ui.el [Ui.paddingXY 6 6] <| actionButton t NoOp False "Run ▶"
+            , Ui.form
+                  [Ui.onSubmit FormatClicked]
                   [ Ui.html
                         (Html.node
                             "textarea"
-                            [ Attr.name "code"
-                            , Attr.id "ace-mirror"
+                            [ Attr.name "fmtcode"
+                            , Attr.id "fmt-code-mirror"
                             , Attr.attribute "hidden" ""
                             ]
                             [])
                   , Ui.el [Ui.paddingXY 6 6]
-                        <| actionButton t NoOp False "Run ▶"
-                  --, secondaryButton t FormatClicked (fmtLabel model)
+                        <| secondaryButton t NoOp (fmtLabel model)
                   ]
             ]
