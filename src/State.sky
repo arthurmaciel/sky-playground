@@ -120,13 +120,13 @@ blockedModuleNames =
 type Page
     = MainPage
 
-type alias RunPayload =
+type alias FormPayload =
     { code : String }
 
 type Msg
     = CodeChanged String
-    | RunClicked RunPayload
-    | FormatClicked
+    | RunClicked FormPayload
+    | FormatClicked FormPayload
     | GotRunResult (Result Error String)
     | GotFormatResult (Result Error String)
     | LoadExample Int

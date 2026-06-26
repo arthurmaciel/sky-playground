@@ -24,10 +24,7 @@ exampleMirror model =
             <| Ui.html
                    (Html.node
                        "textarea"
-                       [ Attr.name "example-mirror"
-                       , Attr.id "example-mirror"
-                       , Attr.attribute "hidden" ""
-                       ]
+                       [ Attr.name "example-mirror", Attr.id "example-mirror" ]
                        [Html.text model.currentCode])
 
 
@@ -57,7 +54,7 @@ toolbar model =
     in
         Ui.row
             [ Ui.width Ui.fill
-            , Ui.paddingXY 14 8
+            , Ui.paddingXY 14 6
             , Ui.spacing 8
             , Ui.centerY
             , Background.color t.bg1
@@ -67,7 +64,6 @@ toolbar model =
             [ exampleSelector model
             , Ui.el [Ui.width Ui.fill] (Ui.text "")
             , fmtStatusHint model
-            , secondaryButton t FormatClicked (fmtLabel model)
             ]
 
 
@@ -148,11 +144,8 @@ fmtLabel model =
         FmtRunning ->
             "Formatting…"
 
-        FmtSucceeded ->
-            "✓ Formatted"
-
         _ ->
-            "sky fmt"
+            "Format"
 
 
 runLabel : Model -> String
@@ -257,6 +250,8 @@ codeInput model =
                             , Attr.attribute "hidden" ""
                             ]
                             [])
-                  , actionButton t NoOp False "Run ▶"
+                  , Ui.el [Ui.paddingXY 6 6]
+                        <| actionButton t NoOp False "Run ▶"
+                  --, secondaryButton t FormatClicked (fmtLabel model)
                   ]
             ]

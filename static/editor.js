@@ -1,19 +1,21 @@
 var editor = ace.edit("editor");
 editor.session.setMode("ace/mode/elm");
-editor.setFontSize(18);
+editor.setFontSize(16);
 editor.setOption("printMargin", false);
 editor.textInput.getElement().id = "editor-textarea";
 editor.textInput.getElement().name = "editor-textarea";
 
-var themeSelectorWrapper = document.getElementById('theme-selector-wrapper');
-editor.setTheme(themeSelectorWrapper ? themeSelectorWrapper.getAttribute('data-ace-theme') : "ace/theme/chrome");
-
-initialCode = "-- Insert you code here or select an example above";
-editor.setValue(initialCode, -1);
-
 var aceMirror = document.getElementById('ace-mirror');
-var exampleMirror = document.getElementById('example-mirror');
-var exampleMirrorWrapper = document.getElementById('example-mirror-wrapper');
+const exampleMirror = document.getElementById('example-mirror');
+const exampleMirrorWrapper = document.getElementById('example-mirror-wrapper');
+const themeSelectorWrapper = document.getElementById('theme-selector-wrapper');
+
+editor.setTheme(themeSelectorWrapper ? themeSelectorWrapper.getAttribute('data-ace-theme') : "ace/theme/chrome");
+initialCode = "-- Insert you code here or select an example above";
+editor.setValue(initialCode, 0);
+editor.focus();
+editor.selection.moveCursorToPosition({row: 0, column: 0});
+editor.selection.selectLine();
 
 // Sync Ace editor and example-mirror
 editor.session.on("change", () => {
@@ -37,7 +39,7 @@ var dropDownObserver = new MutationObserver((mutations) => {
     if (mutation.target.id === exampleMirrorWrapper.id) {
       editor.setValue(exampleMirror.value, -1);
     } else if (mutation.target.id === themeSelectorWrapper.id) {
-      var acePath = themeSelectorWrapper.getAttribute('data-ace-theme');
+      const acePath = themeSelectorWrapper.getAttribute('data-ace-theme');
       editor.setTheme(acePath || "ace/theme/github_dark");
     }
   });
@@ -50,4 +52,3 @@ dropDownObserver.observe(exampleMirrorWrapper, {
 dropDownObserver.observe(themeSelectorWrapper, {
   attributes: true,
 });
-

@@ -7,12 +7,12 @@ import Std.Html.Attributes as HtmlAttrs
 import Std.Live as Live
 import Std.Ui as Ui exposing (Element)
 import Std.Ui.Background as Background
-import Std.Ui.Border as Border
-import Std.Ui.Font as Font
 import Update exposing (update)
-import View.Common exposing (..)
 import View.Editor exposing (editorPanel)
 import View.Output exposing (outputPanel)
+import View.Common exposing (..)
+import Std.Ui.Border as Border
+import Std.Ui.Font as Font
 
 
 -- ── Init ─────────────────────────────────────────────────────────────────────
@@ -46,6 +46,7 @@ view model =
                         "https://cdn.jsdelivr.net/npm/ace-builds/css/ace.min.css"
                   , HtmlAttrs.rel "stylesheet"
                   ]
+            -- , Ui.el [Ui.width Ui.fill] (Ui.text "")
             , Html.node "script" [HtmlAttrs.src "/static/editor.js"] []
             , Ui.layout
                   [Background.color t.bg0]
@@ -94,12 +95,12 @@ themeSelector model =
                 , Border.rounded 5
                 , Border.color t.borderColour
                 , Border.width 1
+                , Ui.width (Ui.px 260)
                 , Ui.pointer
                 , Ui.onClick ToggleThemeDropdown
                 ]
                 (Ui.el
-                    [ Ui.centerY
-                    , Font.family Font.monospace
+                    [ Font.family Font.monospace
                     , Font.size 15
                     , Font.color t.textSecondary
                     ]
@@ -122,9 +123,10 @@ themeSelector model =
                 (Ui.text (themeName theme))
         dropdown =
             Ui.column
-                [ Ui.width (Ui.px 180)
+                [ Ui.width (Ui.px 260)
                 , Background.color t.bg2
                 , Border.color t.borderColour
+                , Ui.htmlAttribute "style" "z-index: 10"
                 , Border.width 1
                 , Border.rounded 5
                 ]
@@ -158,37 +160,38 @@ header model =
         Ui.wrappedRow
             [ Ui.width Ui.fill
             , Ui.height Ui.shrink
-            , Ui.paddingXY 20 0
+            , Ui.paddingXY 14 15
             , Ui.centerY
-            , Ui.spacing 10
+            , Ui.spacing 40
             , Background.color t.bg1
             , Border.color t.borderColour
             , Border.widthEach { top = 0, right = 0, bottom = 1, left = 0 }
             ]
-            [ logoMark t
-            , Ui.el
-                  [ Font.size 24
-                  , Font.bold
-                  , Font.color t.textPrimary
-                  , Font.family Font.monospace
+            [ Ui.row
+                  []
+                  [ logoMark t
+                  , Ui.el [Ui.width (Ui.px 12)] (Ui.text "")
+                  , Ui.el
+                        [ Font.size 24
+                        , Font.bold
+                        , Font.color t.textPrimary
+                        , Font.family Font.monospace
+                        , Ui.centerX
+                        ]
+                        (Ui.text "Sky playground")
                   ]
-                  (Ui.text "Sky playground")
-            , Ui.el [Ui.width Ui.fill] (Ui.text "")
             , themeSelector model
-            , Ui.el
-                  [ Border.color t.borderColour
-                  , Border.widthEach
-                        { top = 0, right = 1, bottom = 0, left = 0 }
-                  , Ui.paddingXY 6 0
-                  , Ui.height (Ui.px 20)
-                  ]
-                  (Ui.text "")
             , Ui.link
                   [ Font.size 18
                   , Font.color t.textMuted
                   , Font.family Font.monospace
+                  , Ui.alignRight
                   ]
                   { url = "https://github.com/arthurmaciel/sky-playground"
                   , label = Ui.text "GitHub ↗"
                   }
             ]
+
+
+explain =
+    [ Border.color Ui.white, Border.width 1 ]

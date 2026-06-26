@@ -19,13 +19,13 @@ update msg model =
             , Cmd.none
             )
 
-        FormatClicked ->
+        FormatClicked payload ->
             let
             -- Always notify the user if dangerous imports were found, but
             -- we still proceed (Runner.runCode calls Security.sanitise
             -- internally, stripping them before the build).
                 warning =
-                    if Security.isDangerous model.currentCode then
+                    if Security.isDangerous payload.code then
                         Security.warningMessage
 
                     else
@@ -34,9 +34,7 @@ update msg model =
                 ( { model | formatStatus = FmtRunning
                   , securityWarning = warning
                   }
-                , Cmd.perform
-                      (Runner.formatCode model.currentCode)
-                      GotFormatResult
+                , Cmd.perform (Runner.formatCode payload.code) GotFormatResult
                 )
 
         GotFormatResult result ->

@@ -31,24 +31,19 @@ withTempDir prefix action =
             let
                 dir = "tmp/" ++ prefix ++ "-" ++ token
                 src = dir ++ "/src"
-                cleanup =
-                    let
-                        _ = Process.run "rm" [ "-rf", dir ]
-                    in
-                        Task.succeed ()
             in
                 File.mkdirAll src |> Task.andThen (\_ -> action dir)
                     |> Task.andThen
                            (\result ->
-                               let
-                                   _ = cleanup
-                               in
+                               -- let
+                               --     _ = Process.run "rm" [ "-rf", dir ]
+                               -- in
                                    Task.succeed result)
                     |> Task.onError
                            (\err ->
-                               let
-                                   _ = cleanup
-                               in
+                               -- let
+                               --     _ = Process.run "rm" [ "-rf", dir ]
+                               -- in
                                    Task.fail err)
     in
         Crypto.randomToken 4 |> Task.andThen runWithTempDir
@@ -82,7 +77,7 @@ runCode code =
                 writeMain = File.writeFile (dir ++ "/src/Main.sky") safe
                 build _ = shellIn dir "sky build src/Main.sky"
                 run buildOut =
-                    shellIn dir "./sky-out/app"
+                    shellIn dir "timeout 10s ./sky-out/app"
                         |> Task.andThen
                                (\runOut ->
                                    Task.succeed (formatOutput buildOut runOut))

@@ -31,8 +31,7 @@ outputToolbar model =
     in
         Ui.row
             [ Ui.width Ui.fill
-            , Ui.paddingXY 4 0
-            , Ui.spacing 0
+            , Ui.paddingXY 4 3
             , Ui.centerY
             , Background.color t.bg1
             , Border.color t.borderColour
@@ -162,7 +161,7 @@ runningView t =
                   , Font.color t.textMuted
                   , Ui.centerX
                   ]
-                  (Ui.text "Building and running… (5 s timeout applied)")
+                  (Ui.text "Building and running… (10 s timeout applied)")
             ])
 
 
